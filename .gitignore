@@ -1,0 +1,12 @@
+
+/data/shhs_1
+/data/mesa_1
+/data/shhs
+/data/mesa
+/data/logs
+*.xml
+*/__pycache__/
+__pycache__
+.vscode
+wandb
+output
