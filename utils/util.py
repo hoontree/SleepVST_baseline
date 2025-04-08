@@ -21,9 +21,11 @@ class MetricsTracker:
         acc = accuracy_score(y_true, y_pred)
         f1 = f1_score(y_true, y_pred, average='macro')
         kappa = cohen_kappa_score(y_true, y_pred)
-        cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='all')
+        
+        cm = confusion_matrix(y_true, y_pred, labels=labels)
+        cm_norm = (confusion_matrix(y_true, y_pred, labels=labels, normalize='true') * 100).round(1)
 
-        return acc, f1, kappa, cm
+        return acc, f1, kappa, cm, cm_norm
 
     def reset(self):
         self.preds = []

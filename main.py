@@ -172,9 +172,9 @@ def evaluate(model, dataloader, criterion):
             metrics.update(preds, labels)
 
     val_loss = losses.avg
-    acc, f1, kappa, cm = metrics.compute()
+    acc, f1, kappa, cm, cm_norm = metrics.compute()
 
-    return val_loss, acc, f1, kappa, cm
+    return val_loss, acc, f1, kappa, cm, cm_norm
 
 def main():
     # 설정 로드
@@ -354,7 +354,7 @@ def main():
             train_losses.append(train_loss)
             train_accs.append(train_accuracy)
             
-            val_loss, val_accuracy, val_f1, kappa, val_cm = evaluate(model, val_loader, criterion)
+            val_loss, val_accuracy, val_f1, kappa, val_cm, _ = evaluate(model, val_loader, criterion)
             
             wandb.log(
                 data={
@@ -427,14 +427,16 @@ def main():
         
         # 테스트 실행
         test_logger.info("----SHHS TEST----")
-        shhs_loss, shhs_accuracy, shhs_f1, shhs_kappa, shhs_cm = evaluate(model, shhs_test_loader, criterion)
+        shhs_loss, shhs_accuracy, shhs_f1, shhs_kappa, shhs_cm, shhs_cm_norm = evaluate(model, shhs_test_loader, criterion)
         test_logger.info(f"SHHS Test Loss: {shhs_loss:.4f}, Acc: {shhs_accuracy:.4f}, F1: {shhs_f1:.4f}, Kappa: {shhs_kappa:.4f}")
         test_logger.info(f"SHHS Confusion Matrix:\n {shhs_cm}")
+        test_logger.info(f"SHHS Normalized Confusion Matrix:\n {shhs_cm_norm}")
         
         test_logger.info("----MESA TEST----")
-        mesa_loss, mesa_accuracy, mesa_f1, mesa_kappa, mesa_cm = evaluate(model, mesa_test_loader, criterion)
+        mesa_loss, mesa_accuracy, mesa_f1, mesa_kappa, mesa_cm, mesa_cm_norm = evaluate(model, mesa_test_loader, criterion)
         test_logger.info(f"MESA Test Loss: {mesa_loss:.4f}, Acc: {mesa_accuracy:.4f}, F1: {mesa_f1:.4f}, Kappa: {mesa_kappa:.4f}")
         test_logger.info(f"MESA Confusion Matrix:\n {mesa_cm}")
+        test_logger.info(f"MESA Normalized Confusion Matrix:\n {mesa_cm_norm}")
         
         # wandb에 테스트 결과 기록 (학습 모드와 함께했을 경우만)
         if mode == 'train_and_test' and 'run' in locals():

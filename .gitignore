@@ -10,3 +10,5 @@ __pycache__
 .vscode
 wandb
 output
+*.ipynb
+processing/preprocess_SNUH.py

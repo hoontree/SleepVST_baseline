@@ -64,3 +64,17 @@ def get_xml_path_from_edf(edf_path, dataset_type='SHHS'):
     
     xml_path = os.path.join(xml_dir, xml_filename)
     return xml_path
+
+def sum_stage_wake_duration_from_csv(csv_path):
+    """CSV 파일에서 Stages 이벤트의 총 지속 시간(초)을 계산합니다."""
+    data = np.genfromtxt(csv_path, delimiter=',', skip_header=1, dtype=str)
+    
+    # Stages 열 추출
+    stages_column = data[:, 1]  # 두 번째 열이 Stages 열이라고 가정
+    total_duration = 0.0
+    
+    for stage in stages_column:
+        if stage == 'Wake':
+            total_duration += 1.0  # Wake 상태의 지속 시간 추가 (1초 단위로 가정)
+    
+    return total_duration
