@@ -1,0 +1,811 @@
+2025-04-09 01:32:40,404 - INFO - 사용 가능한 메모리: 450119.9 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:32:40,404 - INFO - 전처리 작업 시작
+2025-04-09 01:32:40,404 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:32:40,406 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:32:40,415 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:32:40,423 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:32:41,176 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,176 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,176 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,177 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,177 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,177 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,177 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:41,177 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,298 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:32:42,299 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:33:27,300 - INFO - 사용 가능한 메모리: 448778.6 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:33:27,300 - INFO - 전처리 작업 시작
+2025-04-09 01:33:27,300 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:33:27,303 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:33:27,311 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:33:27,319 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:33:28,150 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,150 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,150 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,150 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,150 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,150 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,151 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:28,151 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,259 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,259 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:33:29,260 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:05,804 - INFO - 사용 가능한 메모리: 449738.5 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:34:05,804 - INFO - 전처리 작업 시작
+2025-04-09 01:34:05,804 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:34:05,813 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:34:05,835 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:34:05,856 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:34:08,852 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,853 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,853 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,853 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,854 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,854 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,854 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:08,854 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,917 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,918 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,918 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,919 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,920 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,921 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,921 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:13,921 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:34:55,453 - INFO - 사용 가능한 메모리: 449616.1 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:34:55,453 - INFO - 전처리 작업 시작
+2025-04-09 01:34:55,453 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:34:55,463 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:34:55,484 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:34:55,507 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:35:00,049 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,049 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,049 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,050 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,050 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,050 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,050 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:35:00,050 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable, TypeError
+2025-04-09 01:41:48,371 - INFO - 사용 가능한 메모리: 450141.3 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:41:48,371 - INFO - 전처리 작업 시작
+2025-04-09 01:41:48,371 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:41:48,373 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:41:48,382 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:41:48,390 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:41:49,267 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,267 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,267 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,268 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,268 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,268 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,268 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:49,268 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,289 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,289 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,289 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,290 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,290 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,290 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,290 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:41:50,290 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:51,947 - INFO - 사용 가능한 메모리: 450142.3 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:42:51,948 - INFO - 전처리 작업 시작
+2025-04-09 01:42:51,948 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:42:51,950 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:42:51,958 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:42:51,966 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:42:52,785 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,786 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,786 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,786 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,787 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,787 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,787 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:52,787 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,850 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:53,851 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,894 - ERROR - D2020-NX-01-0167.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,894 - ERROR - D2020-NX-01-0163.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,894 - ERROR - A2021-EM-01-0004.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,894 - ERROR - A2020-EM-01-0195.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,895 - ERROR - A2019-EM-01-0142.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,895 - ERROR - A2021-EM-01-0077.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,895 - ERROR - D2019-NX-01-0130.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:42:54,895 - ERROR - A2021-EM-01-0072.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:29,776 - INFO - 사용 가능한 메모리: 453895.2 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:48:29,776 - INFO - 전처리 작업 시작
+2025-04-09 01:48:29,776 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:48:29,778 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:48:29,787 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:48:29,795 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:48:30,723 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:48:30,724 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:28,508 - INFO - 사용 가능한 메모리: 452711.3 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:49:28,508 - INFO - 전처리 작업 시작
+2025-04-09 01:49:28,509 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:49:28,511 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:49:28,520 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:49:28,528 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:49:29,500 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:49:29,501 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:38,654 - INFO - 사용 가능한 메모리: 449938.4 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:53:38,654 - INFO - 전처리 작업 시작
+2025-04-09 01:53:38,654 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:53:38,656 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:53:38,665 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:53:38,673 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:53:39,516 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,517 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,517 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,517 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,517 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,518 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,518 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:39,518 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,515 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,515 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,516 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,516 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,516 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,517 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,517 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:53:40,517 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:18,217 - INFO - 사용 가능한 메모리: 452685.8 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:56:18,217 - INFO - 전처리 작업 시작
+2025-04-09 01:56:18,218 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:56:18,220 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:56:18,228 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:56:18,236 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:56:19,023 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,023 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:19,024 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,009 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:56:20,010 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:19,991 - INFO - 사용 가능한 메모리: 451951.9 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:57:19,991 - INFO - 전처리 작업 시작
+2025-04-09 01:57:19,991 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:57:19,993 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:57:20,002 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:57:20,010 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:57:20,880 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,881 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,881 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,881 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,881 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,881 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,882 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:20,882 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:26,975 - INFO - 사용 가능한 메모리: 452413.7 MB / 총 메모리: 515849.8 MB
+2025-04-09 01:57:26,975 - INFO - 전처리 작업 시작
+2025-04-09 01:57:26,976 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 01:57:26,978 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 01:57:26,986 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 01:57:26,995 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 01:57:27,899 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,899 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 01:57:27,900 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:06,807 - INFO - 사용 가능한 메모리: 457211.5 MB / 총 메모리: 515849.8 MB
+2025-04-09 02:22:06,807 - INFO - 전처리 작업 시작
+2025-04-09 02:22:06,807 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 02:22:06,816 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 02:22:06,826 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 02:22:06,834 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 02:22:07,677 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,677 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:07,678 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,723 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,723 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:08,724 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,760 - ERROR - D2020-NX-01-0167.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,761 - ERROR - D2020-NX-01-0163.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,761 - ERROR - A2021-EM-01-0004.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,762 - ERROR - A2020-EM-01-0195.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,762 - ERROR - A2019-EM-01-0142.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,762 - ERROR - A2021-EM-01-0077.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,762 - ERROR - D2019-NX-01-0130.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:22:09,762 - ERROR - A2021-EM-01-0072.edf 처리 중 예상치 못한 오류: 'module' object is not callable
+2025-04-09 02:24:28,765 - INFO - 사용 가능한 메모리: 456450.3 MB / 총 메모리: 515849.8 MB
+2025-04-09 02:24:28,765 - INFO - 전처리 작업 시작
+2025-04-09 02:24:28,765 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 02:24:28,768 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 02:24:28,777 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 02:24:28,785 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 02:24:29,682 - ERROR - A2019-EM-01-0027.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,683 - ERROR - A2019-EM-01-0112.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,683 - ERROR - A2020-EM-01-0066.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,683 - ERROR - A2019-EM-01-0041.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,683 - ERROR - D2020-NX-01-0126.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,683 - ERROR - A2021-EM-01-0018.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,684 - ERROR - A2019-EM-01-0076.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:29,684 - ERROR - B2020-EM-01-0066.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,774 - ERROR - A2020-EM-01-0196.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,774 - ERROR - D2019-NX-01-0207.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - B2018-EM-01-0003.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - D2019-NX-01-0076.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - A2020-EM-01-0240.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - B2019-EM-01-0139.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - D2020-NX-01-0012.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:30,775 - ERROR - A2020-EM-01-0202.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,746 - ERROR - D2020-NX-01-0167.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,747 - ERROR - D2020-NX-01-0163.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,747 - ERROR - A2021-EM-01-0004.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,747 - ERROR - A2020-EM-01-0195.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,747 - ERROR - A2019-EM-01-0142.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,748 - ERROR - A2021-EM-01-0077.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,748 - ERROR - D2019-NX-01-0130.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:24:31,748 - ERROR - A2021-EM-01-0072.edf 처리 중 예상치 못한 오류: concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/concurrent/futures/process.py", line 239, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 199, in process_file
+    signal(signal.SIGINT, signal.SIG_IGN)
+TypeError: 'module' object is not callable
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tf/01_code/mylittlecodes/SleepVST_baseline/preprocess_SNUH.py", line 333, in main
+    success, status = future.result(timeout=600)
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 437, in result
+    return self.__get_result()
+  File "/usr/lib/python3.8/concurrent/futures/_base.py", line 389, in __get_result
+    raise self._exception
+TypeError: 'module' object is not callable
+
+2025-04-09 02:27:02,079 - INFO - 사용 가능한 메모리: 459097.7 MB / 총 메모리: 515849.8 MB
+2025-04-09 02:27:02,080 - INFO - 전처리 작업 시작
+2025-04-09 02:27:02,080 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 02:27:02,082 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 02:27:02,091 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 02:27:02,099 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 02:27:10,919 - ERROR - A2019-EM-01-0112.edf: error_processing: ValueError: 데이터셋에는 EKG와 THORAX 두 채널이 필요합니다. 발견된 채널: ['EKG'] (파일: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/A2019-EM-01-0112.edf, 채널: ['EKG'])
+2025-04-09 02:27:12,028 - ERROR - D2020-NX-01-0126.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2020-NX-01-0126.edf에서 ['EKG', 'THORAX']를 찾을 수 없습니다.
+2025-04-09 02:27:16,341 - ERROR - A2019-EM-01-0041.edf: error_processing: ValueError: 데이터셋에는 EKG와 THORAX 두 채널이 필요합니다. 발견된 채널: ['EKG'] (파일: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/A2019-EM-01-0041.edf, 채널: ['EKG'])
+2025-04-09 02:27:16,580 - ERROR - A2019-EM-01-0027.edf: error_processing: ValueError: 데이터셋에는 EKG와 THORAX 두 채널이 필요합니다. 발견된 채널: ['EKG'] (파일: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/A2019-EM-01-0027.edf, 채널: ['EKG'])
+2025-04-09 02:27:17,262 - ERROR - A2020-EM-01-0066.edf: error_processing: ValueError: 데이터셋에는 EKG와 THORAX 두 채널이 필요합니다. 발견된 채널: ['EKG'] (파일: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/A2020-EM-01-0066.edf, 채널: ['EKG'])
+2025-04-09 02:27:17,793 - ERROR - A2019-EM-01-0076.edf: error_processing: ValueError: 데이터셋에는 EKG와 THORAX 두 채널이 필요합니다. 발견된 채널: ['EKG'] (파일: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/A2019-EM-01-0076.edf, 채널: ['EKG'])
+2025-04-09 02:29:31,891 - INFO - 사용 가능한 메모리: 456261.7 MB / 총 메모리: 515849.8 MB
+2025-04-09 02:29:31,891 - INFO - 전처리 작업 시작
+2025-04-09 02:29:31,891 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 02:29:31,894 - INFO - 데이터셋 KISS 처리 시작 (총 942 파일)
+2025-04-09 02:29:31,902 - INFO - 이미 처리된 파일: 0/942 (0.0%)
+2025-04-09 02:29:31,910 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 02:29:39,013 - ERROR - D2020-NX-01-0126.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2020-NX-01-0126.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 02:29:50,812 - ERROR - D2019-NX-01-0076.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2019-NX-01-0076.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 02:29:50,995 - ERROR - D2019-NX-01-0207.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2019-NX-01-0207.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 02:29:55,979 - ERROR - D2020-NX-01-0012.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2020-NX-01-0012.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 02:30:00,660 - ERROR - D2020-NX-01-0163.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2020-NX-01-0163.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 02:30:00,801 - ERROR - D2020-NX-01-0167.edf: error_processing: ValueError: 필요한 채널을 찾을 수 없습니다: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/D2020-NX-01-0167.edf에서 ['EKG', 'Thorax']를 찾을 수 없습니다.
+2025-04-09 04:45:16,540 - INFO - 사용 가능한 메모리: 450928.2 MB / 총 메모리: 515849.8 MB
+2025-04-09 04:45:16,541 - INFO - 전처리 작업 시작
+2025-04-09 04:45:16,541 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 04:45:16,548 - INFO - 데이터셋 KISS 처리 시작 (총 482 파일)
+2025-04-09 04:45:16,552 - INFO - 이미 처리된 파일: 14/482 (2.9%)
+2025-04-09 04:45:16,557 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 04:46:25,198 - INFO - 사용 가능한 메모리: 446687.7 MB / 총 메모리: 515849.8 MB
+2025-04-09 04:46:25,198 - INFO - 전처리 작업 시작
+2025-04-09 04:46:25,198 - INFO - 설정: Namespace(batch_size=128, channels=['ECG', 'THOR RES'], checkpoint_dir='checkpoint', d_model=128, dataset=['SHHS', 'MESA'], early_stopping=3, edf_dir_mesa='/tf/01_code/mesa/polysomnography/edfs/', edf_dir_shhs='/tf/00_data/#_SHHS/polysomnography/edfs/', end_epoch=30, epochs=30, fs=1000.0, gpu_ids=[0], highcut=2.8, if_scratch=False, log_name='train', lowcut=0.66, lr=0.0005, mesa_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa', mode='train_and_test', normalize=False, num_classes=4, num_heads=8, num_layers=2, num_workers=8, patch_bw=150, patch_hw=300, patch_size=300, preprocess_log_dir='processing/preprocess_log', result_dir='results', save_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data', seq_len=240, shhs_npy_dir='/tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs', step=300, train_samples=500, val_samples=100, verbose=False, weight_decay=0.001, xml_dir_mesa='/tf/01_code/mesa/polysomnography/annotations-events-nsrr/', xml_dir_shhs='/tf/00_data/#_SHHS/polysomnography/annotations-events-nsrr/')
+2025-04-09 04:46:25,200 - INFO - 데이터셋 KISS 처리 시작 (총 482 파일)
+2025-04-09 04:46:25,205 - INFO - 이미 처리된 파일: 0/482 (0.0%)
+2025-04-09 04:46:25,209 - INFO - 배치 크기: 8, 워커 수: 4
+2025-04-09 05:06:00,494 - INFO - 데이터셋 KISS 처리 결과: 처리 완료=482, 건너뛴 파일=0, 오류=0
+2025-04-09 05:06:00,495 - INFO - 데이터셋 KISS 처리 완료
+2025-04-09 05:06:00,495 - INFO - 모든 데이터셋 처리 완료

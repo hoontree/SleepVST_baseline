@@ -1,13 +1,15 @@
 import numpy as np
 from scipy.signal import butter, filtfilt, medfilt, resample
-from config import config
+import config
+
+args = config.parse_args()
 
 def bandpass_filter(signal, fs, lowcut=None, highcut=None):
     """신호에 대역 통과 필터를 적용합니다."""
     if lowcut is None:
-        lowcut = config.args.lowcut
+        lowcut = args.lowcut
     if highcut is None:
-        highcut = config.args.highcut
+        highcut = args.highcut
         
     nyq = 0.5 * fs
     b, a = butter(N=2, Wn=[lowcut/nyq, highcut/nyq], btype='band')

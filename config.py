@@ -19,9 +19,13 @@ def get_parser():
                         help='Directory to save SHHS .npy files')
     parser.add_argument('--mesa_npy_dir', type=str, default='/tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa',
                         help='Directory to save MESA .npy files')
+    parser.add_argument('--kvss_npy_dir', type=str, default='/tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss',
+                        help='Directory to save KVSS .npy files')
+    parser.add_argument('--csv_dir_kvss', type=str, default='/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels',
+                        help='Directory containing KVSS CSV files')
     
-    parser.add_argument('--dataset', type=str, nargs='+', default=['SHHS', 'MESA'],
-                        help='Dataset name')
+    parser.add_argument('--dataset', type=str, default='all',
+                        help='shhs_mesa, kvss, all')
     parser.add_argument('--save_dir', type=str, 
                         default='/tf/01_code/mylittlecodes/SleepVST_baseline/data',
                         help='Directory to save .npy files')
@@ -70,10 +74,16 @@ def get_parser():
     parser.add_argument('--checkpoint_dir', type=str, default='checkpoint', help='Directory to save output files')
     parser.add_argument('--log_name', type=str, default='train', help='Log file name')
     parser.add_argument('--gpu_ids', nargs='+', default=[0], help='GPU IDs to use')
-    parser.add_argument('--preprocess_log_dir', type=str, default='pocessing/preprocess_log', help='Directory to save preprocessing logs')
+    parser.add_argument('--preprocess_log_dir', type=str, default='processing/preprocess_log', help='Directory to save preprocessing logs')
+    
     parser.add_argument('--mode', type=str, default='train_and_test', 
-                        choices=['train', 'test', 'train_and_test'],
-                        help='실행 모드 선택: train(학습만), test(테스트만), train_and_test(학습+테스트)')
+                        choices=['train', 'test', 'train_and_test', 'finetune'],
+                        help='실행 모드 (train, test, train_and_test, finetune)')
+    parser.add_argument('--finetune_lr', type=float, default=None,
+                        help='Fine-tuning에 사용할 학습률 (기본: 기존 lr의 1/10)')
+    parser.add_argument('--pretrained_checkpoint_dir', type=str, default='output',
+                        help='Fine-tuning에 사용할 사전학습된 모델 체크포인트 경로')
+    parser.add_argument('--kvss', action='store_true', help='Use KVSS dataset')
     # Jupyter Notebook 환경에서 빈 리스트 전달
     if 'ipykernel' in sys.modules:
         return parser.parse_args(args=[])

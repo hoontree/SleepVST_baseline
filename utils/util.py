@@ -1,7 +1,8 @@
 import numpy as np
-from utils.logger import Logger
+from utils.customlogger import Logger
 import xml.etree.ElementTree as ET
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, cohen_kappa_score
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, cohen_kappa_score, classification_report
+import csv
 
 logger = Logger(dir='output/log', name='SleepVST.mesa_loader')
 
@@ -24,8 +25,9 @@ class MetricsTracker:
         
         cm = confusion_matrix(y_true, y_pred, labels=labels)
         cm_norm = (confusion_matrix(y_true, y_pred, labels=labels, normalize='true') * 100).round(1)
+        cr = classification_report(y_true, y_pred, labels=labels, target_names=['Wake', 'N1/N2', 'N3', 'REM'], zero_division=0)
 
-        return acc, f1, kappa, cm, cm_norm
+        return acc, f1, kappa, cm, cm_norm, cr
 
     def reset(self):
         self.preds = []
@@ -49,6 +51,40 @@ class AverageMeter(object):
 		self.sum += val * n
 		self.count += n
 		self.avg = self.sum / self.count if self.count != 0 else 0
+  
+def parse_csv(csv_path):
+    """
+    Args:
+        csv_path (str)
+    Returns:
+        list: 수면 단계 정보가 포함된 딕셔너리 리스트
+    """
+    
+    label_map = {
+            "Wake": 0,
+            "N1": 1,
+            "N2": 1,
+            "N3": 2,
+            "REM": 3,
+        }
+    
+    try:
+        sleep_epochs = []
+        with open(csv_path, 'r') as f:
+            ann = [row for row in csv.DictReader(f)]
+            if len(ann) == 0:
+                logger.error(f"CSV 파일이 비어있습니다: {csv_path}")
+                return []
+            for row in ann:
+                sleep_epochs.append({
+                    "start": (float(row['Start_Epoch'])-1) * 30,
+                    "duration": 30,
+                    "label": label_map[row['Event_Label']]
+                })
+        return sleep_epochs
+    except Exception as e:
+        logger.error(f"CSV 파싱 오류 {csv_path}: {e}")
+        return []
   
 def parse_xml(xml_path):
     """

@@ -12,7 +12,7 @@ import warnings
 import signal
 
 from concurrent.futures import ProcessPoolExecutor
-from utils.logger import Logger
+from utils.customlogger import Logger
 from utils.io import *
 from utils.utils_data import *
 from mne.io import read_raw_edf

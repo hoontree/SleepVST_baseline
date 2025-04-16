@@ -6,7 +6,7 @@ import random
 import re
 from utils.util import parse_xml
 from glob import glob
-from utils.logger import Logger
+from utils.customlogger import Logger
 from config import parse_args
 from tqdm import tqdm
 
@@ -159,19 +159,37 @@ class SHHS(data.Dataset):
         
         # 데이터 로드 - 병렬 처리 대신 순차 처리
         self.samples = []
-        
-        # tqdm으로 진행 상황 표시
-        for hw_file in tqdm(hw_files, desc=f'데이터 로딩 ({split})'):
-            hw_file = path.join(self.shhs_npy_dir, hw_file)
-            result = process_file(hw_file, self.seq_len, step=10)
-            if result:
-                self.samples.extend(result)
+        if self.split == 'train' or self.split == 'val':
+            for hw_file in tqdm(hw_files, desc=f'데이터 로딩 ({split})'):
+                hw_file = path.join(self.mesa_npy_dir, hw_file)
+                result = process_file(hw_file, self.seq_len, step=10)
+                if result:
+                    self.samples.extend(result)
+                    if self.max_samples is not None and len(self.samples) >= self.max_samples:
+                        self.samples = self.samples[:self.max_samples]
+                        logger.info(f"최대 샘플 수 {self.max_samples}개 도달, 데이터 로딩 중단")
+                        break
+        else:
+            for hw_file in tqdm(hw_files, desc=f'테스트 데이터 로딩'):
+                basename = path.basename(hw_file).replace('_hw.npy', '')
+                hw = np.load(hw_file).astype(np.float32)
+                bw = np.load(hw_file.replace('_hw.npy', '_bw.npy')).astype(np.float32)
+                if 'shhs1' in basename:
+                    label_path = path.join(args.xml_dir_shhs, 'shhs1', f'{basename}-nsrr.xml')
+                else:
+                    label_path = path.join(args.xml_dir_shhs, 'shhs2', f'{basename}-nsrr.xml')
+                epochs = parse_xml(label_path)
+                labels = np.array([e['label'] for e in epochs])
                 
-                # max_samples 제한 적용
-                if self.max_samples is not None and len(self.samples) >= self.max_samples:
-                    self.samples = self.samples[:self.max_samples]
-                    logger.info(f"최대 샘플 수 {self.max_samples}개 도달, 데이터 로딩 중단")
-                    break
+                T = min(len(hw), len(bw), len(labels))
+                self.samples.append({
+                    'subject_id': basename,
+                    'start_idx': 0,
+                    'x_hw': hw[:T],
+                    'x_bw': bw[:T],
+                    'label': labels[:T]
+                })
+                
             
         logger.info(f"{split} 데이터셋 준비 완료 - 샘플 수: {len(self.samples)}")
             

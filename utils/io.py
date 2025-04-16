@@ -1,7 +1,9 @@
 import os
 import numpy as np
 import xml.etree.ElementTree as ET
-from config import config
+import config
+
+args = config.parse_args()
 
 def check_file_processed(base_name, save_path):
     hw_file = os.path.join(save_path, base_name + '_hw.npy')
@@ -57,7 +59,7 @@ def get_xml_path_from_edf(edf_path, dataset_type='SHHS'):
         subdir = os.path.basename(edf_dir)
         
         # XML 디렉토리도 동일한 하위 디렉토리 구조를 가짐
-        xml_dir = os.path.join(config.args.xml_dir_shhs, subdir)
+        xml_dir = os.path.join(args.xml_dir_shhs, subdir)
     else:  # MESA
         # MESA 데이터셋의 XML 파일 경로
         xml_dir = config.args.xml_dir_mesa
