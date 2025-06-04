@@ -10,6 +10,7 @@ from utils.customlogger import Logger
 from utils.util import MetricsTracker, AverageMeter
 import wandb
 import argparse
+import time
 
 def parse_args():
     parser = argparse.ArgumentParser(description='SleepVST Transfer Learning')
@@ -22,6 +23,8 @@ def parse_args():
     parser.add_argument('--epochs', type=int, default=50, help='Number of epochs')
     parser.add_argument('--num_classes', type=int, default=4, help='Number of target classes')
     parser.add_argument('--output_dir', type=str, default='transfer_checkpoints', help='Output directory')
+    parser.add_argument('--run_name', type=str, default=time.strftime('%Y%m%d_%H%M%S'),
+                        help='Unique run name for logs and checkpoints')
     parser.add_argument('--use_wandb', action='store_true', help='Use wandb for logging')
     return parser.parse_args()
 
@@ -66,7 +69,7 @@ def freeze_layers(model, freeze_encoder=False, freeze_transformer=False):
 
 def transfer_learning(args):
     # 로거 설정
-    logger = Logger(dir='output/log', name=f'SleepVST_transfer_{args.target_dataset}')
+    logger = Logger(dir='output/log', name=f'SleepVST_transfer_{args.target_dataset}', run_name=args.run_name)
     
     # 모델 로드
     logger.info(f"Loading source model from {args.source_ckpt}")
@@ -187,7 +190,7 @@ def transfer_learning(args):
             best_val_acc = val_acc
             
             # 체크포인트 저장
-            checkpoint_path = os.path.join(args.output_dir, f"best_model_{args.target_dataset}.pth")
+            checkpoint_path = os.path.join(args.output_dir, f"{args.run_name}_best_model_{args.target_dataset}.pth")
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),

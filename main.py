@@ -325,7 +325,8 @@ def main():
     num_workers = args.num_workers
     checkpoint_dir = args.checkpoint_dir
     log_name = args.log_name
-    checkpoint_path = os.path.join(checkpoint_dir, 'checkpoint.pth')
+    run_name = args.run_name
+    checkpoint_path = os.path.join(checkpoint_dir, f"{run_name}_checkpoint.pth")
     
     lr = args.lr
     weight_decay = args.weight_decay
@@ -349,7 +350,7 @@ def main():
     # Logger 설정
     if not os.path.exists('output/log'):
         os.makedirs('output/log')
-    logger = Logger(dir='output/log', name='SleepVST' + '.train')
+    logger = Logger(dir='output/log', name='SleepVST.train', run_name=run_name)
     
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
@@ -382,8 +383,8 @@ def main():
             "mode": mode
         }
         wandb.config.update(wandb_config)
-        run_name = f"{log_name}_{mode}" if finetune_mode else log_name
-        wandb.run.name = run_name
+        wandb_run_name = f"{log_name}_{mode}" if finetune_mode else log_name
+        wandb.run.name = wandb_run_name
         
         # 손실 함수, 옵티마이저 설정
         criterion = nn.CrossEntropyLoss().cuda()
@@ -502,7 +503,7 @@ def main():
                 # Fine-tuning일 경우 다른 이름으로 저장
                 save_path = checkpoint_path
                 if finetune_mode:
-                    save_path = os.path.join(checkpoint_dir, 'kvss_finetuned_checkpoint.pth')
+                    save_path = os.path.join(checkpoint_dir, f"{run_name}_kvss_finetuned_checkpoint.pth")
                 
                 torch.save({
                     'epoch': epoch,
@@ -541,7 +542,7 @@ def main():
                 logger.error(f"No checkpoint found at {checkpoint_path}. Cannot test.")
                 return
         elif 'train' not in mode and use_kvss:
-            checkpoint_path = os.path.join(checkpoint_dir, 'kvss_finetuned_checkpoint.pth')
+            checkpoint_path = os.path.join(checkpoint_dir, f"{run_name}_kvss_finetuned_checkpoint.pth")
             logger.info(f"Fine-tuning mode: Loading model from {checkpoint_path}")
             if os.path.exists(checkpoint_path):
                 checkpoint = torch.load(checkpoint_path)
@@ -552,7 +553,7 @@ def main():
                 return
         
         # 테스트 로거 설정
-        test_logger = Logger(dir='output/log', name='SleepVST' + '.test')
+        test_logger = Logger(dir='output/log', name='SleepVST.test', run_name=run_name)
         
         if use_shhs_mesa:
             criterion = nn.CrossEntropyLoss().cuda()

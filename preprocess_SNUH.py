@@ -24,7 +24,7 @@ from tqdm import tqdm
 # 전역 변수로 executor 선언
 executor = None
 args = config.parse_args()
-logger = Logger(dir=args.preprocess_log_dir, name='SleepVST.preprocess')
+logger = Logger(dir=args.preprocess_log_dir, name='SleepVST.preprocess', run_name=args.run_name)
 
 def signal_handler(sig, frame):
     """
