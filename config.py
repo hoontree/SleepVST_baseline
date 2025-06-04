@@ -58,7 +58,6 @@ def get_parser():
     # 학습 파라미터
     parser.add_argument('--batch_size', type=int, default=128, help='Batch size')
     parser.add_argument('--if_scratch', action='store_true', help='If training from scratch')
-    parser.add_argument('--end_epoch', type=int, default=30, help='Number of epochs')
     parser.add_argument('--epochs', type=int, default=30, help='Number of epochs')
     parser.add_argument('--lr', type=float, default=0.0005, help='Learning rate')
     parser.add_argument('--weight_decay', type=float, default=0.001, help='Weight decay')

@@ -332,7 +332,7 @@ def main():
     early_stopping = args.early_stopping
     batch_size = args.batch_size
     num_classes = args.num_classes
-    end_epoch = args.end_epoch
+    epochs = args.epochs
     if_scratch = args.if_scratch
     
     if finetune_mode:
@@ -370,7 +370,7 @@ def main():
         )
         
         wandb_config = {
-            "epochs": end_epoch,
+            "epochs": epochs,
             "batch_size": batch_size,
             "learning_rate": lr,
             "weight_decay": weight_decay,
@@ -455,9 +455,9 @@ def main():
         logger.info(f"{'Fine-tuning' if finetune_mode else 'Training'} started with {dataset_text}")
         training_start_time = time.time()
         
-        for epoch in range(begin_epoch, end_epoch):
+        for epoch in range(begin_epoch, epochs):
             start_time = time.time()
-            logger.info(f"\n===== Epoch {epoch + 1}/{end_epoch} =====")
+            logger.info(f"\n===== Epoch {epoch + 1}/{epochs} =====")
             
             train_loss, train_accuracy = train_one_epoch(model, dataloaders['train'], optimizer, criterion)
             
@@ -491,7 +491,7 @@ def main():
             
             epoch_time = time.time() - start_time
             logger.info(f"Epoch {epoch + 1} completed in {epoch_time:.2f} seconds.")
-            logger.info(f"Epoch {epoch+1}/{end_epoch} - Train Loss: {train_loss:.4f}, Train Acc: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_accuracy:.4f}, Val F1: {val_f1:.4f}",)
+            logger.info(f"Epoch {epoch+1}/{epochs} - Train Loss: {train_loss:.4f}, Train Acc: {train_accuracy:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_accuracy:.4f}, Val F1: {val_f1:.4f}",)
             
             scheduler.step(val_loss)
             

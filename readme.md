@@ -41,7 +41,7 @@ python processing/preprocess.py
 ## Model Training and Evaluation
 ### Training
 ```bash
-python main.py --mode train --if_scratch --batch_size 128 --end_epoch 30
+python main.py --mode train --if_scratch --batch_size 128 --epochs 30
 ```
 ### Testing
 ```bash
@@ -57,7 +57,7 @@ python main.py --mode train_and_test --if_scratch
 --mode: Execution mode (train, test, train_and_test)
 --if_scratch: Whether to train from scratch
 --batch_size: Batch size
---end_epoch: Maximum training epochs
+--epochs: Maximum training epochs
 --lr: Learning rate
 --seq_len: Sequence length (default: 240)
 --d_model: Model dimension (default: 128)
