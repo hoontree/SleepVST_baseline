@@ -1,5 +1,6 @@
 import argparse
 import sys
+import time
 
 def get_parser():
     parser = argparse.ArgumentParser(description="Process EDF files to extract ECG and THOR RES signals.")
@@ -73,6 +74,8 @@ def get_parser():
     parser.add_argument('--result_dir', type=str, default='results', help='Directory to save results')
     parser.add_argument('--checkpoint_dir', type=str, default='checkpoint', help='Directory to save output files')
     parser.add_argument('--log_name', type=str, default='train', help='Log file name')
+    parser.add_argument('--run_name', type=str, default=time.strftime('%Y%m%d_%H%M%S'),
+                        help='Unique run name for checkpoints and logs')
     parser.add_argument('--gpu_ids', nargs='+', default=[0], help='GPU IDs to use')
     parser.add_argument('--preprocess_log_dir', type=str, default='processing/preprocess_log', help='Directory to save preprocessing logs')
     

@@ -10,8 +10,8 @@ from utils.customlogger import Logger
 from config import parse_args
 from tqdm import tqdm
 
-logger = Logger(dir='output/log', name='SleepVST.shhs_loader')
 args = parse_args()
+logger = Logger(dir='output/log', name='SleepVST.shhs_loader', run_name=args.run_name)
 
 def process_file(hw_path, seq_len, step=10):
     """
