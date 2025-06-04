@@ -9,6 +9,7 @@ from glob import glob
 from utils.customlogger import Logger
 from config import parse_args
 from tqdm import tqdm
+from data.utils import collate_fn as shared_collate_fn
 
 # 로깅 설정
 logger = Logger(dir='output/log', name='SleepVST.kvss_loader')
@@ -237,194 +238,13 @@ class KVSS(data.Dataset):
             "class_distribution": class_dist
         }
         
-    def collate_fn(batch, pad_value=0, stack_labels=True, return_dict=True):
-        """
-        KVSS 데이터셋의 배치를 처리하는 collate 함수입니다.
-        
-        Args:
-            batch (list): 샘플 딕셔너리 리스트
-            pad_value (float): 패딩에 사용할 값
-            stack_labels (bool): 레이블을 스택할지 여부 (False면 리스트로 유지)
-            return_dict (bool): 딕셔너리 형태로 반환할지 여부
-            
-        Returns:
-            dict or tuple: 배치 처리된 텐서
-        """
-        # 길이가 다를 수 있으므로 각 샘플에서 텐서 추출
-        x_hw = [item['x_hw'] for item in batch]
-        x_bw = [item['x_bw'] for item in batch]
-        labels = [item['label'] for item in batch]
-        subject_ids = [item['subject_id'] for item in batch]
-        start_idxs = [item['start_idx'] for item in batch]
-        
-        # 배치 내 최대 길이
-        max_len_hw = max(x.shape[0] for x in x_hw)
-        max_len_bw = max(x.shape[0] for x in x_bw)
-        max_len_label = max(x.shape[0] for x in labels)
-        
-        # 패딩 적용
-        padded_x_hw = []
-        padded_x_bw = []
-        padded_labels = []
-        
-        for i in range(len(batch)):
-            hw = x_hw[i]
-            bw = x_bw[i]
-            label = labels[i]
-            
-            # 각 텐서의 길이 계산
-            len_hw = hw.shape[0]
-            len_bw = bw.shape[0]
-            len_label = label.shape[0]
-            
-            # 필요한 패딩 길이 계산
-            pad_hw = max_len_hw - len_hw
-            pad_bw = max_len_bw - len_bw
-            pad_label = max_len_label - len_label
-            
-            # 패딩 적용 (뒤에 패딩 추가)
-            if pad_hw > 0:
-                hw_pad = torch.full((pad_hw, hw.shape[1]), pad_value, dtype=hw.dtype, device=hw.device)
-                hw = torch.cat([hw, hw_pad], dim=0)
-                
-            if pad_bw > 0:
-                bw_pad = torch.full((pad_bw, bw.shape[1]), pad_value, dtype=bw.dtype, device=bw.device)
-                bw = torch.cat([bw, bw_pad], dim=0)
-                
-            if pad_label > 0 and stack_labels:
-                label_pad = torch.full((pad_label,), -100, dtype=label.dtype, device=label.device)
-                label = torch.cat([label, label_pad], dim=0)
-            
-            padded_x_hw.append(hw)
-            padded_x_bw.append(bw)
-            padded_labels.append(label)
-        
-        # 배치 차원으로 스택
-        x_hw_batch = torch.stack(padded_x_hw, dim=0)
-        x_bw_batch = torch.stack(padded_x_bw, dim=0)
-        
-        # 레이블을 스택할지 여부 결정
-        if stack_labels:
-            labels_batch = torch.stack(padded_labels, dim=0)
-        else:
-            labels_batch = padded_labels
-        
-        # 길이 정보 추가 (패딩 마스크 생성 등에 활용 가능)
-        lengths = torch.tensor([x.shape[0] for x in x_hw])
-        
-        if return_dict:
-            # 딕셔너리 형태로 반환
-            return {
-                'x_hw': x_hw_batch,
-                'x_bw': x_bw_batch,
-                'label': labels_batch,
-                'lengths': lengths,
-                'subject_ids': subject_ids,
-                'start_idxs': start_idxs
-            }
-        else:
-            # 튜플 형태로 반환
-            return x_hw_batch, x_bw_batch, labels_batch, lengths, subject_ids, start_idxs
 
     @staticmethod
     def collate_fn(batch, pad_value=0, stack_labels=True, return_dict=True):
-        """
-        KVSS 데이터셋의 배치를 처리하는 collate 함수입니다.
-        데이터로더에서 사용할 수 있습니다.
-        
-        사용 예:
-            dataloader = DataLoader(
-                dataset, 
-                batch_size=32, 
-                collate_fn=KVSS.collate_fn
-            )
-        
-        커스텀 설정 예:
-            dataloader = DataLoader(
-                dataset, 
-                batch_size=32, 
-                collate_fn=lambda batch: KVSS.collate_fn(
-                    batch, 
-                    pad_value=0, 
-                    stack_labels=False
-                )
-            )
-        """
-        # 길이가 다를 수 있으므로 각 샘플에서 텐서 추출
-        x_hw = [item['x_hw'] for item in batch]
-        x_bw = [item['x_bw'] for item in batch]
-        labels = [item['label'] for item in batch]
-        subject_ids = [item['subject_id'] for item in batch]
-        start_idxs = [item['start_idx'] for item in batch]
-        
-        # 배치 내 최대 길이 구하기
-        max_len_hw = max(x.shape[0] for x in x_hw)
-        max_len_bw = max(x.shape[0] for x in x_bw)
-        max_len_label = max(x.shape[0] for x in labels)
-        
-        # 패딩 적용
-        padded_x_hw = []
-        padded_x_bw = []
-        padded_labels = []
-        
-        for i in range(len(batch)):
-            hw = x_hw[i]
-            bw = x_bw[i]
-            label = labels[i]
-            
-            # 각 텐서의 길이 계산
-            len_hw = hw.shape[0]
-            len_bw = bw.shape[0]
-            len_label = label.shape[0]
-            
-            # 필요한 패딩 길이 계산
-            pad_hw = max_len_hw - len_hw
-            pad_bw = max_len_bw - len_bw
-            pad_label = max_len_label - len_label
-            
-            # 패딩 적용 (뒤에 패딩 추가)
-            if pad_hw > 0:
-                hw_pad = torch.full((pad_hw, hw.shape[1]), pad_value, dtype=hw.dtype, device=hw.device)
-                hw = torch.cat([hw, hw_pad], dim=0)
-                
-            if pad_bw > 0:
-                bw_pad = torch.full((pad_bw, bw.shape[1]), pad_value, dtype=bw.dtype, device=bw.device)
-                bw = torch.cat([bw, bw_pad], dim=0)
-                
-            if pad_label > 0 and stack_labels:
-                label_pad = torch.full((pad_label,), -100, dtype=label.dtype, device=label.device)
-                label = torch.cat([label, label_pad], dim=0)
-            
-            padded_x_hw.append(hw)
-            padded_x_bw.append(bw)
-            padded_labels.append(label)
-        
-        # 배치 차원으로 스택
-        x_hw_batch = torch.stack(padded_x_hw, dim=0)
-        x_bw_batch = torch.stack(padded_x_bw, dim=0)
-        
-        # 레이블을 스택할지 여부 결정
-        if stack_labels:
-            labels_batch = torch.stack(padded_labels, dim=0)
-        else:
-            labels_batch = padded_labels
-        
-        # 길이 정보 추가 (패딩 마스크 생성 등에 활용 가능)
-        lengths = torch.tensor([x.shape[0] for x in x_hw])
-        
-        if return_dict:
-            # 딕셔너리 형태로 반환
-            return {
-                'x_hw': x_hw_batch,
-                'x_bw': x_bw_batch,
-                'label': labels_batch,
-                'lengths': lengths,
-                'subject_ids': subject_ids,
-                'start_idxs': start_idxs
-            }
-        else:
-            # 튜플 형태로 반환
-            return x_hw_batch, x_bw_batch, labels_batch, lengths, subject_ids, start_idxs
+        """Wrapper around :func:`data.utils.collate_fn`."""
+        return shared_collate_fn(batch, pad_value=pad_value,
+                                stack_labels=stack_labels,
+                                return_dict=return_dict)
         
     @classmethod         
     def create_subset(cls, full_dataset, max_samples=None, max_subjects=None, seed=42):
