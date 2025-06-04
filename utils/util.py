@@ -3,8 +3,10 @@ from utils.customlogger import Logger
 import xml.etree.ElementTree as ET
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, cohen_kappa_score, classification_report
 import csv
+from config import parse_args
 
-logger = Logger(dir='output/log', name='SleepVST.mesa_loader')
+args = parse_args()
+logger = Logger(dir='output/log', name='SleepVST.mesa_loader', run_name=args.run_name)
 
 class MetricsTracker:
     def __init__(self):

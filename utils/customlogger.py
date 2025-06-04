@@ -2,7 +2,7 @@ import logging
 import os
 
 class Logger():
-    def __init__(self, dir, name='SleepVST', level=logging.DEBUG):
+    def __init__(self, dir, name='SleepVST', run_name=None, level=logging.DEBUG):
         """
         :param dir: 로그 파일을 저장할 디렉토리
         :param name: 로그 파일 이름
@@ -43,7 +43,10 @@ class Logger():
         self.logger.setLevel(logging.INFO)
 
         # 로그 파일 핸들러 설정
-        log_file = os.path.join(dir, name)
+        filename = name
+        if run_name:
+            filename = f"{name}_{run_name}"
+        log_file = os.path.join(dir, filename + ".log")
         if not os.path.exists(dir):
             os.makedirs(dir)
         fh = logging.FileHandler(log_file)
