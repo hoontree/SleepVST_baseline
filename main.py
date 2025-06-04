@@ -325,7 +325,8 @@ def main():
     num_workers = args.num_workers
     checkpoint_dir = args.checkpoint_dir
     log_name = args.log_name
-    checkpoint_path = os.path.join(checkpoint_dir, 'checkpoint.pth')
+    run_name = f"{log_name}_{mode}" if finetune_mode else log_name
+    checkpoint_path = os.path.join(checkpoint_dir, f"{run_name}.pth")
     
     lr = args.lr
     weight_decay = args.weight_decay
@@ -342,7 +343,7 @@ def main():
         lr = lr / 10 if args.finetune_lr is None else args.finetune_lr
         # pretrained 체크포인트 경로 (기본 체크포인트와 다를 수 있음)
         pretrained_checkpoint = checkpoint_dir
-        pretrained_checkpoint_path = os.path.join(pretrained_checkpoint, 'checkpoint.pth')
+        pretrained_checkpoint_path = os.path.join(pretrained_checkpoint, f"{log_name}.pth")
     
 
     
@@ -382,7 +383,6 @@ def main():
             "mode": mode
         }
         wandb.config.update(wandb_config)
-        run_name = f"{log_name}_{mode}" if finetune_mode else log_name
         wandb.run.name = run_name
         
         # 손실 함수, 옵티마이저 설정
