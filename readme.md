@@ -51,6 +51,9 @@ python main.py --mode test
 ```bash
 python main.py --mode train_and_test --if_scratch
 ```
+Checkpoints are stored in `checkpoint/{run_name}.pth`. The `run_name` is based
+on the `--log_name` argument (and `--mode` when fine-tuning) so multiple runs do
+not overwrite each other.
 
 ## Key Parameters
 ```
