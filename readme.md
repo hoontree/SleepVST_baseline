@@ -17,7 +17,7 @@ SleepVST_baseline\
 │ └── preprocess.py # Preprocessing pipeline 
 ├── utils/ # Utility functions 
 │ ├── io.py # File I/O functions 
-│ ├── logger.py # Logging configuration 
+│ ├── customlogger.py # Logging configuration 
 │ ├── util.py # General utility functions 
 │ └── utils_data.py # Data processing utilities 
 └── output/ # Output and log folder
