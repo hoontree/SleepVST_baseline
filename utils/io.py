@@ -62,7 +62,7 @@ def get_xml_path_from_edf(edf_path, dataset_type='SHHS'):
         xml_dir = os.path.join(args.xml_dir_shhs, subdir)
     else:  # MESA
         # MESA 데이터셋의 XML 파일 경로
-        xml_dir = config.args.xml_dir_mesa
+        xml_dir = args.xml_dir_mesa
     
     xml_path = os.path.join(xml_dir, xml_filename)
     return xml_path
