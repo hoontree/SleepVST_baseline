@@ -11,8 +11,8 @@ from config import parse_args
 from tqdm import tqdm
 
 # 로깅 설정
-logger = Logger(dir='output/log', name='SleepVST.kvss_loader')
 args = parse_args()
+logger = Logger(dir='output/log', name='SleepVST.kvss_loader', run_name=args.run_name)
 
 def process_file(hw_path, seq_len, step=10):
     """
