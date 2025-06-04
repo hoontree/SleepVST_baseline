@@ -1,9 +1,7 @@
 import os
 import numpy as np
 import xml.etree.ElementTree as ET
-import config
 
-args = config.parse_args()
 
 def check_file_processed(base_name, save_path):
     hw_file = os.path.join(save_path, base_name + '_hw.npy')
@@ -47,7 +45,7 @@ def sum_stage_wake_duration(xml_path):
                     pass  # 숫자가 아닌 경우 무시
     return total_duration
 
-def get_xml_path_from_edf(edf_path, dataset_type='SHHS'):
+def get_xml_path_from_edf(edf_path, dataset_type='SHHS', xml_dir_shhs=None, xml_dir_mesa=None):
     """EDF 파일 경로로부터 해당하는 XML 파일 경로를 생성합니다."""
     base = os.path.splitext(os.path.basename(edf_path))[0]
     xml_filename = f"{base}-nsrr.xml"
@@ -59,10 +57,14 @@ def get_xml_path_from_edf(edf_path, dataset_type='SHHS'):
         subdir = os.path.basename(edf_dir)
         
         # XML 디렉토리도 동일한 하위 디렉토리 구조를 가짐
-        xml_dir = os.path.join(args.xml_dir_shhs, subdir)
+        if xml_dir_shhs is None:
+            raise ValueError('xml_dir_shhs must be specified')
+        xml_dir = os.path.join(xml_dir_shhs, subdir)
     else:  # MESA
+        if xml_dir_mesa is None:
+            raise ValueError('xml_dir_mesa must be specified')
         # MESA 데이터셋의 XML 파일 경로
-        xml_dir = config.args.xml_dir_mesa
+        xml_dir = xml_dir_mesa
     
     xml_path = os.path.join(xml_dir, xml_filename)
     return xml_path

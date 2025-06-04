@@ -62,7 +62,12 @@ def extract_signal(edf_path, dataset_type='SHHS', channels=None, patch_size={'EC
     
     # XML에서 duration 계산
     try:
-        xml_path = get_xml_path_from_edf(edf_path, dataset_type)
+        xml_path = get_xml_path_from_edf(
+            edf_path,
+            dataset_type,
+            xml_dir_shhs=args.xml_dir_shhs,
+            xml_dir_mesa=args.xml_dir_mesa,
+        )
         if os.path.exists(xml_path):
             duration_sec = sum_stage_wake_duration(xml_path)
             if duration_sec <= 0:

@@ -7,14 +7,12 @@ import re
 from utils.util import parse_xml
 from glob import glob
 from utils.customlogger import Logger
-from config import parse_args
 from tqdm import tqdm
 
 # 로깅 설정
 logger = Logger(dir='output/log', name='SleepVST.mesa_loader')
-args = parse_args()
 
-def process_file(hw_path, seq_len, step=10):
+def process_file(hw_path, seq_len, xml_dir, step=10):
     """
     Args:
         hw_path (str): 기준 npy 파일 경로 (hw 파일 경로)
@@ -29,7 +27,7 @@ def process_file(hw_path, seq_len, step=10):
         basename = path.basename(hw_path).replace('_hw.npy', '')
         
         # xml 라벨 파일 경로 생성
-        label_path = path.join(args.xml_dir_mesa, f'{basename}-nsrr.xml')
+        label_path = path.join(xml_dir, f'{basename}-nsrr.xml')
         # 필요한 파일이 모두 존재하는지 확인
         if not path.exists(bw_path) or not path.exists(label_path):
             return []
@@ -84,8 +82,9 @@ class MESA(data.Dataset):
         max_subjects (int, optional): 로드할 최대 피험자 수, None이면 모두 로드
         max_samples (int, optional): 로드할 최대 샘플 수, None이면 모두 로드
     '''
-    def __init__(self, 
-                 data_dir=args.mesa_npy_dir, 
+    def __init__(self,
+                 data_dir,
+                 xml_dir,
                  seq_len=240,
                  split='train',
                  val_ratio=0.25,
@@ -97,8 +96,9 @@ class MESA(data.Dataset):
             1, 21, 33, 52, 77, 81, 101, 111, 225, 310, 314, 402, 416, 445, 465, 483, 505, 554, 572, 587, 601, 620, 648, 702, 764, 771, 792, 797, 800, 807, 860, 892, 902, 904, 921, 1033, 1080, 1121, 1140, 1148, 1161, 1164, 1219, 1224, 1271, 1324, 1356, 1391, 1463, 1483, 1497, 1528, 1531, 1539, 1672, 1693, 1704, 1874, 1876, 1900, 1914, 2039, 2049, 2096, 2100, 2109, 2169, 2172, 2183, 2208, 2239, 2243, 2260, 2269, 2317, 2362, 2388, 2470, 2472, 2488, 2527, 2556, 2602, 2608, 2613, 2677, 2680, 2685, 2727, 2729, 2802, 2811, 2828, 2877, 2881, 2932, 2934, 2993, 2999, 3044, 3066, 3068, 3111, 3121, 3153, 3275, 3298, 3324, 3369, 3492, 3543, 3554, 3557, 3561, 3684, 3689, 3777, 3793, 3801, 3815, 3839, 3886, 3997, 4110, 4137, 4171, 4227, 4285, 4332, 4406, 4460, 4462, 4497, 4501, 4552, 4577, 4649, 4650, 4667, 4732, 4794, 4888, 4892, 4895, 4912, 4918, 4998, 5006, 5075, 5077, 5148, 5169, 5203, 5232, 5243, 5287, 5316, 5357, 5366, 5395, 5397, 5457, 5472, 5479, 5496, 5532, 5568, 5580, 5659, 5692, 5706, 5737, 5754, 5805, 5838, 5847, 5890, 5909, 5957, 5983, 6015, 6039, 6047, 6123, 6224, 6263, 6266, 6281, 6291, 6482, 6491, 6502, 6516, 6566, 6567, 6583, 6619, 6629, 6646, 6680, 6722, 6730, 6741, 6788
         ]
         
-        # 데이터 디렉토리 설정
+        # 데이터 디렉토리 및 XML 디렉토리 설정
         self.mesa_npy_dir = data_dir
+        self.xml_dir = xml_dir
         
         # 모든 hw 파일 찾기
         all_hw_files = sorted(glob(path.join(self.mesa_npy_dir, '*_hw.npy')))
@@ -150,7 +150,7 @@ class MESA(data.Dataset):
         if split == 'train' or split == 'val':
             for hw_file in tqdm(hw_files, desc=f'데이터 로딩 ({split})'):
                 hw_file = path.join(self.mesa_npy_dir, hw_file)
-                result = process_file(hw_file, self.seq_len, step=10)
+                result = process_file(hw_file, self.seq_len, self.xml_dir, step=10)
                 if result:
                     self.samples.extend(result)
                     if self.max_samples is not None and len(self.samples) >= self.max_samples:
@@ -163,7 +163,7 @@ class MESA(data.Dataset):
                 basename = path.basename(hw_file).replace('_hw.npy', '')
                 hw = np.load(hw_file).astype(np.float32)
                 bw = np.load(bw_file).astype(np.float32)
-                label_path = path.join(args.xml_dir_mesa, f'{basename}-nsrr.xml')
+                label_path = path.join(self.xml_dir, f'{basename}-nsrr.xml')
                 epochs = parse_xml(label_path)
                 labels = np.array([e['label'] for e in epochs])
                 T = min(len(hw), len(bw), len(labels))

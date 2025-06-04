@@ -7,14 +7,12 @@ import re
 from utils.util import parse_csv
 from glob import glob
 from utils.customlogger import Logger
-from config import parse_args
 from tqdm import tqdm
 
 # 로깅 설정
 logger = Logger(dir='output/log', name='SleepVST.kvss_loader')
-args = parse_args()
 
-def process_file(hw_path, seq_len, step=10):
+def process_file(hw_path, seq_len, csv_dir, step=10):
     """
     Args:
         hw_path (str): 기준 npy 파일 경로 (hw 파일 경로)
@@ -28,8 +26,8 @@ def process_file(hw_path, seq_len, step=10):
         bw_path = hw_path.replace('_hw.npy', '_bw.npy')
         basename = path.basename(hw_path).replace('_hw.npy', '')
         
-        # xml 라벨 파일 경로 생성
-        label_path = path.join(args.csv_dir_kvss, f'{basename}_label.csv')
+        # csv 라벨 파일 경로 생성
+        label_path = path.join(csv_dir, f'{basename}_label.csv')
         # 필요한 파일이 모두 존재하는지 확인
         if not path.exists(bw_path) or not path.exists(label_path):
             return []
@@ -80,8 +78,9 @@ class KVSS(data.Dataset):
         max_subjects (int, optional): 로드할 최대 피험자 수, None이면 모두 로드
         max_samples (int, optional): 로드할 최대 샘플 수, None이면 모두 로드
     '''
-    def __init__(self, 
-                 data_dir=args.kvss_npy_dir, 
+    def __init__(self,
+                 data_dir,
+                 csv_dir,
                  seq_len=240,
                  split='train',
                  val_ratio=0.15,
@@ -93,6 +92,7 @@ class KVSS(data.Dataset):
         self.split = split
         # 데이터 디렉토리 설정
         self.kvss_npy_dir = data_dir
+        self.csv_dir = csv_dir
         self.exceptions = [
             # [1. edf 파일이 존재하지 않는 case]
             'A2019-EM-01-0119',
@@ -170,8 +170,8 @@ class KVSS(data.Dataset):
         
         if split == 'train' or split == 'val':
             for hw_file in tqdm(hw_files, desc=f'데이터 로딩 ({split})'):
-                hw_file = path.join(data_dir, hw_file)
-                result = process_file(hw_file, self.seq_len, step=10)
+                hw_file = path.join(self.kvss_npy_dir, hw_file)
+                result = process_file(hw_file, self.seq_len, self.csv_dir, step=10)
                 if result:
                     self.samples.extend(result)
         else:
@@ -180,7 +180,7 @@ class KVSS(data.Dataset):
                 bw_file = hw_file.replace('_hw.npy', '_bw.npy')
                 hw = np.load(hw_file).astype(np.float32)
                 bw = np.load(bw_file).astype(np.float32)
-                label_path = path.join(args.csv_dir_kvss, f'{basename}_label.csv')
+                label_path = path.join(self.csv_dir, f'{basename}_label.csv')
                 epochs = parse_csv(label_path)
                 
                 labels = np.array([e['label'] for e in epochs], dtype=np.int64)

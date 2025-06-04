@@ -38,14 +38,14 @@ def setup_dataloaders(args, logger):
     # --- 테스트 데이터 로더 ---
     if use_shhs_mesa:
         logger.info("Loading SHHS and MESA test datasets...")
-        shhs_test = SHHS(split='test')
-        mesa_test = MESA(split='test')
+        shhs_test = SHHS(data_dir=args.shhs_npy_dir, xml_dir=args.xml_dir_shhs, split='test')
+        mesa_test = MESA(data_dir=args.mesa_npy_dir, xml_dir=args.xml_dir_mesa, split='test')
         dataloaders['shhs_test'] = DataLoader(shhs_test, batch_size=1, shuffle=False, num_workers=num_workers, pin_memory=True)
         dataloaders['mesa_test'] = DataLoader(mesa_test, batch_size=1, shuffle=False, num_workers=num_workers, pin_memory=True)
 
     if use_kvss:
         logger.info("Loading KVSS test dataset...")
-        kvss_test = KVSS(split='test')
+        kvss_test = KVSS(data_dir=args.kvss_npy_dir, csv_dir=args.csv_dir_kvss, split='test')
         dataloaders['kvss_test'] = DataLoader(kvss_test, batch_size=1, shuffle=False, num_workers=num_workers, pin_memory=True)
 
     # --- 학습/검증 데이터 로더 ---
@@ -55,8 +55,8 @@ def setup_dataloaders(args, logger):
 
         if use_kvss:
             logger.info("Loading KVSS train/val datasets...")
-            kvss_train = KVSS(split='train')
-            kvss_val = KVSS(split='val')
+            kvss_train = KVSS(data_dir=args.kvss_npy_dir, csv_dir=args.csv_dir_kvss, split='train')
+            kvss_val = KVSS(data_dir=args.kvss_npy_dir, csv_dir=args.csv_dir_kvss, split='val')
             train_datasets.append(kvss_train)
             val_datasets.append(kvss_val)
             logger.info(f"KVSS training data size: {len(kvss_train)}")
@@ -66,10 +66,10 @@ def setup_dataloaders(args, logger):
         if use_shhs_mesa and not finetune_mode:
             if args.if_scratch:  # if_scratch 조건이 있는 경우에만 
                 logger.info("Loading SHHS and MESA train/val datasets...")
-                shhs_train = SHHS(split='train')
-                mesa_train = MESA(split='train')
-                shhs_val = SHHS(split='val')
-                mesa_val = MESA(split='val')
+                shhs_train = SHHS(data_dir=args.shhs_npy_dir, xml_dir=args.xml_dir_shhs, split='train')
+                mesa_train = MESA(data_dir=args.mesa_npy_dir, xml_dir=args.xml_dir_mesa, split='train')
+                shhs_val = SHHS(data_dir=args.shhs_npy_dir, xml_dir=args.xml_dir_shhs, split='val')
+                mesa_val = MESA(data_dir=args.mesa_npy_dir, xml_dir=args.xml_dir_mesa, split='val')
                 
                 train_datasets.extend([shhs_train, mesa_train])
                 val_datasets.extend([shhs_val, mesa_val])
