@@ -242,21 +242,26 @@ def train_one_epoch(model, dataloader, optimizer, criterion):
             print(f"[Batch {batch_idx}] Loss is NaN or Inf!")
             print("logits stats →", logits.min().item(), logits.max().item())
             print("labels stats →", labels.min().item(), labels.max().item())
-            continue  # NaN 발생 시 해당 배치 스킵
-        
+
             # 라벨 범위 확인
             num_classes_model = logits.size(-1)
             invalid_labels = (labels < 0) | (labels >= num_classes_model)
             if invalid_labels.any():
-                print(f"INVALID LABELS FOUND! Out of range [0, {num_classes_model-1}]")
+                print(
+                    f"INVALID LABELS FOUND! Out of range [0, {num_classes_model-1}]"
+                )
                 print(f"Invalid labels count: {invalid_labels.sum().item()}")
-                print(f"Invalid label values: {labels[invalid_labels].unique().cpu().tolist()}")
-            
+                print(
+                    f"Invalid label values: {labels[invalid_labels].unique().cpu().tolist()}"
+                )
+
             # NaN/Inf 값 확인
             if torch.isnan(logits).any():
                 print("NaN values in logits:", torch.isnan(logits).sum().item())
             if torch.isinf(logits).any():
                 print("Inf values in logits:", torch.isinf(logits).sum().item())
+
+            continue  # NaN 발생 시 해당 배치 스킵
 
         try:
             loss.backward()
