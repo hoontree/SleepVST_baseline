@@ -296,7 +296,7 @@ def evaluate(model, dataloader, criterion):
             metrics.update(preds, labels)
 
     val_loss = losses.avg
-    acc, f1, kappa, cm, cm_norm = metrics.compute()
+    acc, f1, kappa, cm, cm_norm, cr = metrics.compute()
 
     return val_loss, acc, f1, kappa, cm, cm_norm
 

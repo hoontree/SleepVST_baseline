@@ -87,10 +87,12 @@ class KVSS(data.Dataset):
                  val_ratio=0.15,
                  test_ratio=0.15,
                  n_jobs=4,
-                 seed=42,):
+                 seed=42,
+                 random = False,):
         self.seq_len = seq_len
         self.split = split
-        
+        # 데이터 디렉토리 설정
+        self.kvss_npy_dir = data_dir
         self.exceptions = [
             # [1. edf 파일이 존재하지 않는 case]
             'A2019-EM-01-0119',
@@ -113,30 +115,41 @@ class KVSS(data.Dataset):
             # records 개수에 관한 RuntimeWarning 발생
             'A2021-EM-01-0163',
             ]
-        exceptions = [path.join(data_dir, f'{e}_hw.npy') for e in self.exceptions]
-        # 데이터 디렉토리 설정
-        self.kvss_npy_dir = data_dir
-        
-        # 모든 hw 파일 찾기
-        all_hw_files = sorted(glob(path.join(self.kvss_npy_dir, '*_hw.npy')))
-        all_hw_files = [f for f in all_hw_files if f not in exceptions]
-        
-        if not all_hw_files:
-            raise ValueError(f"디렉토리에서 hw 파일을 찾을 수 없음: {self.kvss_npy_dir}")
-        
-        # 훈련/검증 분할 (테스트 파일 제외하고 분할)
-        random.seed(seed)
-        random.shuffle(all_hw_files)
-        
-        train_size = int(len(all_hw_files) * (1 - val_ratio - test_ratio))
-        val_size = int(len(all_hw_files) * val_ratio)
-        test_size = int(len(all_hw_files) * test_ratio)
-        
-        train_files = all_hw_files[:train_size]
-        val_files = all_hw_files[train_size:train_size + val_size]
-        test_files = all_hw_files[train_size + val_size:train_size + val_size + test_size]
-        # 훈련/검증/테스트 파일 리스트
-        all_files = train_files + val_files + test_files
+        exceptions = set([path.join(data_dir, f'{e}_hw.npy') for e in self.exceptions])
+        if random:
+             # 모든 hw 파일 찾기
+            all_hw_files = sorted(glob(path.join(self.kvss_npy_dir, '*_hw.npy')))
+            all_hw_files = [f for f in all_hw_files if f not in exceptions]
+            # 훈련/검증 분할 (테스트 파일 제외하고 분할)
+            random.seed(seed)
+            random.shuffle(all_hw_files)
+            
+            train_size = int(len(all_hw_files) * (1 - val_ratio - test_ratio))
+            val_size = int(len(all_hw_files) * val_ratio)
+            test_size = int(len(all_hw_files) * test_ratio)
+            
+            train_files = all_hw_files[:train_size]
+            val_files = all_hw_files[train_size:train_size + val_size]
+            test_files = all_hw_files[train_size + val_size:train_size + val_size + test_size]
+        else:
+            datapath = '/tf/01_code/mylittlecodes/SleepVST_baseline/data'
+            train_list_file = path.join(datapath, 'A-train.txt')
+            valid_list_file = path.join(datapath, 'A-valid.txt')
+            test_list_file = path.join(datapath, 'A-test.txt')
+            
+            with open(train_list_file, 'r') as f:
+                self.train_list = set([path.join(data_dir, line.strip().replace('.h5', '_hw.npy')) for line in f.readlines()]) - exceptions
+                train_files = [path.join(data_dir, f) for f in self.train_list]
+                
+            with open(valid_list_file, 'r') as f:
+                self.valid_list = set([path.join(data_dir, line.strip().replace('.h5', '_hw.npy')) for line in f.readlines()]) - exceptions
+                val_files = [path.join(data_dir, f) for f in self.valid_list]
+                
+            with open(test_list_file, 'r') as f:
+                self.test_list = set([path.join(data_dir, line.strip().replace('.h5', '_hw.npy')) for line in f.readlines()]) - exceptions
+                test_files = [path.join(data_dir, f) for f in self.test_list]
+            
+            all_hw_files = train_files + val_files + test_files
         
         # 요청된 분할에 따라 파일 선택
         if split == 'train':

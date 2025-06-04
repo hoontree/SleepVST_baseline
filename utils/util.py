@@ -15,19 +15,47 @@ class MetricsTracker:
         self.preds.append(preds.detach().cpu().numpy().reshape(-1))
         self.targets.append(targets.detach().cpu().numpy().reshape(-1))
 
-    def compute(self, labels:list=None):
+    def compute(self, labels: list = None):
         y_pred = np.concatenate(self.preds)
         y_true = np.concatenate(self.targets)
 
-        acc = accuracy_score(y_true, y_pred)
-        f1 = f1_score(y_true, y_pred, average='macro')
-        kappa = cohen_kappa_score(y_true, y_pred)
-        
-        cm = confusion_matrix(y_true, y_pred, labels=labels)
-        cm_norm = (confusion_matrix(y_true, y_pred, labels=labels, normalize='true') * 100).round(1)
-        cr = classification_report(y_true, y_pred, labels=labels, target_names=['Wake', 'N1/N2', 'N3', 'REM'], zero_division=0)
+        # Acc_T
+        acc_T = accuracy_score(y_true, y_pred)
 
-        return acc, f1, kappa, cm, cm_norm, cr
+        # Acc_mu = macro recall
+        cm = confusion_matrix(y_true, y_pred, labels=labels)
+        recalls = cm.diagonal() / cm.sum(axis=1)
+        acc_mu = np.mean(recalls)
+
+        # κ_T
+        kappa_T = cohen_kappa_score(y_true, y_pred)
+
+        # κ_mu (macro kappa): 클래스별 kappa 평균
+        total = cm.sum()
+        kappa_list = []
+        for i in range(len(cm)):
+            po = cm[i, i] / cm[i].sum() if cm[i].sum() > 0 else 0
+            pe = (cm[i].sum() * cm[:, i].sum()) / (total ** 2)
+            kappa_i = (po - pe) / (1 - pe) if (1 - pe) > 0 else 0
+            kappa_list.append(kappa_i)
+        kappa_mu = np.mean(kappa_list)
+
+        cm_norm = (confusion_matrix(y_true, y_pred, labels=labels, normalize='true') * 100).round(1)
+
+        cr = classification_report(
+            y_true, y_pred, labels=labels,
+            target_names=['Wake', 'N1/N2', 'N3', 'REM'], zero_division=0
+        )
+
+        return {
+            'acc_T': acc_T,
+            'acc_mu': acc_mu,
+            'kappa_T': kappa_T,
+            'kappa_mu': kappa_mu,
+            'cm': cm,
+            'cm_norm': cm_norm,
+            'report': cr
+        }
 
     def reset(self):
         self.preds = []
