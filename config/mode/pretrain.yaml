@@ -1,0 +1,4 @@
+mode: pretrain
+max_epochs: 50
+lr: 0.001
+freeze: []   # 레이어 동결 안 함

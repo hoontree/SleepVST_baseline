@@ -1,0 +1,8 @@
+lr: 0.001
+weight_decay: 0.01
+epochs: 30
+batch_size: 64
+from_scratch: true
+early_stopping_patience: 10
+log_name: sleepvst_train
+checkpoint_dir: checkpoint

@@ -1,0 +1,21 @@
+# @package _global_
+
+# Test configuration
+command: test
+
+defaults:
+  - /data@data.kvss: kvss
+  - /data@data.shhs: shhs
+  - /data@data.mesa: mesa
+  - /model: SleepVST_BW
+
+test:
+  checkpoint: checkpoint/finetune/sleepvst_finetune_kvss_finetuned.pth
+  datasets:
+    - kvss
+    # - shhs
+    # - mesa
+
+log:
+  dir: logs/test
+  name: test

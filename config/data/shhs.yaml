@@ -1,0 +1,7 @@
+name: shhs
+root: /tf/01_code/mylittlecodes/SleepVST_baseline/data/shhs
+seq_len: 240
+batch_size: 64
+num_workers: 8
+shuffle: True
+pin_memory: True

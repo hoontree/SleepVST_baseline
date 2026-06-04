@@ -1,0 +1,42 @@
+# Motion Features Extraction Configuration
+
+log:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/logs"
+  name: "motion_features"
+
+# Input/Output paths
+video_path: "/tf/00_data/#_2021_Sleep_Video/"  # Path to the input video directory
+
+# Video processing parameters
+target_fps: 4  # Target FPS for optical flow computation
+output:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/motionfeatures"
+  size: [224, 224]  # Output size for homography transformation [width, height]
+
+# Processing options
+num_workers: 8  # Number of worker processes for multiprocessing
+skip_existing: false  # Skip videos that already have output files
+
+# Motion feature computation parameters
+motion_features:
+  # Time windows for cumulative features (in seconds)
+  time_windows: [30, 300]  # f1, f2 features computation windows
+  
+  # Thresholds for motion detection features
+  motion_thresholds: [0.01, 0.1, 1.0]  # f3, f4 features thresholds
+
+# Homography transformation settings
+homography:
+  # Source points for perspective correction (bed corners)
+  source_points: [[197, 63], [507, 63], [611, 426], [102, 420]]
+  scale_factor: 1.2  # Scaling factor for quad transformation
+
+# Region of interest settings
+roi:
+  # Person bounding box coordinates [x0, y0, x1, y1]
+  person_box: [46, 78, 372, 570]
+  head_bottom_y: 153  # Y coordinate separating head and body regions
+
+video:
+  input_path: /tf/00_data/#_2021_Sleep_Video/
+  file_list: /tf/01_code/mylittlecodes/SleepVST_baseline/config/preprocess/file_list.txt

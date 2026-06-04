@@ -1,0 +1,52 @@
+# Respiratory Signal Extraction Configuration - Debug/Test Mode
+# This config is for testing specific records and epochs
+
+defaults:
+  - respiratory
+
+# Override filtering settings for debugging
+filter:
+  enabled: true  # Enable filtering to process specific records/epochs only
+
+  # Example 1: Process only specific records
+  # record_ids: ["P00001", "P00002"]
+  record_ids: []  # Empty = all records in file_list
+
+  # Example 2: Process specific epoch ranges for specific records
+  # Format: record_id: [start_epoch, end_epoch] (1-indexed, inclusive)
+  epoch_ranges:
+    # "P00001": [1, 10]      # Process epochs 1-10 for P00001
+    # "P00002": [5, 15]      # Process epochs 5-15 for P00002
+    # "P00003": [20, 25]     # Process epochs 20-25 for P00003
+    {}
+
+# Example usage scenarios:
+#
+# Scenario 1: Test single record, single epoch
+# filter:
+#   enabled: true
+#   record_ids: ["P00001"]
+#   epoch_ranges:
+#     "P00001": [1, 1]
+#
+# Scenario 2: Test single record, first 10 epochs
+# filter:
+#   enabled: true
+#   record_ids: ["P00001"]
+#   epoch_ranges:
+#     "P00001": [1, 10]
+#
+# Scenario 3: Test multiple records, different epoch ranges
+# filter:
+#   enabled: true
+#   record_ids: ["P00001", "P00002", "P00003"]
+#   epoch_ranges:
+#     "P00001": [1, 5]
+#     "P00002": [10, 20]
+#     # P00003 will process all epochs (no range specified)
+#
+# Scenario 4: Process all epochs for specific records only
+# filter:
+#   enabled: true
+#   record_ids: ["P00001", "P00002"]
+#   epoch_ranges: {}  # No epoch restrictions

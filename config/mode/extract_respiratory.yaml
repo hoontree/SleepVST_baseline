@@ -1,0 +1,6 @@
+# Respiratory Signal Extraction Mode Configuration
+
+defaults:
+  - /preprocess: respiratory
+
+command: extract_respiratory

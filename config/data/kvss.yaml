@@ -1,0 +1,38 @@
+name: kvss
+root: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
+video_dir: /tf/00_data/#_2021_Sleep_Video/
+signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
+respiratory_signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/respiratory
+motion_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/motionfeatures
+label_dir: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels
+
+model: SleepVST_BW
+seq_len: 240
+step_size: 60
+d_model: 128
+motion_dim: 90
+split: train
+exceptions: 
+  - A2019-EM-01-0119
+  - A2019-EM-01-0120
+  - A2019-EM-01-0122
+  - A2019-EM-01-0123
+  - A2019-EM-01-0124
+  - A2019-EM-01-0125
+  - A2019-EM-01-0196
+  - A2019-EM-01-0197
+  - A2019-EM-01-0198
+  - A2019-EM-01-0199
+  - A2019-EM-01-0200
+  - A2019-EM-01-0201
+  - A2019-EM-01-0202
+  - A2019-EM-01-0203
+  - A2019-EM-01-0204
+  - A2019-EM-01-0205
+  - A2019-EM-01-0206
+  - A2021-EM-01-0163
+batch_size: 1
+num_workers: 8
+shuffle: True
+pin_memory: True
+data_source: video # video, raw

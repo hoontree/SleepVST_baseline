@@ -1,0 +1,28 @@
+# @package _global_
+
+# Pretrain configuration for SHHS + MESA
+command: pretrain
+
+defaults:
+  - /data@data.shhs: shhs
+  - /data@data.mesa: mesa
+  - /model: SleepVST
+  - /train: defaults
+
+train:
+  log_name: sleepvst_pretrain
+  checkpoint_dir: checkpoint/pretrain
+  batch_size: 64
+  lr: 0.001
+  weight_decay: 0.01
+  epochs: 50
+  from_scratch: true
+  early_stopping_patience: 10
+
+log:
+  dir: logs/pretrain
+  name: pretrain
+
+wandb:
+  project: SleepVST
+  entity: null  # Set your wandb entity here

@@ -1,0 +1,49 @@
+# SNUH Dataset Preprocessing Configuration
+
+# Dataset configuration
+dataset:
+  name: "KISS"
+  edf_dir: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed"
+  annotation_dir: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels"
+  save_dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/kiss"
+  file_pattern: "A*.edf"
+
+# Signal processing configuration
+signals:
+  channels: ["EKG", "Thorax"]
+  patch_sizes:
+    hw: 300  # Heart wave patch size
+    bw: 150  # Breathing wave patch size
+  patch_steps:
+    hw: 300  # Heart wave patch step
+    bw: 150  # Breathing wave patch step
+
+# Processing configuration
+processing:
+  batch_size: 8  # Number of files per batch
+  num_workers: 4  # Number of parallel workers
+  timeout: 600  # Timeout per file in seconds (10 minutes)
+  memory_threshold: 0.8  # Memory usage threshold (80%)
+
+# Logging configuration
+log:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/logs"
+  name: "snuh_preprocess"
+  level: "INFO"
+
+# Error handling
+error_handling:
+  skip_partial: true  # Skip partially processed files
+  continue_on_error: true  # Continue processing on individual file errors
+  max_retries: 2  # Maximum retries per file
+
+# Selection of specific records to process (all optional)
+selection:
+  # Exact names or glob patterns of records (base name without extension), e.g., ["A0001", "A0002", "A01*"]
+  include: []
+  # Patterns to exclude (applied after include), e.g., ["A013*", "*_bad"]
+  exclude: []
+  # Explicit list of records (same as include); can be used with CLI override, e.g., ["A0001","A0003"]
+  files: []
+  # Path to a text file that contains one record name or pattern per line
+  file_list: null

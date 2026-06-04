@@ -1,0 +1,7 @@
+experiment: transfer_learning_sleepvst_video
+dataset: kvss
+model: SleepVST
+mode: fit
+log: log_transfer
+preprocess: motionfeatures
+fps: fps_from_video

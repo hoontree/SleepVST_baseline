@@ -1,0 +1,35 @@
+# Finetune configuration for KVSS
+command: finetune
+
+defaults:
+  - /data@data: kvss
+  - /model: SleepVST_BW
+  - /train: defaults
+  - _self_
+
+train:
+  log_name: sleepvst_finetune_kvss
+  checkpoint_dir: checkpoint/finetune
+  pretrained_checkpoint: checkpoint/pretrain/pretrained_sleepvst_bw.pth
+  batch_size: 1  # KVSS는 배치 사이즈 1 사용
+  lr: 0.001
+  finetune_lr: 0.0001  # Pretrain lr의 1/10
+  weight_decay: 0.01
+  epochs: 30
+  early_stopping_patience: 10
+
+system:
+  device: cuda
+  num_workers: 8
+  pin_memory: true
+  gpu_ids: "4"
+
+log:
+  dir: logs/finetune
+  name: finetune_kvss
+
+wandb:
+  project: SleepVST
+  entity: null
+
+mode: finetune

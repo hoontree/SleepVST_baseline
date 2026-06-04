@@ -1,0 +1,2010 @@
+Testing 1000 samples...
+====================================================================================================
+✅ A2019-EM-01-0001: Labels match (819 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0002: Labels match (784 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0003: Labels match (1010 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0004: Labels match (872 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0005: Labels match (793 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0006: Labels match (822 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0007: Labels match (844 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0008: Labels match (633 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0009: Labels match (891 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0011: Labels match (971 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0012: Labels match (732 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0013: Labels match (877 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0014: Labels match (954 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0015: Labels match (799 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0016: Labels match (796 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0019: Labels match (716 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0021: Labels match (866 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0022: Labels match (739 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0023: Labels match (849 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0024: Labels match (834 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0025: Labels match (880 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0027: Labels match (894 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0028: Labels match (809 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0029: Labels match (890 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0030: Labels match (832 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0031: Labels match (873 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0032: Labels match (827 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0036: Labels match (890 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0037: Labels match (660 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0038: Labels match (789 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0040: Labels match (988 epochs, FPS=4.958333333333333)
+
+✅ A2019-EM-01-0041: Labels match (803 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0042: Labels match (872 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0043: Labels match (799 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0046: Labels match (1078 epochs, FPS=4.958333333333333)
+
+✅ A2019-EM-01-0047: Labels match (970 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0048: Labels match (848 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0050: Labels match (862 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0051: Labels match (782 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0052: Labels match (798 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0053: Labels match (708 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0054: Labels match (871 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0055: Labels match (742 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0056: Labels match (687 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0057: Labels match (895 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0058: Labels match (936 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0060: Labels match (900 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0061: Labels match (658 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0062: Labels match (795 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0063: Labels match (1040 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0064: Labels match (873 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0065: Labels match (721 epochs, FPS=4.958333333333333)
+
+✅ A2019-EM-01-0066: Labels match (803 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0067: Labels match (813 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0068: Labels match (838 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0069: Labels match (1058 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0070: Labels match (389 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0072: Labels match (872 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0073: Labels match (817 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0074: Labels match (780 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0076: Labels match (853 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0077: Labels match (793 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0078: Labels match (878 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0079: Labels match (795 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0081: Labels match (833 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0082: Labels match (833 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0083: Labels match (843 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0085: Labels match (857 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0086: Labels match (796 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0087: Labels match (825 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0088: Labels match (859 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0089: Labels match (719 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0090: Labels match (964 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0091: Labels match (837 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0096: Labels match (864 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0097: Labels match (925 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0098: Labels match (930 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0101: Labels match (929 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0102: Labels match (791 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0105: Labels match (794 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0107: Labels match (814 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0108: Labels match (764 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0109: Labels match (736 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0110: Labels match (884 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0111: Labels match (953 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0112: Labels match (889 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0113: Labels match (881 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0114: Labels match (866 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0115: Labels match (818 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0117: Labels match (940 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0118: Labels match (910 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0119: Labels match (862 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0120: Labels match (816 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0122: Labels match (868 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0123: Labels match (947 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0124: Labels match (922 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0125: Labels match (929 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0129: Labels match (722 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0138: Labels match (683 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0141: Labels match (678 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0142: Labels match (839 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0143: Labels match (858 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0144: Labels match (845 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0145: Labels match (879 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0146: Labels match (876 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0147: Labels match (869 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0148: Labels match (734 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0150: Labels match (672 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0151: Labels match (973 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0152: Labels match (832 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0153: Labels match (845 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0154: Labels match (798 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0155: Labels match (790 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0156: Labels match (821 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0157: Labels match (814 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0158: Labels match (801 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0159: Labels match (786 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0161: Labels match (806 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0162: Labels match (839 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0163: Labels match (802 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0164: Labels match (750 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0165: Labels match (794 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0167: Labels match (736 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0168: Labels match (832 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0169: Labels match (1029 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0170: Labels match (755 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0171: Labels match (754 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0172: Labels match (810 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0173: Labels match (745 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0174: Labels match (741 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0175: Labels match (823 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0176: Labels match (803 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0177: Labels match (941 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0180: Labels match (748 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0182: Labels match (879 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0183: Labels match (761 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0185: Labels match (770 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0186: Labels match (872 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0187: Labels match (840 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0188: Labels match (797 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0189: Labels match (838 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0190: Labels match (758 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0191: Labels match (812 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0192: Labels match (866 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0193: Labels match (924 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0194: Labels match (842 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0195: Labels match (793 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0196: Labels match (921 epochs, FPS=4.958333333333333)
+
+✅ A2019-EM-01-0197: Labels match (813 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0198: Labels match (922 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0199: Labels match (674 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0200: Labels match (743 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0201: Labels match (875 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0202: Labels match (984 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0203: Labels match (1025 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0204: Labels match (717 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0205: Labels match (869 epochs, FPS=4.930555555555555)
+
+✅ A2019-EM-01-0206: Labels match (809 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0207: Labels match (798 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0208: Labels match (1132 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0210: Labels match (986 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0211: Labels match (878 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0212: Labels match (751 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0213: Labels match (848 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0216: Labels match (700 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0217: Labels match (822 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0218: Labels match (828 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0219: Labels match (790 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0220: Labels match (850 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0221: Labels match (920 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0222: Labels match (854 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0223: Labels match (789 epochs, FPS=4.972222222222222)
+
+✅ A2019-EM-01-0224: Labels match (737 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0225: Labels match (901 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0239: Labels match (855 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0240: Labels match (692 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0242: Labels match (945 epochs, FPS=4.986111111111111)
+
+✅ A2019-EM-01-0243: Labels match (787 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0244: Labels match (794 epochs, FPS=5.0)
+
+✅ A2019-EM-01-0246: Labels match (763 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0247: Labels match (824 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0248: Labels match (562 epochs, FPS=4.944444444444445)
+
+✅ A2019-EM-01-0250: Labels match (881 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0251: Labels match (948 epochs, FPS=4.995)
+
+✅ A2019-EM-01-0252: Labels match (899 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0001: Labels match (861 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0002: Labels match (837 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0003: Labels match (838 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0004: Labels match (907 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0005: Labels match (922 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0006: Labels match (857 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0008: Labels match (946 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0009: Labels match (960 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0014: Labels match (939 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0016: Labels match (929 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0017: Labels match (777 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0018: Labels match (837 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0019: Labels match (967 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0020: Labels match (803 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0022: Labels match (913 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0023: Labels match (907 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0025: Labels match (870 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0026: Labels match (807 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0027: Labels match (923 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0028: Labels match (765 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0029: Labels match (834 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0030: Labels match (740 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0032: Labels match (737 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0033: Labels match (795 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0034: Labels match (975 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0035: Labels match (838 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0036: Labels match (916 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0038: Labels match (865 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0039: Labels match (749 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0041: Labels match (892 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0042: Labels match (790 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0044: Labels match (825 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0045: Labels match (834 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0046: Labels match (742 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0047: Labels match (760 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0049: Labels match (840 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0050: Labels match (809 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0051: Labels match (839 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0052: Labels match (932 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0053: Labels match (819 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0054: Labels match (720 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0056: Labels match (826 epochs, FPS=4.930555555555555)
+
+✅ A2020-EM-01-0057: Labels match (987 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0058: Labels match (903 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0060: Labels match (755 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0061: Labels match (794 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0064: Labels match (754 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0065: Labels match (845 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0066: Labels match (1002 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0068: Labels match (842 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0069: Labels match (811 epochs, FPS=4.930555555555555)
+
+✅ A2020-EM-01-0070: Labels match (797 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0075: Labels match (949 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0076: Labels match (783 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0077: Labels match (877 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0078: Labels match (806 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0079: Labels match (797 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0080: Labels match (796 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0081: Labels match (855 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0082: Labels match (882 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0083: Labels match (778 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0084: Labels match (840 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0085: Labels match (781 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0086: Labels match (768 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0087: Labels match (813 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0088: Labels match (942 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0090: Labels match (934 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0093: Labels match (838 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0096: Labels match (917 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0097: Labels match (716 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0098: Labels match (788 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0099: Labels match (834 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0100: Labels match (953 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0102: Labels match (775 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0103: Labels match (919 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0104: Labels match (894 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0105: Labels match (812 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0106: Labels match (840 epochs, FPS=4.958333333333333)
+
+✅ A2020-EM-01-0107: Labels match (881 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0110: Labels match (748 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0112: Labels match (806 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0113: Labels match (787 epochs, FPS=4.930555555555555)
+
+✅ A2020-EM-01-0115: Labels match (863 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0116: Labels match (1073 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0117: Labels match (881 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0118: Labels match (785 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0119: Labels match (775 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0120: Labels match (796 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0121: Labels match (919 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0122: Labels match (704 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0123: Labels match (876 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0124: Labels match (768 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0125: Labels match (794 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0126: Labels match (754 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0128: Labels match (870 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0129: Labels match (782 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0130: Labels match (837 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0131: Labels match (784 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0132: Labels match (785 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0133: Labels match (814 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0136: Labels match (866 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0137: Labels match (848 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0138: Labels match (787 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0140: Labels match (740 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0141: Labels match (894 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0142: Labels match (755 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0147: Labels match (721 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0148: Labels match (897 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0149: Labels match (933 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0150: Labels match (850 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0151: Labels match (837 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0152: Labels match (841 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0154: Labels match (1075 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0156: Labels match (761 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0160: Labels match (748 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0163: Labels match (853 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0164: Labels match (795 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0168: Labels match (928 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0171: Labels match (744 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0172: Labels match (875 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0180: Labels match (762 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0181: Labels match (800 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0182: Labels match (957 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0183: Labels match (817 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0184: Labels match (959 epochs, FPS=4.930555555555555)
+
+✅ A2020-EM-01-0185: Labels match (830 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0186: Labels match (782 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0187: Labels match (838 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0189: Labels match (796 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0190: Labels match (768 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0191: Labels match (844 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0192: Labels match (991 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0195: Labels match (893 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0196: Labels match (870 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0197: Labels match (897 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0198: Labels match (876 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0202: Labels match (854 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0206: Labels match (811 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0207: Labels match (779 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0208: Labels match (790 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0209: Labels match (1076 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0210: Labels match (895 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0211: Labels match (804 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0212: Labels match (970 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0213: Labels match (956 epochs, FPS=4.930555555555555)
+
+✅ A2020-EM-01-0214: Labels match (847 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0215: Labels match (784 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0216: Labels match (728 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0217: Labels match (793 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0219: Labels match (823 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0220: Labels match (858 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0221: Labels match (924 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0222: Labels match (866 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0223: Labels match (763 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0224: Labels match (753 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0225: Labels match (884 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0226: Labels match (805 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0227: Labels match (717 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0228: Labels match (805 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0229: Labels match (899 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0230: Labels match (822 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0231: Labels match (924 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0232: Labels match (825 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0233: Labels match (828 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0235: Labels match (869 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0236: Labels match (829 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0237: Labels match (846 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0238: Labels match (789 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0239: Labels match (833 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0240: Labels match (894 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0241: Labels match (858 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0243: Labels match (790 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0244: Labels match (827 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0245: Labels match (851 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0246: Labels match (955 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0247: Labels match (938 epochs, FPS=5.0)
+
+✅ A2020-EM-01-0248: Labels match (858 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0250: Labels match (857 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0251: Labels match (798 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0252: Labels match (716 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0254: Labels match (955 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0255: Labels match (874 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0256: Labels match (876 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0257: Labels match (842 epochs, FPS=4.986111111111111)
+
+✅ A2020-EM-01-0259: Labels match (858 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0260: Labels match (1087 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0262: Labels match (823 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0263: Labels match (716 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0265: Labels match (832 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0266: Labels match (850 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0267: Labels match (890 epochs, FPS=4.944444444444445)
+
+✅ A2020-EM-01-0270: Labels match (696 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0271: Labels match (591 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0272: Labels match (839 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0273: Labels match (981 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0275: Labels match (860 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0277: Labels match (907 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0278: Labels match (714 epochs, FPS=4.972222222222222)
+
+✅ A2020-EM-01-0279: Labels match (755 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0280: Labels match (776 epochs, FPS=4.995)
+
+✅ A2020-EM-01-0281: Labels match (780 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0002: Labels match (811 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0004: Labels match (826 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0005: Labels match (694 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0006: Labels match (554 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0008: Labels match (762 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0009: Labels match (796 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0010: Labels match (912 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0011: Labels match (748 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0012: Labels match (847 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0014: Labels match (954 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0015: Labels match (764 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0016: Labels match (758 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0018: Labels match (1177 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0019: Labels match (768 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0020: Labels match (916 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0021: Labels match (845 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0022: Labels match (919 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0023: Labels match (822 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0025: Labels match (832 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0026: Labels match (890 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0027: Labels match (857 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0028: Labels match (858 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0031: Labels match (731 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0035: Labels match (847 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0036: Labels match (745 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0037: Labels match (750 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0041: Labels match (726 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0042: Labels match (789 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0044: Labels match (853 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0045: Labels match (747 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0047: Labels match (788 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0048: Labels match (828 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0052: Labels match (836 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0053: Labels match (853 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0055: Labels match (861 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0056: Labels match (845 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0057: Labels match (839 epochs, FPS=4.944444444444445)
+
+✅ A2021-EM-01-0058: Labels match (820 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0061: Labels match (970 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0063: Labels match (709 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0064: Labels match (736 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0071: Labels match (766 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0072: Labels match (784 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0074: Labels match (684 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0076: Labels match (1150 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0077: Labels match (850 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0078: Labels match (853 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0079: Labels match (898 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0080: Labels match (782 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0081: Labels match (870 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0082: Labels match (954 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0083: Labels match (845 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0084: Labels match (704 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0086: Labels match (748 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0087: Labels match (715 epochs, FPS=4.944444444444445)
+
+✅ A2021-EM-01-0088: Labels match (776 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0090: Labels match (728 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0093: Labels match (734 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0096: Labels match (828 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0097: Labels match (1077 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0098: Labels match (758 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0099: Labels match (787 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0101: Labels match (868 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0102: Labels match (658 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0103: Labels match (858 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0104: Labels match (889 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0105: Labels match (735 epochs, FPS=4.986111111111111)
+
+✅ A2021-EM-01-0106: Labels match (916 epochs, FPS=4.944444444444445)
+
+✅ A2021-EM-01-0107: Labels match (867 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0108: Labels match (830 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0110: Labels match (727 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0111: Labels match (870 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0112: Labels match (813 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0113: Labels match (815 epochs, FPS=4.986111111111111)
+
+✅ A2021-EM-01-0114: Labels match (826 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0115: Labels match (808 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0116: Labels match (673 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0117: Labels match (827 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0118: Labels match (760 epochs, FPS=4.986111111111111)
+
+✅ A2021-EM-01-0119: Labels match (839 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0120: Labels match (728 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0121: Labels match (795 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0123: Labels match (777 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0124: Labels match (868 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0125: Labels match (978 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0126: Labels match (713 epochs, FPS=4.986111111111111)
+
+✅ A2021-EM-01-0127: Labels match (757 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0128: Labels match (832 epochs, FPS=4.944444444444445)
+
+✅ A2021-EM-01-0129: Labels match (838 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0130: Labels match (766 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0132: Labels match (593 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0133: Labels match (891 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0135: Labels match (710 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0136: Labels match (848 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0139: Labels match (969 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0140: Labels match (745 epochs, FPS=4.944444444444445)
+
+✅ A2021-EM-01-0151: Labels match (780 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0152: Labels match (794 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0153: Labels match (830 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0155: Labels match (796 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0156: Labels match (719 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0157: Labels match (802 epochs, FPS=4.930555555555555)
+
+✅ A2021-EM-01-0158: Labels match (779 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0159: Labels match (847 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0160: Labels match (740 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0161: Labels match (865 epochs, FPS=4.958333333333333)
+
+✅ A2021-EM-01-0162: Labels match (834 epochs, FPS=4.986111111111111)
+
+✅ A2021-EM-01-0163: Labels match (934 epochs, FPS=4.972222222222222)
+
+✅ A2021-EM-01-0164: Labels match (980 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0165: Labels match (646 epochs, FPS=5.0)
+
+✅ A2021-EM-01-0168: Labels match (788 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0169: Labels match (737 epochs, FPS=4.995)
+
+✅ A2021-EM-01-0170: Labels match (842 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0002: Labels match (986 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0003: Labels match (989 epochs, FPS=5.0)
+
+✅ B2018-EM-01-0004: Labels match (1027 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0005: Labels match (1026 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0006: Labels match (927 epochs, FPS=4.958333333333333)
+
+✅ B2018-EM-01-0008: Labels match (922 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0011: Labels match (1007 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0014: Labels match (1016 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0016: Labels match (976 epochs, FPS=4.958333333333333)
+
+✅ B2018-EM-01-0017: Labels match (999 epochs, FPS=4.972222222222222)
+
+✅ B2018-EM-01-0018: Labels match (1086 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0021: Labels match (999 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0023: Labels match (1000 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0025: Labels match (981 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0026: Labels match (1011 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0027: Labels match (1049 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0030: Labels match (1012 epochs, FPS=4.958333333333333)
+
+✅ B2018-EM-01-0034: Labels match (983 epochs, FPS=4.986111111111111)
+
+✅ B2018-EM-01-0035: Labels match (1039 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0036: Labels match (967 epochs, FPS=4.958333333333333)
+
+✅ B2018-EM-01-0040: Labels match (1006 epochs, FPS=4.944444444444445)
+
+✅ B2018-EM-01-0042: Labels match (1034 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0048: Labels match (996 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0049: Labels match (1005 epochs, FPS=5.0)
+
+✅ B2018-EM-01-0052: Labels match (969 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0055: Labels match (995 epochs, FPS=4.972222222222222)
+
+✅ B2018-EM-01-0056: Labels match (984 epochs, FPS=4.930555555555555)
+
+✅ B2018-EM-01-0058: Labels match (978 epochs, FPS=4.995)
+
+✅ B2018-EM-01-0059: Labels match (974 epochs, FPS=4.972222222222222)
+
+✅ B2018-EM-01-0061: Labels match (933 epochs, FPS=5.0)
+
+✅ B2018-EM-01-0064: Labels match (1104 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0001: Labels match (969 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0003: Labels match (952 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0004: Labels match (965 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0006: Labels match (964 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0007: Labels match (959 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0008: Labels match (999 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0009: Labels match (893 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0011: Labels match (976 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0012: Labels match (936 epochs, FPS=4.944444444444445)
+
+✅ B2019-EM-01-0014: Labels match (950 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0015: Labels match (1012 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0016: Labels match (1006 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0017: Labels match (971 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0018: Labels match (999 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0020: Labels match (980 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0022: Labels match (972 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0023: Labels match (990 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0024: Labels match (928 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0025: Labels match (1013 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0026: Labels match (989 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0028: Labels match (965 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0030: Labels match (944 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0032: Labels match (980 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0037: Labels match (962 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0040: Labels match (986 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0042: Labels match (954 epochs, FPS=4.944444444444445)
+
+✅ B2019-EM-01-0043: Labels match (957 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0044: Labels match (987 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0046: Labels match (967 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0047: Labels match (998 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0049: Labels match (895 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0051: Labels match (950 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0052: Labels match (1014 epochs, FPS=4.944444444444445)
+
+✅ B2019-EM-01-0053: Labels match (953 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0054: Labels match (981 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0056: Labels match (1001 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0060: Labels match (1017 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0062: Labels match (979 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0063: Labels match (1012 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0064: Labels match (952 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0067: Labels match (982 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0068: Labels match (909 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0069: Labels match (957 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0072: Labels match (942 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0074: Labels match (967 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0075: Labels match (966 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0076: Labels match (949 epochs, FPS=4.944444444444445)
+
+✅ B2019-EM-01-0077: Labels match (980 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0080: Labels match (941 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0081: Labels match (1013 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0083: Labels match (941 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0084: Labels match (974 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0085: Labels match (958 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0086: Labels match (959 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0090: Labels match (947 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0093: Labels match (958 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0094: Labels match (975 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0096: Labels match (969 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0099: Labels match (962 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0100: Labels match (1022 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0103: Labels match (989 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0104: Labels match (1044 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0107: Labels match (983 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0112: Labels match (873 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0113: Labels match (953 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0116: Labels match (930 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0121: Labels match (952 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0123: Labels match (973 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0125: Labels match (992 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0126: Labels match (980 epochs, FPS=4.930555555555555)
+
+✅ B2019-EM-01-0127: Labels match (987 epochs, FPS=4.958333333333333)
+
+✅ B2019-EM-01-0128: Labels match (972 epochs, FPS=4.944444444444445)
+
+✅ B2019-EM-01-0129: Labels match (971 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0130: Labels match (949 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0131: Labels match (954 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0132: Labels match (1079 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0133: Labels match (956 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0138: Labels match (999 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0139: Labels match (965 epochs, FPS=5.0)
+
+✅ B2019-EM-01-0141: Labels match (946 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0147: Labels match (991 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0149: Labels match (938 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0150: Labels match (951 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0151: Labels match (965 epochs, FPS=4.995004995004995)
+
+✅ B2019-EM-01-0152: Labels match (1124 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0153: Labels match (928 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0154: Labels match (975 epochs, FPS=4.986111111111111)
+
+✅ B2019-EM-01-0158: Labels match (1007 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0159: Labels match (965 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0162: Labels match (971 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0163: Labels match (957 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0164: Labels match (1009 epochs, FPS=4.972222222222222)
+
+✅ B2019-EM-01-0165: Labels match (947 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0166: Labels match (994 epochs, FPS=4.995)
+
+✅ B2019-EM-01-0167: Labels match (977 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0005: Labels match (964 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0007: Labels match (953 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0008: Labels match (952 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0010: Labels match (942 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0011: Labels match (957 epochs, FPS=4.930555555555555)
+
+✅ B2020-EM-01-0012: Labels match (944 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0013: Labels match (935 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0014: Labels match (943 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0017: Labels match (958 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0018: Labels match (979 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0019: Labels match (973 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0020: Labels match (973 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0024: Labels match (1004 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0025: Labels match (988 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0028: Labels match (990 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0029: Labels match (962 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0035: Labels match (958 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0036: Labels match (1028 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0037: Labels match (950 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0038: Labels match (971 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0039: Labels match (1047 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0042: Labels match (991 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0043: Labels match (947 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0044: Labels match (956 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0045: Labels match (951 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0046: Labels match (963 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0051: Labels match (967 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0054: Labels match (921 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0058: Labels match (962 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0059: Labels match (1036 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0060: Labels match (962 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0062: Labels match (956 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0063: Labels match (956 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0066: Labels match (973 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0067: Labels match (1014 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0071: Labels match (956 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0072: Labels match (878 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0076: Labels match (963 epochs, FPS=4.944444444444445)
+
+✅ B2020-EM-01-0077: Labels match (959 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0078: Labels match (952 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0079: Labels match (954 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0080: Labels match (990 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0082: Labels match (978 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0084: Labels match (953 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0088: Labels match (968 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0090: Labels match (1009 epochs, FPS=4.972222222222222)
+
+✅ B2020-EM-01-0092: Labels match (967 epochs, FPS=4.958333333333333)
+
+✅ B2020-EM-01-0098: Labels match (953 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0100: Labels match (942 epochs, FPS=5.0)
+
+✅ B2020-EM-01-0102: Labels match (957 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0103: Labels match (1093 epochs, FPS=4.995004995004995)
+
+✅ B2020-EM-01-0107: Labels match (953 epochs, FPS=4.995)
+
+✅ B2020-EM-01-0108: Labels match (1037 epochs, FPS=4.986111111111111)
+
+✅ B2020-EM-01-0109: Labels match (967 epochs, FPS=5.0)
+
+✅ B2021-EM-01-0001: Labels match (945 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0002: Labels match (954 epochs, FPS=4.958333333333333)
+
+✅ B2021-EM-01-0004: Labels match (978 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0005: Labels match (955 epochs, FPS=4.972222222222222)
+
+✅ B2021-EM-01-0006: Labels match (954 epochs, FPS=4.986111111111111)
+
+✅ B2021-EM-01-0007: Labels match (969 epochs, FPS=4.930555555555555)
+
+✅ B2021-EM-01-0008: Labels match (975 epochs, FPS=5.0)
+
+✅ B2021-EM-01-0010: Labels match (956 epochs, FPS=4.930555555555555)
+
+✅ B2021-EM-01-0011: Labels match (947 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0012: Labels match (952 epochs, FPS=4.944444444444445)
+
+✅ B2021-EM-01-0013: Labels match (977 epochs, FPS=4.986111111111111)
+
+✅ B2021-EM-01-0017: Labels match (958 epochs, FPS=4.986111111111111)
+
+✅ B2021-EM-01-0018: Labels match (964 epochs, FPS=4.944444444444445)
+
+✅ B2021-EM-01-0019: Labels match (974 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0020: Labels match (973 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0022: Labels match (954 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0023: Labels match (976 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0030: Labels match (1072 epochs, FPS=4.930555555555555)
+
+✅ B2021-EM-01-0032: Labels match (957 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0034: Labels match (950 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0035: Labels match (992 epochs, FPS=5.0)
+
+✅ B2021-EM-01-0036: Labels match (1031 epochs, FPS=4.930555555555555)
+
+✅ B2021-EM-01-0037: Labels match (964 epochs, FPS=4.944444444444445)
+
+✅ B2021-EM-01-0038: Labels match (952 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0040: Labels match (951 epochs, FPS=4.972222222222222)
+
+✅ B2021-EM-01-0041: Labels match (954 epochs, FPS=4.995)
+
+✅ B2021-EM-01-0042: Labels match (960 epochs, FPS=5.0)
+
+✅ B2021-EM-01-0043: Labels match (959 epochs, FPS=4.930555555555555)
+
+✅ B2021-EM-01-0044: Labels match (949 epochs, FPS=4.995)
+
+❌ C2019-EM-01-0001: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0001_label.csv
+❌ C2019-EM-01-0002: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0002_label.csv
+❌ C2019-EM-01-0003: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0003_label.csv
+❌ C2019-EM-01-0004: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0004_label.csv
+❌ C2019-EM-01-0005: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0005_label.csv
+❌ C2019-EM-01-0006: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0006_label.csv
+❌ C2019-EM-01-0009: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0009_label.csv
+❌ C2019-EM-01-0012: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0012_label.csv
+❌ C2019-EM-01-0013: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0013_label.csv
+❌ C2019-EM-01-0014: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0014_label.csv
+❌ C2019-EM-01-0016: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0016_label.csv
+❌ C2019-EM-01-0017: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2019-EM-01-0017_label.csv
+❌ C2020-EM-01-0002: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0002_label.csv
+❌ C2020-EM-01-0003: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0003_label.csv
+❌ C2020-EM-01-0005: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0005_label.csv
+❌ C2020-EM-01-0009: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0009_label.csv
+❌ C2020-EM-01-0011: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0011_label.csv
+❌ C2020-EM-01-0012: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0012_label.csv
+❌ C2020-EM-01-0015: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0015_label.csv
+❌ C2020-EM-01-0016: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0016_label.csv
+❌ C2020-EM-01-0017: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0017_label.csv
+❌ C2020-EM-01-0018: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0018_label.csv
+❌ C2020-EM-01-0019: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0019_label.csv
+❌ C2020-EM-01-0020: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0020_label.csv
+❌ C2020-EM-01-0021: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2020-EM-01-0021_label.csv
+❌ C2021-EM-01-0001: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0001_label.csv
+❌ C2021-EM-01-0002: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0002_label.csv
+❌ C2021-EM-01-0005: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0005_label.csv
+❌ C2021-EM-01-0006: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0006_label.csv
+❌ C2021-EM-01-0007: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0007_label.csv
+❌ C2021-EM-01-0008: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0008_label.csv
+❌ C2021-EM-01-0009: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0009_label.csv
+❌ C2021-EM-01-0010: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0010_label.csv
+❌ C2021-EM-01-0011: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0011_label.csv
+❌ C2021-EM-01-0013: Missing files
+   - CSV not found: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels/C2021-EM-01-0013_label.csv
+✅ D2019-NX-01-0001: Labels match (739 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0002: Labels match (906 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0004: Labels match (712 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0006: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0007: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0008: Labels match (762 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0009: Labels match (735 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0015: Labels match (715 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0023: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0026: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0029: Labels match (746 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0032: Labels match (737 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0033: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0036: Labels match (795 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0039: Labels match (711 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0041: Labels match (771 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0045: Labels match (776 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0046: Labels match (716 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0049: Labels match (733 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0053: Labels match (719 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0054: Labels match (728 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0058: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0060: Labels match (741 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0061: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0062: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0075: Labels match (715 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0076: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0079: Labels match (725 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0082: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0083: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0084: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0085: Labels match (735 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0086: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0089: Labels match (755 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0093: Labels match (746 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0094: Labels match (720 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0097: Labels match (733 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0098: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0102: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0104: Labels match (724 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0107: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0110: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0111: Labels match (869 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0113: Labels match (768 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0114: Labels match (735 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0115: Labels match (728 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0116: Labels match (748 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0117: Labels match (831 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0118: Labels match (716 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0123: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0124: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0125: Labels match (773 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0127: Labels match (753 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0129: Labels match (718 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0130: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0131: Labels match (726 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0138: Labels match (712 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0139: Labels match (823 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0140: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0142: Labels match (726 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0143: Labels match (735 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0144: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0146: Labels match (834 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0148: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0149: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0150: Labels match (756 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0151: Labels match (765 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0152: Labels match (768 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0155: Labels match (718 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0157: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0158: Labels match (717 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0160: Labels match (855 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0161: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0164: Labels match (728 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0165: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0167: Labels match (842 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0168: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0169: Labels match (726 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0172: Labels match (735 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0183: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0185: Labels match (720 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0186: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0187: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0188: Labels match (787 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0189: Labels match (738 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0190: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0192: Labels match (763 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0194: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0195: Labels match (709 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0196: Labels match (715 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0198: Labels match (726 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0199: Labels match (717 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0200: Labels match (731 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0202: Labels match (908 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0203: Labels match (752 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0204: Labels match (807 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0205: Labels match (778 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0206: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0207: Labels match (731 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0208: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0209: Labels match (720 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0210: Labels match (720 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0211: Labels match (728 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0217: Labels match (725 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0218: Labels match (719 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0219: Labels match (819 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0220: Labels match (713 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0222: Labels match (736 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0224: Labels match (713 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0226: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0228: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0229: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0232: Labels match (723 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0234: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0235: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0236: Labels match (789 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0237: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0238: Labels match (727 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0239: Labels match (722 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0241: Labels match (728 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0243: Labels match (734 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0245: Labels match (725 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0246: Labels match (739 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0247: Labels match (721 epochs, FPS=5.0)
+
+✅ D2019-NX-01-0248: Labels match (715 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0002: Labels match (720 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0004: Labels match (757 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0005: Labels match (827 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0011: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0012: Labels match (737 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0016: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0019: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0021: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0022: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0029: Labels match (728 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0031: Labels match (750 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0032: Labels match (761 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0037: Labels match (729 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0038: Labels match (978 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0040: Labels match (713 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0043: Labels match (763 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0045: Labels match (561 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0049: Labels match (728 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0051: Labels match (743 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0052: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0053: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0056: Labels match (825 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0058: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0062: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0064: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0066: Labels match (718 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0067: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0070: Labels match (728 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0071: Labels match (794 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0072: Labels match (734 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0073: Labels match (841 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0074: Labels match (716 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0075: Labels match (720 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0076: Labels match (718 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0095: Labels match (733 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0097: Labels match (765 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0100: Labels match (729 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0101: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0103: Labels match (727 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0104: Labels match (733 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0105: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0108: Labels match (737 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0109: Labels match (715 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0110: Labels match (719 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0112: Labels match (733 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0114: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0118: Labels match (788 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0121: Labels match (730 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0122: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0124: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0126: Labels match (803 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0128: Labels match (829 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0130: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0134: Labels match (725 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0138: Labels match (727 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0139: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0140: Labels match (756 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0146: Labels match (738 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0150: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0151: Labels match (731 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0152: Labels match (786 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0153: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0156: Labels match (752 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0157: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0163: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0164: Labels match (718 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0165: Labels match (716 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0166: Labels match (764 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0167: Labels match (810 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0169: Labels match (686 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0170: Labels match (735 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0172: Labels match (726 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0173: Labels match (727 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0174: Labels match (795 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0175: Labels match (726 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0176: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0178: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0180: Labels match (715 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0181: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0184: Labels match (800 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0188: Labels match (757 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0190: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0191: Labels match (715 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0193: Labels match (768 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0194: Labels match (734 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0195: Labels match (719 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0197: Labels match (712 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0199: Labels match (747 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0201: Labels match (730 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0204: Labels match (703 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0206: Labels match (725 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0207: Labels match (802 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0208: Labels match (716 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0210: Labels match (710 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0211: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0212: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0214: Labels match (815 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0216: Labels match (802 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0218: Labels match (757 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0219: Labels match (719 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0222: Labels match (726 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0223: Labels match (731 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0224: Labels match (719 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0226: Labels match (788 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0227: Labels match (729 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0229: Labels match (728 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0230: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0231: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0232: Labels match (728 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0235: Labels match (729 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0236: Labels match (725 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0237: Labels match (744 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0239: Labels match (731 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0241: Labels match (750 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0242: Labels match (764 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0243: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0249: Labels match (726 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0252: Labels match (723 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0253: Labels match (720 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0254: Labels match (699 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0262: Labels match (783 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0264: Labels match (722 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0267: Labels match (724 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0268: Labels match (725 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0269: Labels match (731 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0270: Labels match (720 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0271: Labels match (721 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0273: Labels match (717 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0274: Labels match (788 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0276: Labels match (744 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0278: Labels match (709 epochs, FPS=5.0)
+
+✅ D2020-NX-01-0282: Labels match (757 epochs, FPS=5.0)
+
+====================================================================================================
+SUMMARY
+====================================================================================================
+Total samples: 1000
+✅ Matched: 965 (96.5%)
+⚠️  Mismatched: 0 (0.0%)
+❌ Missing files: 35
+❌ Errors: 0

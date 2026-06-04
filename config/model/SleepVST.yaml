@@ -1,0 +1,6 @@
+name: SleepVST
+checkpoint: /tf/01_code/mylittlecodes/SleepVST_baseline/checkpoint/pretrain/pretrained_sleepvst.pth
+finetuned_checkpoint: /tf/01_code/mylittlecodes/SleepVST_baseline/checkpoint/finetune/kvss_finetuned.pth
+use_finetuned: false
+input_length: 74
+d_model: 128

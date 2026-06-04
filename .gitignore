@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Data files (inputs / large binary artifacts)
+# NOTE: leading slash anchors to repo root so src/data/ and legacy/models/ stay tracked
+/data/
+legacy/data/
+/test_sample/
+*.npy
+*.pkl
+*.h5
+*.edf
+
+# Trained models
+/models/
+
+# Logs and runtime outputs
+/logs/
+/outputs/
+/output/
+/wandb/
+*.log
+
+# Checkpoints
+/checkpoint/
+*.pth
+*.ckpt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+*.ipynb_checkpoints
+# Disposable/experimental notebooks are kept on disk under archive/ but not tracked
+/archive/
+# Oversized notebook with embedded data (preserved on disk, too large for git)
+notebooks/Extraction_of_Respiratory_Pattern_using_PBM_Final_r2.ipynb
+
+# Figures and visualizations (kept on disk under figures/, not tracked)
+/figures/
+*.png
+*.jpg
+*.jpeg
+
+# Temporary files
+*.tmp
+*.bak
+.DS_Store
+
+# Claude Code
+.claude/

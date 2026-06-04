@@ -1,0 +1,54 @@
+# Respiratory Signal Extraction Configuration
+
+log:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/logs"
+  name: "respiratory_extraction"
+
+# Input/Output paths
+video:
+  input_path: /tf/00_data/#_2021_Sleep_Video/  # Path to the input video directory
+  file_list: /tf/01_code/mylittlecodes/SleepVST_baseline/config/preprocess/file_list.txt  # Optional: file list for batch processing
+
+edf:
+  input_path: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/"
+
+# Output paths
+output:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/respiratory"  # Base output directory
+  save_frames: true  # Save frames with max point visualization
+  save_signals: true  # Save signal plots
+  save_magnified_frames: true  # Save magnified frames
+
+# Video processing parameters
+video_fps: 30  # Input video FPS (KVSS dataset default)
+
+# Phase-based motion magnification parameters
+magnification:
+  mag_factor: 50  # Magnification factor for respiratory motion
+  freq_range: [0.2, 0.3]  # Frequency range for respiratory signal (6-24 breaths/min)
+  attenuate: true  # Attenuate I and Q channels
+  sigma: 5  # Standard deviation for amplitude-weighted blur (0 = no blur)
+
+# Temporal filter parameters
+temporal_filter:
+  type: "difference_of_iir"  # Type of temporal filter to use
+  # For difference_of_iir filter
+  rl: 0.4  # Low frequency cutoff (for high-pass)
+  rh: 0.05  # High frequency cutoff (for low-pass)
+
+# Processing options
+num_workers: 1  # Number of worker processes (respiratory extraction is memory intensive)
+skip_existing: false  # Skip videos that already have output files
+batch_size: 1  # Process videos one at a time
+
+# Multiprocessing options (video-level parallelization)
+multiprocessing:
+  enabled: true  # Enable multiprocessing for video-level parallelization
+  num_workers: 16  # Number of parallel workers for video processing. null = auto (CPU count - 1)
+
+# Filtering options for debugging/testing
+filter:
+  enabled: false  # Enable filtering to process specific records/epochs only
+  record_ids: ["A2021-EM-01-0063"]  # List of specific record IDs to process (e.g., ["P00001", "P00002"]). Empty = all records
+  epoch_ranges: {"A2021-EM-01-0063": [12, 14]}  # Dict of record_id: [start_epoch, end_epoch]. Example: {"P00001": [1, 10], "P00002": [5, 15]}
+  # If epoch_ranges is not specified for a record, all epochs will be processed

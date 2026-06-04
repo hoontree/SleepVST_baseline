@@ -1,0 +1,20 @@
+defaults:
+  - data: kvss
+  - model: SleepVST
+  - mode: transfer
+  - log: log_transfer
+  - preprocess: respiratory
+  - train: defaults
+  - _self_
+
+system:
+  device: cuda
+  num_workers: 8
+  pin_memory: true
+  gpu_ids: "4"
+
+command: transfer_to_video
+d_model: 128
+motion_dim: 90 
+seq_len: 240
+step_size: 60
