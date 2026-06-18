@@ -60,3 +60,6 @@ notebooks/Extraction_of_Respiratory_Pattern_using_PBM_Final_r2.ipynb
 
 # Claude Code
 .claude/
+
+# Generated results (regenerable; kept on disk only)
+results/

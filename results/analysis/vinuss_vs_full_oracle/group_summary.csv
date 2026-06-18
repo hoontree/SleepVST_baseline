@@ -1,5 +1,0 @@
-group,description,count,pct
-G1,"ViNUSS correct, Proxy wrong",7763,13.4
-G2,"ViNUSS wrong, Proxy correct",5447,9.41
-G3,Both correct,38812,67.02
-G4,Both wrong,5893,10.18
