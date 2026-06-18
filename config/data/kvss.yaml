@@ -9,7 +9,7 @@ label_dir: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels
 
 #preprocessed data dir
 signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
-respiratory_signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/respiratory
+respiratory_signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/resp_proxy_video_epochs
 motion_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/motionfeatures
 
 model: SleepVST_BW

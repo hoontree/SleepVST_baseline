@@ -243,7 +243,7 @@ def process_single_video_by_epoch(
 
         processed_count = 0
 
-        preprocessed_signal_dir='data/kiss_respiratory'
+        preprocessed_signal_dir='data/resp_proxy_video'
         preprocessed_path = Path(preprocessed_signal_dir) / f'{record_id}_bw.npy'
         preprocessed_signal = np.load(preprocessed_path)
 

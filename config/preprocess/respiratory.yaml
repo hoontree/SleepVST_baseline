@@ -14,7 +14,7 @@ edf:
 
 # Output paths
 output:
-  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/respiratory"  # Base output directory
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/resp_proxy_video_epochs"  # Base output directory
   save_frames: true  # Save frames with max point visualization
   save_signals: true  # Save signal plots
   save_magnified_frames: true  # Save magnified frames

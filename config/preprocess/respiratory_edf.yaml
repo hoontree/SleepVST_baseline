@@ -6,7 +6,7 @@ dataset:
   name: "KISS_Respiratory"
   edf_dir: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/Processed/"
   annotation_dir: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels"
-  save_dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/kiss_respiratory"
+  save_dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/resp_proxy_video"
   file_pattern: "A*.edf"
 
 # Signal processing configuration
