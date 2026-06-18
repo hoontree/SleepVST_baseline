@@ -7,7 +7,9 @@ Implementation of SleepVST paper: https://arxiv.org/abs/2404.03831
 ```
 SleepVST_baseline/
 ├── src/                          # Main source code (use this for development)
-│   ├── cli.py                    # CLI entry point with Hydra
+│   ├── cli_train.py              # Entry point: training/eval (pretrain, finetune, test, transfer)
+│   ├── cli_preprocess.py         # Entry point: data preprocessing (edf/motion/respiratory)
+│   ├── cli.py                    # Backward-compatible shim routing to the two above
 │   ├── common/                   # Common utilities (logger, utils)
 │   ├── data/                     # Datasets, registry, preprocessing pipelines
 │   │   ├── datasets/             # KVSS / MESA / SHHS loaders
@@ -25,7 +27,6 @@ SleepVST_baseline/
 │   └── movinet_mamba_test/       # MoViNet/Mamba ablation results
 ├── figures/                      # All plots/figures (gitignored — PNGs)
 ├── models/                       # Trained RF model pickles (gitignored — large)
-├── legacy/                       # Pre-pretrain preprocessing code (reference only — do not modify)
 ├── archive/                      # Disposable debug scripts / one-off notebooks (gitignored, kept on disk)
 │   ├── notebooks/
 │   └── scripts/
@@ -53,46 +54,54 @@ pip install tqdm wandb
 
 ## Usage
 
-The project uses Hydra for configuration management. All commands are executed through the CLI:
+The project uses Hydra for configuration management. Commands are split across
+focused entry points by task:
 
-```bash
-python -m src.cli [OPTIONS]
-```
+- **Training / evaluation** (GPU): `python -m src.cli_train`
+- **EDF preprocessing** (CPU): `python -m src.cli_preprocess`
+- **Motion feature extraction** (CPU / multiprocessing): `python -m src.cli_motionfeatures`
+- **Respiratory video extraction** (CPU / multiprocessing): `python -m src.cli_extract_respiratory`
+
+> `python -m src.cli command=<command>` is kept for older training and EDF preprocessing
+> commands, but the dedicated entry points are preferred.
 
 ### Available Commands
 
 #### 1. Pretraining on SHHS + MESA
 ```bash
-python -m src.cli command=pretrain
+python -m src.cli_train command=pretrain
 ```
 
 #### 2. Fine-tuning on KVSS
 ```bash
-python -m src.cli command=finetune
+python -m src.cli_train command=finetune
 ```
 
 #### 3. Evaluation
 ```bash
-python -m src.cli command=eval
+python -m src.cli_train command=test
 ```
 
 #### 4. Data Preprocessing
 ```bash
 # Extract signals from EDF files (SHHS/MESA/SNUH datasets)
-python -m src.cli command=preprocess
+python -m src.cli_preprocess command=preprocess
+
+# Extract respiratory signals from EDF files
+python -m src.cli_preprocess command=preprocess_respiratory_edf
 
 # Extract motion features from videos (KVSS dataset)
-python -m src.cli command=motionfeatures
+python -m src.cli_motionfeatures
 
 # Extract respiratory signals from videos (KVSS dataset)
-python -m src.cli mode=extract_respiratory
+python -m src.cli_extract_respiratory
 ```
 
 For detailed information on respiratory signal extraction, see [RESPIRATORY_EXTRACTION_GUIDE.md](RESPIRATORY_EXTRACTION_GUIDE.md).
 
 #### 5. Transfer Learning to Video Domain
 ```bash
-python -m src.cli command=transfer_to_video
+python -m src.cli_train command=transfer_to_video
 ```
 
 ### Configuration
@@ -101,13 +110,13 @@ Override any configuration using Hydra syntax:
 
 ```bash
 # Change batch size and learning rate
-python -m src.cli command=pretrain train.batch_size=256 train.lr=0.0005
+python -m src.cli_train command=pretrain train.batch_size=256 train.lr=0.0005
 
 # Use different GPU
-python -m src.cli command=pretrain system.gpu_ids='0,1'
+python -m src.cli_train command=pretrain system.gpu_ids='0,1'
 
 # Change dataset path
-python -m src.cli command=pretrain data.shhs.root=/path/to/shhs
+python -m src.cli_train command=pretrain data.shhs.root=/path/to/shhs
 ```
 
 ## Model Architecture
@@ -121,10 +130,6 @@ python -m src.cli command=pretrain data.shhs.root=/path/to/shhs
 - **SHHS**: Sleep Heart Health Study (public)
 - **MESA**: Multi-Ethnic Study of Atherosclerosis (public)
 - **KVSS**: Korean Video Sleep Study (proprietary)
-
-## Legacy Code
-
-The `legacy/` directory contains deprecated code that has been refactored. Do not modify files in this directory. See [legacy/README.md](legacy/README.md) for details.
 
 ## Citation
 

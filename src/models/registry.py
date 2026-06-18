@@ -1,12 +1,17 @@
-from src.models.SleepVST import SleepVST, SleepVST_BW
+"""Hydra-based model instantiation helpers."""
 
-MODEL_REGISTRY = {
-    "SleepVST": SleepVST,
-    "SleepVST_BW": SleepVST_BW,
-}
+from hydra.utils import instantiate
 
-def get_model(name, *args, **kwargs):
-    if name not in MODEL_REGISTRY:
-        raise ValueError(f"Model {name} is not registered.")
-    model_class = MODEL_REGISTRY[name]
-    return model_class(*args, **kwargs)
+
+def get_model(cfg):
+    """Instantiate a model from a Hydra config node with ``_target_``.
+
+    The old name-based registry has been replaced by Hydra's target resolution.
+    Pass ``cfg.model`` or another config object that defines ``_target_``.
+    """
+    if isinstance(cfg, str):
+        raise ValueError(
+            "Name-based model registry is no longer supported. "
+            "Pass a Hydra config node with `_target_`, e.g. cfg.model."
+        )
+    return instantiate(cfg)

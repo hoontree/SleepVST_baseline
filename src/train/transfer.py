@@ -1,32 +1,570 @@
-from src.eval.metrics import MetricsTracker, AverageMeter
-from src.models.registry import get_model
-from tqdm import tqdm
-from torch import nn
-import torch
-from src.data.datasets.KVSS import KVSSDataModule
+import copy
+
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import pandas as pd
-from sklearn.metrics import confusion_matrix
-from src.models.SleepVST import SleepVST, SleepVST_BW
+import torch
+from src.data.base_datamodule import BaseDataset
+from torch import nn
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+from hydra.utils import instantiate
+
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+
+def transfer_to_video(cfg):
+    """Transfer a pretrained SleepVST encoder to video via a Random Forest head.
+
+    The SleepVST classifier head is replaced with ``nn.Identity`` to use the model
+    as a frozen feature extractor. Per-epoch features (signal + motion) are
+    extracted for the KVSS splits and a Random Forest is fit / evaluated on them.
+
+    Behaviour depends on ``cfg.transfer.classifier.mode``:
+        - ``fit``: train the RF and save it.
+        - ``fit_test``: train, save, then evaluate on the test split.
+        - otherwise (``test``): load a saved RF and evaluate on the test split.
+
+    Args:
+        cfg: Config with model, data, system, and mode settings.
+
+    Returns:
+        The fitted or loaded ``SleepVSTVideoRF`` model.
+    """
+    
+    from src.models.RFClassifier import SleepVSTVideoRF, SleepVSTVideoRFConfig
+    # Load the SleepVST model and checkpoint
+    model = instantiate(cfg.model).cuda()
+    checkpoint_path = cfg.model.finetuned_checkpoint if cfg.model.use_finetuned else cfg.model.checkpoint
+    checkpoint = torch.load(checkpoint_path, map_location=cfg.system.device)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    logger.info(f"Loaded {cfg.model.name} from {checkpoint_path}")
+
+    # Replace classifier head with identity to use the model as a feature extractor
+    model.classifier = nn.Identity().cuda()
+    feature_extractor = model
+    feature_extractor.eval()
+
+    if cfg.transfer.classifier.mode in ('fit', 'fit_test'):
+        cfg_train = cfg.copy()
+        cfg_train.data.split = 'train'
+        train_dataset: BaseDataset = instantiate(cfg.data, split='train')
+
+        cfg_val = cfg.copy()
+        cfg_val.data.split = 'valid'
+        val_dataset: BaseDataset = instantiate(cfg.data, split='valid')
+
+        # Build feature names (signal features + motion features)
+        motion_feature_keys = train_dataset.get_motion_feature_keys()
+        signal_features = [f"signal_feat_{i}" for i in range(cfg.d_model)]
+        if motion_feature_keys is not None:
+            motion_features = motion_feature_keys
+            logger.info(f"Loaded {len(motion_feature_keys)} motion feature keys")
+        else:
+            motion_features = [f"motion_feat_{i}" for i in range(cfg.motion_dim)]
+        feature_names = signal_features + motion_features
+        
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=cfg.data.get("batch_size", 1),
+            num_workers=cfg.data.get("num_workers", 8),
+            shuffle=cfg.data.get("shuffle", True),
+            pin_memory=cfg.data.get("pin_memory", True),
+        )
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=cfg.data.get("batch_size", 1),
+            num_workers=cfg.data.get("num_workers", 8),
+            shuffle=cfg.data.get("shuffle", False),
+            pin_memory=cfg.data.get("pin_memory", True),
+        )
+        
+        rf_config = SleepVSTVideoRFConfig(
+            n_estimators=300,
+            search_params=False,
+            verbose=1
+        )
+        rf_model = SleepVSTVideoRF(rf_config)
+        
+        with torch.no_grad():
+            train_features, train_labels, train_subject_ids = extract_features_from_loader(cfg_train,
+                feature_extractor,
+                train_loader,
+                "Extracting features from KVSS train set"
+            )
+
+            val_features, val_labels, val_subject_ids = extract_features_from_loader(cfg_val,
+                feature_extractor,
+                val_loader,
+                "Extracting features from KVSS validation set"
+            )
+            
+        X_train = np.vstack([features for features in train_features])
+        X_val = np.vstack([features for features in val_features])
+
+        y_train = np.hstack([labels for labels in train_labels])
+        y_val = np.hstack([labels for labels in val_labels])
+
+        logger.info(
+            f"Train: {len(y_train):,} epochs from {len(train_features)} recordings {X_train.shape} | "
+            f"Val: {len(y_val):,} epochs from {len(val_features)} recordings {X_val.shape}"
+        )
+
+        rf_model.fit(X_train, y_train, feature_names=feature_names)
+
+        # Basic evaluation (overall metrics only)
+        train_results = rf_model.evaluate(X_train, y_train)
+        val_results = rf_model.evaluate(X_val, y_val)
+        logger.info(
+            f"Overall | train: acc {train_results['accuracy']:.4f} kappa {train_results['kappa']:.4f} "
+            f"f1 {train_results['f1']:.4f} | "
+            f"val: acc {val_results['accuracy']:.4f} kappa {val_results['kappa']:.4f} "
+            f"f1 {val_results['f1']:.4f}"
+        )
+
+        # Per-recording metrics (paper equations 7, 8)
+        logger.info("Train set:")
+        calculate_per_recording_metrics(train_features, train_labels, rf_model)
+        logger.info("Validation set:")
+        calculate_per_recording_metrics(val_features, val_labels, rf_model)
+
+        # Save the RF model with motion feature keys as metadata
+        if cfg.model.use_finetuned:
+            save_path = f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned_{cfg.data.data_source}.pkl"
+        else:
+            save_path = f"./checkpoint/randomforest/{cfg.model.name}_rf_model_{cfg.data.data_source}.pkl"
+        rf_model.save(save_path, metadata={'motion_feature_keys': motion_feature_keys})
+        logger.info(f"Saved RF model to {save_path}")
+
+        if cfg.transfer.classifier.mode == 'fit_test':
+            _run_test_evaluation(cfg, feature_extractor, rf_model)
+    else:
+        # Test-only mode: load a saved RF model and evaluate
+        if cfg.model.use_finetuned:
+            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned.pkl")
+        else:
+            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model.pkl")
+
+        _run_test_evaluation(cfg, feature_extractor, rf_model)
+
+    return rf_model
+
+
+def _make_dataloader(data_cfg, dataset):
+    return DataLoader(
+        dataset,
+        batch_size=data_cfg.get("batch_size", 1),
+        num_workers=data_cfg.get("num_workers", 8),
+        shuffle=data_cfg.get("shuffle", True),
+        pin_memory=data_cfg.get("pin_memory", True),
+    )
+
+
+def extract_features_from_loader(seq_len, step_size, motion_dim, feature_extractor: torch.nn.Module, data_loader, desc, use_bw_only=False):
+    """Extract per-epoch features for every recording in a dataloader.
+
+    Each sliding window is encoded once; for every time step the feature is taken
+    from the window whose center is closest to that step, then concatenated with
+    the step's motion vector. Supports both single-input (BW) and dual-input
+    (HW + BW) models depending on ``cfg.model.name``.
+
+    Args:
+        seq_len: Length of each sliding window.
+        step_size: Step size for sliding window.
+        motion_dim: Dimensionality of the motion features.
+        feature_extractor: Model with its classifier head replaced by ``nn.Identity``.
+        data_loader: Dataloader yielding batches with x_hw/x_bw/motion/label/subject_id.
+        desc: tqdm progress bar description.
+        use_bw_only: Whether to use only the black-and-white input.
+
+        feature_extractor: Model with its classifier head replaced by ``nn.Identity``.
+        data_loader: Dataloader yielding batches with x_hw/x_bw/motion/label/subject_id.
+        desc: tqdm progress bar description.
+        use_bw_only: Whether to use only the black-and-white input.
+
+    Returns:
+        Tuple ``(features, labels, subject_ids)`` as lists with one entry per
+        recording: features are (T, d_model + motion_dim), labels are (T,).
+    """
+    feature_extractor.eval()
+    window_size = seq_len
+    step = step_size
+    center_index = (window_size - 1) // 2
+    use_bw_only = use_bw_only or 'x_hw' not in data_loader.dataset[0]
+
+    all_final_features = []
+    all_labels = []
+    all_subject_ids = []
+
+    with torch.no_grad():
+        for batch in tqdm(data_loader, desc=desc):
+            if not use_bw_only and ('x_hw' not in batch or 'x_bw' not in batch):
+                raise KeyError("Batch must contain both 'x_hw' and 'x_bw' keys for dual-input models.")
+
+            x_bw = batch['x_bw'].cuda().float()        # (B, N, 150)
+            motion = batch['motion'].float().cpu().numpy()  # (B, N, motion_dim)
+            labels = batch['label'].cpu().numpy()      # (B, N)
+            subject_ids = batch['subject_id']          # (B,)
+            B, N, _ = x_bw.shape
+            T = min(N, batch['label'].shape[1])
+            x_hw = batch['x_hw'].cuda().float() if not use_bw_only else None
+
+            # Encode each sliding window once; force a final window to cover the tail
+            starts = list(range(0, max(T - window_size + 1, 0), step))
+            if T >= window_size and (not starts or starts[-1] != T - window_size):
+                starts.append(T - window_size)
+
+            window_features = {}
+            for start in starts:
+                sl = slice(start, start + window_size)
+                feats = feature_extractor(x_bw[:, sl]) if use_bw_only \
+                    else feature_extractor(x_hw[:, sl], x_bw[:, sl])
+                window_features[start] = feats.cpu().numpy()  # (B, W, d_model)
+
+            # For each step, take the feature from the window whose center is closest,
+            # then concatenate with that step's motion vector
+            batch_final_features = np.zeros((B, T, seq_len + motion_dim), dtype=np.float32)
+            batch_labels = np.zeros((B, T), dtype=np.int64)
+
+            for t in range(T):
+                best_start = _closest_window(window_features, t, window_size, center_index)
+                if best_start is not None:
+                    feature_vec = window_features[best_start][:, t - best_start]  # (B, d_model)
+                    batch_final_features[:, t, :] = np.concatenate([feature_vec, motion[:, t, :]], axis=1)
+                batch_labels[:, t] = labels[:, t]
+
+            for i in range(B):
+                all_final_features.append(batch_final_features[i])
+                all_labels.append(batch_labels[i])
+                all_subject_ids.append(subject_ids[i])
+
+    return all_final_features, all_labels, all_subject_ids
+
+
+def _closest_window(window_features, t, window_size, center_index):
+    """Return the start index of the window covering step ``t`` whose center is
+    closest to ``t``, or ``None`` if no window covers it.
+
+    On ties the earliest window wins (dict keys are in increasing start order).
+    """
+    best_start = None
+    min_distance = float('inf')
+    for start in window_features:
+        if start <= t < start + window_size:
+            distance = abs((t - start) - center_index)
+            if distance < min_distance:
+                min_distance = distance
+                best_start = start
+    return best_start
+
+
+def analyze_motion_features(X_train, cfg):
+    """Diagnose the motion-feature block of a stacked feature matrix.
+
+    Splits each row into visual features (first ``cfg.d_model`` dims) and motion
+    features (remaining ``cfg.motion_dim`` dims), then reports degenerate
+    features (zero/low variance, constant), the visual-vs-motion scale ratio, and
+    NaN/Inf counts. Output is logged at debug level since it is purely diagnostic.
+
+    Args:
+        X_train: Feature matrix of shape (N, d_model + motion_dim).
+        cfg: Config providing ``d_model`` and ``motion_dim``.
+
+    Returns:
+        Dict with zero-variance / valid / constant feature indices and the
+        visual-to-motion standard-deviation ratio.
+    """
+    visual_data = X_train[:, :cfg.d_model]
+    motion_data = X_train[:, cfg.d_model:]
+
+    motion_vars = np.var(motion_data, axis=0)
+    motion_mins = np.min(motion_data, axis=0)
+    motion_maxs = np.max(motion_data, axis=0)
+
+    zero_var_indices = np.where(motion_vars == 0)[0]
+    very_low_var_indices = np.where(motion_vars < 1e-10)[0]
+    constant_indices = np.where(motion_mins == motion_maxs)[0]
+    valid_var_indices = np.where(motion_vars > 1e-6)[0]
+
+    scale_ratio = np.std(visual_data) / np.std(motion_data) if np.std(motion_data) > 0 else float('inf')
+    nan_count = int(np.sum(np.isnan(motion_data)))
+    inf_count = int(np.sum(np.isinf(motion_data)))
+
+    logger.debug(
+        f"Motion features: {cfg.motion_dim} dims | "
+        f"zero-var {len(zero_var_indices)}, low-var {len(very_low_var_indices)}, "
+        f"constant {len(constant_indices)}, valid {len(valid_var_indices)}"
+    )
+    logger.debug(f"Visual/motion std ratio: {scale_ratio:.2f} | NaN {nan_count}, Inf {inf_count}")
+    if scale_ratio > 100:
+        logger.warning("Visual features dominate motion features in scale; consider normalization")
+
+    return {
+        'zero_var_indices': zero_var_indices,
+        'valid_var_indices': valid_var_indices,
+        'constant_indices': constant_indices,
+        'scale_ratio': scale_ratio
+    }
+
+
+def calculate_per_recording_metrics(features_list, labels_list, rf_model):
+    """Compute total and per-recording accuracy / Cohen's kappa.
+
+    Implements the paper's Equations 7 (total, pooled over all epochs) and 8
+    (mean over per-recording scores).
+
+    Args:
+        features_list: Per-recording feature arrays [(T1, D), (T2, D), ...].
+        labels_list: Per-recording label arrays [(T1,), (T2,), ...].
+        rf_model: Trained RF classifier exposing ``predict``.
+
+    Returns:
+        Dict with ``Acc_T``, ``Acc_mu``, ``Kappa_T``, ``Kappa_mu``, the per-recording
+        accuracy/kappa lists, and ``num_recordings``.
+    """
+    from sklearn.metrics import accuracy_score, cohen_kappa_score
+
+    # Per-recording metrics
+    per_recording_acc = []
+    per_recording_kappa = []
+
+    all_y_true = []
+    all_y_pred = []
+
+    for i, (features, labels) in enumerate(zip(features_list, labels_list)):
+        # Predict for this recording
+        y_pred = rf_model.predict(features)
+
+        # Per-recording metrics (κ_i, Acc_i)
+        acc_i = accuracy_score(labels, y_pred)
+        kappa_i = cohen_kappa_score(labels, y_pred)
+
+        per_recording_acc.append(acc_i)
+        per_recording_kappa.append(kappa_i)
+
+        # Collect for overall metrics
+        all_y_true.extend(labels)
+        all_y_pred.extend(y_pred)
+
+    # Acc_μ = (1/N) * Σ Acc_i  (Equation 8 equivalent for accuracy)
+    acc_mu = np.mean(per_recording_acc)
+
+    # κ_μ = (1/N) * Σ κ_i  (Equation 8)
+    kappa_mu = np.mean(per_recording_kappa)
+
+    # Acc_T: Overall accuracy across all epochs (Equation 7 equivalent)
+    acc_T = accuracy_score(all_y_true, all_y_pred)
+
+    # κ_T: Overall kappa across all epochs (Equation 7)
+    kappa_T = cohen_kappa_score(all_y_true, all_y_pred)
+
+    results = {
+        'Acc_T': acc_T,
+        'Acc_mu': acc_mu,
+        'Kappa_T': kappa_T,
+        'Kappa_mu': kappa_mu,
+        'per_recording_acc': per_recording_acc,
+        'per_recording_kappa': per_recording_kappa,
+        'num_recordings': len(features_list)
+    }
+
+    logger.info(
+        f"Per-recording metrics ({len(features_list)} recordings, {len(all_y_true)} epochs) | "
+        f"Acc_T {acc_T:.4f} Acc_mu {acc_mu:.4f} (std {np.std(per_recording_acc):.4f}) | "
+        f"Kappa_T {kappa_T:.4f} Kappa_mu {kappa_mu:.4f} (std {np.std(per_recording_kappa):.4f})"
+    )
+
+    return results
+
+
+def _run_test_evaluation(cfg_base, feature_extractor, rf_model):
+    """Evaluate ``rf_model`` on the KVSS test split.
+
+    Extracts test features, writes per-epoch predictions and per-subject
+    metrics to CSV, and logs overall / per-recording / per-class results plus
+    a saved confusion-matrix figure. Shared by the ``fit_test`` and ``test`` modes.
+    """
+    cfg_test = cfg_base.copy()
+    cfg_test.data.split = 'test'
+    test_dataset = instantiate(cfg_base.data, split='test')
+    test_loader = _make_dataloader(cfg_test.data, test_dataset)
+
+    with torch.no_grad():
+        test_features, test_labels, test_subject_ids = extract_features_from_loader(
+            cfg_test.seq_len, cfg_test.step_size, cfg_test.data.motion_dim, feature_extractor, test_loader, "Extracting features from KVSS test set"
+        )
+
+    X_test = np.vstack([features for features in test_features])
+    y_test = np.hstack([labels for labels in test_labels])
+
+    logger.info(
+        f"Test set: {len(y_test):,} epochs from {len(test_features)} recordings, "
+        f"feature shape {X_test.shape}"
+    )
+
+    # Sleep stage label mapping
+    class_names = ['Wake', 'N1+N2', 'N3', 'REM']
+
+    # Per-recording predictions and per-subject metrics
+    csv_data = []
+    subject_metrics = []
+
+    from sklearn.metrics import accuracy_score, cohen_kappa_score, f1_score, precision_score, recall_score, confusion_matrix as sk_cm
+
+    for i, (features, labels, subject_id) in enumerate(zip(test_features, test_labels, test_subject_ids)):
+        predictions = rf_model.predict(features)
+
+        subject_acc = accuracy_score(labels, predictions)
+        subject_kappa = cohen_kappa_score(labels, predictions)
+        subject_f1_macro = f1_score(labels, predictions, average='macro', zero_division=0)
+        subject_f1_weighted = f1_score(labels, predictions, average='weighted', zero_division=0)
+        subject_precision = precision_score(labels, predictions, average='macro', zero_division=0)
+        subject_recall = recall_score(labels, predictions, average='macro', zero_division=0)
+
+        subject_cm = sk_cm(labels, predictions)
+
+        per_class_acc = []
+        for class_idx in range(len(class_names)):
+            if class_idx < subject_cm.shape[0] and np.sum(subject_cm[class_idx, :]) > 0:
+                class_acc = subject_cm[class_idx, class_idx] / np.sum(subject_cm[class_idx, :])
+                per_class_acc.append(class_acc)
+            else:
+                per_class_acc.append(np.nan)
+
+        subject_metrics.append({
+            'subject_id': subject_id,
+            'recording_idx': i,
+            'num_epochs': len(labels),
+            'accuracy': subject_acc,
+            'kappa': subject_kappa,
+            'f1_macro': subject_f1_macro,
+            'f1_weighted': subject_f1_weighted,
+            'precision_macro': subject_precision,
+            'recall_macro': subject_recall,
+            'wake_accuracy': per_class_acc[0],
+            'n1n2_accuracy': per_class_acc[1],
+            'n3_accuracy': per_class_acc[2],
+            'rem_accuracy': per_class_acc[3]
+        })
+
+        for epoch_idx in range(len(labels)):
+            csv_data.append({
+                'subject_id': subject_id,
+                'recording_idx': i,
+                'epoch_idx': epoch_idx,
+                'ground_truth_label': int(labels[epoch_idx]),
+                'ground_truth_name': class_names[int(labels[epoch_idx])],
+                'prediction_label': int(predictions[epoch_idx]),
+                'prediction_name': class_names[int(predictions[epoch_idx])]
+            })
+
+    # Save per-epoch predictions and per-subject metrics
+    df_predictions = pd.DataFrame(csv_data)
+    csv_path = f"{cfg_base.model.name}_test_predictions.csv"
+    df_predictions.to_csv(csv_path, index=False)
+
+    df_metrics = pd.DataFrame(subject_metrics)
+    metrics_path = f"{cfg_base.model.name}_test_subject_metrics.csv"
+    df_metrics.to_csv(metrics_path, index=False)
+    logger.info(
+        f"Saved {len(csv_data):,} predictions to {csv_path} and "
+        f"{len(subject_metrics)} subject metrics to {metrics_path}"
+    )
+
+    # Per-subject metric summary (mean ± std across subjects)
+    logger.info(
+        f"Per-subject (mean±std) | "
+        f"acc {df_metrics['accuracy'].mean():.4f}±{df_metrics['accuracy'].std():.4f} | "
+        f"kappa {df_metrics['kappa'].mean():.4f}±{df_metrics['kappa'].std():.4f} | "
+        f"f1_macro {df_metrics['f1_macro'].mean():.4f}±{df_metrics['f1_macro'].std():.4f} | "
+        f"f1_wtd {df_metrics['f1_weighted'].mean():.4f}±{df_metrics['f1_weighted'].std():.4f}"
+    )
+    logger.info(
+        f"Per-class acc (mean across subjects) | "
+        f"Wake {df_metrics['wake_accuracy'].mean():.4f} | "
+        f"N1+N2 {df_metrics['n1n2_accuracy'].mean():.4f} | "
+        f"N3 {df_metrics['n3_accuracy'].mean():.4f} | "
+        f"REM {df_metrics['rem_accuracy'].mean():.4f}"
+    )
+
+    # Single detailed report provides both overall metrics and the per-class report
+    detailed_report = rf_model.get_detailed_report(X_test, y_test)
+    test_results = detailed_report['basic_metrics']
+    class_report = detailed_report['classification_report']
+    calculate_per_recording_metrics(test_features, test_labels, rf_model)
+
+    # Overall test results
+    cm = test_results['confusion_matrix']
+    total_samples = int(np.sum(cm))
+    correct_predictions = int(np.trace(cm))
+    logger.info(
+        f"Test overall | f1_macro {test_results['f1_macro']:.4f} "
+        f"f1_weighted {test_results['f1_weighted']:.4f} | "
+        f"correct {correct_predictions:,}/{total_samples:,}"
+    )
+
+    # Confusion matrix and per-class accuracy at debug level
+    header = "        " + "  ".join([f"{name:>6}" for name in class_names])
+    rows = "\n".join(
+        f"{name:>6}: " + "  ".join([f"{cm[i, j]:>6d}" for j in range(len(class_names))])
+        for i, name in enumerate(class_names)
+    )
+    logger.debug(f"Confusion matrix (actual vs predicted):\n{header}\n{rows}")
+
+    per_class = []
+    for i, name in enumerate(class_names):
+        if np.sum(cm[i, :]) > 0:
+            per_class.append(f"{name} {cm[i, i] / np.sum(cm[i, :]):.4f}")
+        else:
+            per_class.append(f"{name} N/A")
+    logger.debug("Per-class accuracy | " + " | ".join(per_class))
+
+    # Detailed classification report at debug level
+    report_lines = [f"{'Class':<8} {'Precision':<10} {'Recall':<8} {'F1':<10} {'Support':<8}"]
+    for i, class_name in enumerate(class_names):
+        if str(i) in class_report:
+            m = class_report[str(i)]
+            report_lines.append(
+                f"{class_name:<8} {m['precision']:<10.4f} {m['recall']:<8.4f} "
+                f"{m['f1-score']:<10.4f} {int(m['support']):<8d}"
+            )
+    
+    for avg_key, avg_label in (('macro avg', 'Macro'), ('weighted avg', 'Weighted')):
+        if avg_key in class_report:
+            m = class_report[avg_key]
+            report_lines.append(
+                f"{avg_label:<8} {m['precision']:<10.4f} {m['recall']:<8.4f} "
+                f"{m['f1-score']:<10.4f} {int(m['support']):<8d}"
+            )
+    logger.debug("Classification report:\n" + "\n".join(report_lines))
+
+    plot_confusion_matrix(
+        test_results,
+        class_report,
+        class_names=class_names,
+        title=f"{cfg_base.model.name}",
+        save_path=f"{cfg_base.model.name}_confusion_matrix.png",
+    )
+
 
 def plot_confusion_matrix(result_dict, class_report, class_names=None, title="Test Results", save_path=None):
-    """
-    Dict 형태의 결과에서 confusion matrix를 그리는 함수
-    
+    """Render a confusion matrix heatmap annotated with counts, percentages,
+    and per-class precision/recall.
+
     Args:
-        result_dict (dict): 다음 키들을 포함해야 함:
-            - 'confusion_matrix': numpy array 형태의 confusion matrix
-        class_report (dict): classification_report 결과 dict
-        class_names (list): 클래스 이름 리스트 (기본값: ['Wake', 'N1+N2', 'N3', 'REM'])
-        title (str): 그래프 제목
-        save_path (str): 저장할 파일 경로 (선택사항)
-    
+        result_dict: Dict with a 'confusion_matrix' key (numpy array).
+        class_report: ``classification_report`` output dict (per-class precision/recall).
+        class_names: Class label names (default: ['Wake', 'N1+N2', 'N3', 'REM']).
+        title: Figure title.
+        save_path: If given, the figure is saved to this path (600 dpi).
+
     Returns:
-        matplotlib.figure.Figure: 생성된 figure 객체
+        matplotlib.figure.Figure: The rendered figure.
     """
-    
+
     # 기본 라벨 설정
     if class_names is None:
         class_names = ['Wake', 'N1+N2', 'N3', 'REM']
@@ -88,689 +626,4 @@ def plot_confusion_matrix(result_dict, class_report, class_names=None, title="Te
         plt.savefig(save_path, dpi=600, bbox_inches='tight')
     
     plt.show()
-    return fig    
-
-def extract_features_from_loader(cfg, feature_extractor: torch.nn.Module, data_loader, desc):
-    """
-    최적화된 특징 추출 함수 - 윈도우별로 한 번만 계산하고 레이블, subject_id도 함께 추출
-    """
-    feature_extractor.eval()
-    window_size = cfg.seq_len
-    step = cfg.step_size
-    center_index = (window_size-1) // 2
-
-    all_final_features = []
-    all_labels = []
-    all_subject_ids = []
-
-    with torch.no_grad():
-        if 'BW' in cfg.model.name:
-            for batch_idx, batch in enumerate(tqdm(data_loader, desc=desc)):
-                x_bw = batch['x_bw'].cuda().float() # (B, N, 150)
-                motion = batch['motion'].cuda().float() # (B, N, 90)
-                labels = batch['label'].cpu().numpy()  # (B, N)
-                subject_ids = batch['subject_id']  # (B,) - list of subject IDs
-                B, N, _ = x_bw.shape
-                T = min(N, batch['label'].shape[1])
-
-                # 각 윈도우의 특징을 한 번씩만 계산
-                window_features = {}
-                # 시작점 리스트 만들기(+꼬리 커버용 마지막 창 강제 추가)
-                starts = list(range(0, max(T - window_size + 1, 0), step))
-                if T >= window_size and (not starts or starts[-1] != T - window_size):
-                    starts.append(T - window_size)
-
-                for start in starts:
-                    x_window = x_bw[:, start:start + window_size]  # (B, W, 150)
-                    features = feature_extractor(x_window).cpu().numpy()  # (B, W, 128)
-                    window_features[start] = features
-
-                # 각 시간 스텝에서 최적의 윈도우 선택
-                batch_final_features = np.zeros((B, T, cfg.d_model + cfg.motion_dim), dtype=np.float32)  # (B, T, 128 + 90)
-                batch_labels = np.zeros((B, T), dtype=np.int64)  # (B, T)
-
-                for t in range(T):
-                    best_window_start = -1
-                    min_distance = float('inf')
-
-                    # t를 포함하는 모든 윈도우 확인
-                    for start_pos in window_features.keys():
-                        if start_pos <= t < start_pos + window_size:
-                            relative_pos = t - start_pos
-                            distance = abs(relative_pos - center_index)
-                            if distance < min_distance:
-                                min_distance = distance
-                                best_window_start = start_pos
-
-                    if best_window_start != -1:
-                        relative_pos = t - best_window_start
-                        feature_vec = window_features[best_window_start][:, relative_pos]  # (B, 128)
-                        motion_vec = motion[:, t, :].cpu().numpy()  # motion vector at time t (B, 90)
-
-                        # feature와 motion을 concat
-                        batch_final_features[:, t, :] = np.concatenate([feature_vec, motion_vec], axis=1)
-                    batch_labels[:, t] = labels[:, t]  # 해당 시점의 레이블
-
-                for i in range(B):
-                    all_final_features.append(batch_final_features[i])
-                    all_labels.append(batch_labels[i])
-                    all_subject_ids.append(subject_ids[i])
-        else:
-            for batch_idx, batch in enumerate(tqdm(data_loader, desc=desc)):
-                if 'x_hw' not in batch or 'x_bw' not in batch:
-                    raise KeyError("Batch must contain both 'x_hw' and 'x_bw' keys for dual input models.")
-                x_hw = batch['x_hw'].cuda().float() # (B, N, 150)
-                x_bw = batch['x_bw'].cuda().float() # (B, N, 150)
-                motion = batch['motion'].cuda().float() # (B, N, 90)
-                labels = batch['label'].cpu().numpy()  # (B, N)
-                subject_ids = batch['subject_id']  # (B,) - list of subject IDs
-                B, N, _ = x_bw.shape
-                T = min(N, batch['label'].shape[1])
-
-                # 각 윈도우의 특징을 한 번씩만 계산
-                window_features = {}
-                starts = list(range(0, max(T - window_size + 1, 0), step))
-                if T >= window_size and (not starts or starts[-1] != T - window_size):
-                    starts.append(T - window_size)
-
-                for start in starts:
-                    hw_window = x_hw[:, start:start + window_size]  # (B, W, 150)
-                    bw_window = x_bw[:, start:start + window_size]  # (B, W, 150)
-                    features = feature_extractor(hw_window, bw_window).cpu().numpy()  # (B, W, 128)
-                    window_features[start] = features
-
-                # 각 시간 스텝에서 최적의 윈도우 선택
-                batch_final_features = np.zeros((B, T, cfg.d_model + cfg.motion_dim), dtype=np.float32)  # (B, T, 128 + 90)
-                batch_labels = np.zeros((B, T), dtype=np.int64)  # (B, T)
-
-                for t in range(T):
-                    best_window_start = -1
-                    min_distance = float('inf')
-
-                    # t를 포함하는 모든 윈도우 확인
-                    for start_pos in window_features.keys():
-                        if start_pos <= t < start_pos + window_size:
-                            relative_pos = t - start_pos
-                            distance = abs(relative_pos - center_index)
-                            if distance < min_distance:
-                                min_distance = distance
-                                best_window_start = start_pos
-
-                    if best_window_start != -1:
-                        relative_pos = t - best_window_start
-                        feature_vec = window_features[best_window_start][:, relative_pos]  # (B, 128)
-                        motion_vec = motion[:, t, :]  # motion vector at time t (B, 90)
-
-                        # feature와 motion을 concat
-                        batch_final_features[:, t, :] = np.concatenate([feature_vec, motion_vec], axis=1)
-                    batch_labels[:, t] = labels[:, t]  # 해당 시점의 레이블
-
-                for i in range(B):
-                    all_final_features.append(batch_final_features[i])
-                    all_labels.append(batch_labels[i])
-                    all_subject_ids.append(subject_ids[i])
-
-
-    return all_final_features, all_labels, all_subject_ids  # (B, T, 128 + 90), (B, T), (N,)
-
-def analyze_motion_features(X_train, cfg, logger):
-    """Motion feature 데이터 분석"""
-    
-    # Visual과 Motion feature 분리
-    visual_data = X_train[:, :cfg.d_model]  # 0~127
-    motion_data = X_train[:, cfg.d_model:]  # 128~217 (motion_dim=90)
-    
-    logger.info(f"\n=== Motion Feature Data Analysis ===")
-    logger.info(f"Visual features shape: {visual_data.shape}")
-    logger.info(f"Motion features shape: {motion_data.shape}")
-    logger.info(f"Expected motion dim: {cfg.motion_dim}")
-    
-    # 1. 기본 통계
-    logger.info(f"\nBasic Statistics:")
-    logger.info(f"Motion data range: [{np.min(motion_data):.6f}, {np.max(motion_data):.6f}]")
-    logger.info(f"Motion data mean: {np.mean(motion_data):.6f}")
-    logger.info(f"Motion data std: {np.std(motion_data):.6f}")
-    
-    # 2. 각 feature별 분석
-    motion_means = np.mean(motion_data, axis=0)
-    motion_stds = np.std(motion_data, axis=0)
-    motion_vars = np.var(motion_data, axis=0)
-    motion_mins = np.min(motion_data, axis=0)
-    motion_maxs = np.max(motion_data, axis=0)
-    
-    # 3. 문제가 있는 feature들 찾기
-    zero_var_indices = np.where(motion_vars == 0)[0]
-    very_low_var_indices = np.where(motion_vars < 1e-10)[0]
-    constant_indices = np.where(motion_mins == motion_maxs)[0]
-    
-    logger.info(f"\nProblem Features:")
-    logger.info(f"Zero variance features: {len(zero_var_indices)}/{cfg.motion_dim}")
-    logger.info(f"Very low variance (<1e-10): {len(very_low_var_indices)}/{cfg.motion_dim}")
-    logger.info(f"Constant features: {len(constant_indices)}/{cfg.motion_dim}")
-    
-    if len(zero_var_indices) > 0:
-        logger.info(f"Zero variance indices (first 10): {zero_var_indices[:10]}")
-    
-    # 4. 유효한 feature들만 확인
-    valid_var_indices = np.where(motion_vars > 1e-6)[0]
-    logger.info(f"Valid features (var > 1e-6): {len(valid_var_indices)}/{cfg.motion_dim}")
-    
-    if len(valid_var_indices) > 0:
-        logger.info(f"Valid features stats:")
-        logger.info(f"  - Mean range: [{np.min(motion_means[valid_var_indices]):.6f}, {np.max(motion_means[valid_var_indices]):.6f}]")
-        logger.info(f"  - Std range: [{np.min(motion_stds[valid_var_indices]):.6f}, {np.max(motion_stds[valid_var_indices]):.6f}]")
-        logger.info(f"  - Value range: [{np.min(motion_mins[valid_var_indices]):.6f}, {np.max(motion_maxs[valid_var_indices]):.6f}]")
-    
-    # 5. Visual vs Motion 스케일 비교
-    logger.info(f"\nScale Comparison:")
-    logger.info(f"Visual - Mean: {np.mean(visual_data):.6f}, Std: {np.std(visual_data):.6f}")
-    logger.info(f"Motion - Mean: {np.mean(motion_data):.6f}, Std: {np.std(motion_data):.6f}")
-    
-    if np.std(motion_data) > 0:
-        scale_ratio = np.std(visual_data) / np.std(motion_data)
-        logger.info(f"Scale ratio (Visual/Motion): {scale_ratio:.2f}")
-        
-        if scale_ratio > 100:
-            logger.info("WARNING: Visual features have much larger scale than motion features!")
-            logger.info("Consider feature scaling or normalization.")
-    
-    # 6. 샘플별 motion feature 확인 (처음 몇 샘플만)
-    logger.info(f"\nFirst 5 samples motion data:")
-    for i in range(min(5, motion_data.shape[0])):
-        sample_data = motion_data[i, :10]  # 처음 10개 feature만
-        logger.info(f"Sample {i}: {sample_data}")
-    
-    # 7. NaN, Inf 확인
-    nan_count = np.sum(np.isnan(motion_data))
-    inf_count = np.sum(np.isinf(motion_data))
-    logger.info(f"\nData Quality:")
-    logger.info(f"NaN values: {nan_count}")
-    logger.info(f"Infinite values: {inf_count}")
-    
-    return {
-        'zero_var_indices': zero_var_indices,
-        'valid_var_indices': valid_var_indices,
-        'constant_indices': constant_indices,
-        'scale_ratio': np.std(visual_data) / np.std(motion_data) if np.std(motion_data) > 0 else float('inf')
-    }
-
-def calculate_per_recording_metrics(features_list, labels_list, rf_model, logger=None):
-    """
-    Args:
-        features_list: List of feature arrays, one per recording [(T1, D), (T2, D), ...]
-        labels_list: List of label arrays, one per recording [(T1,), (T2,), ...]
-        rf_model: Trained RF classifier
-        logger: Logger for output
-
-    Returns:
-        dict: Contains Acc_T, Acc_mu, Kappa_T, Kappa_mu metrics
-    """
-    from sklearn.metrics import accuracy_score, cohen_kappa_score
-
-    # Per-recording metrics
-    per_recording_acc = []
-    per_recording_kappa = []
-
-    all_y_true = []
-    all_y_pred = []
-
-    for i, (features, labels) in enumerate(zip(features_list, labels_list)):
-        # Predict for this recording
-        y_pred = rf_model.predict(features)
-
-        # Per-recording metrics (κ_i, Acc_i)
-        acc_i = accuracy_score(labels, y_pred)
-        kappa_i = cohen_kappa_score(labels, y_pred)
-
-        per_recording_acc.append(acc_i)
-        per_recording_kappa.append(kappa_i)
-
-        # Collect for overall metrics
-        all_y_true.extend(labels)
-        all_y_pred.extend(y_pred)
-
-    # Acc_μ = (1/N) * Σ Acc_i  (Equation 8 equivalent for accuracy)
-    acc_mu = np.mean(per_recording_acc)
-
-    # κ_μ = (1/N) * Σ κ_i  (Equation 8)
-    kappa_mu = np.mean(per_recording_kappa)
-
-    # Acc_T: Overall accuracy across all epochs (Equation 7 equivalent)
-    acc_T = accuracy_score(all_y_true, all_y_pred)
-
-    # κ_T: Overall kappa across all epochs (Equation 7)
-    kappa_T = cohen_kappa_score(all_y_true, all_y_pred)
-
-    results = {
-        'Acc_T': acc_T,
-        'Acc_mu': acc_mu,
-        'Kappa_T': kappa_T,
-        'Kappa_mu': kappa_mu,
-        'per_recording_acc': per_recording_acc,
-        'per_recording_kappa': per_recording_kappa,
-        'num_recordings': len(features_list)
-    }
-
-    if logger:
-        logger.info("\n" + "="*60)
-        logger.info("PER-RECORDING METRICS (as per paper equations 7, 8)")
-        logger.info("="*60)
-        logger.info(f"\n📊 ACCURACY METRICS:")
-        logger.info(f"Acc_T  (Total accuracy, all epochs):     {acc_T:.4f}")
-        logger.info(f"Acc_μ  (Mean per-recording accuracy):    {acc_mu:.4f}")
-        logger.info(f"       Std of per-recording accuracies:  {np.std(per_recording_acc):.4f}")
-
-        logger.info(f"\n📈 KAPPA METRICS:")
-        logger.info(f"κ_T    (Total kappa, all epochs):        {kappa_T:.4f}")
-        logger.info(f"κ_μ    (Mean per-recording kappa):       {kappa_mu:.4f}")
-        logger.info(f"       Std of per-recording kappas:      {np.std(per_recording_kappa):.4f}")
-
-        logger.info(f"\nNumber of recordings: {len(features_list)}")
-        logger.info(f"Total epochs: {len(all_y_true)}")
-
-    return results
-
-def transfer_to_video(cfg, logger=None):
-    from src.models.RFClassifier import SleepVSTVideoRF, SleepVSTVideoRFConfig
-    if logger:
-        logger.info(f"Loading model...{cfg.model.name}")
-    model_mapping = {
-        "SleepVST": SleepVST,
-        "SleepVST_BW": SleepVST_BW
-    }
-    model = model_mapping[cfg.model.name](cfg.model)
-    if cfg.model.use_finetuned:
-        checkpoint = torch.load(cfg.model.finetuned_checkpoint, map_location=cfg.system.device)
-        if logger:
-            logger.info(f"Model {cfg.model.name} loaded from {cfg.model.finetuned_checkpoint}")
-    else:
-        checkpoint = torch.load(cfg.model.checkpoint, map_location=cfg.system.device)
-        if logger:
-            logger.info(f"Model {cfg.model.name} loaded from {cfg.model.checkpoint}")
-    model.load_state_dict(checkpoint['model_state_dict'])
-    model = model.cuda()  # 모델을 GPU로 이동
-    
-    in_features = model.classifier.in_features
-    model.classifier = nn.Identity().cuda()
-    feature_extractor = model
-    feature_extractor.eval()  # evaluation 모드로 설정
-    
-    # 테스트 단계 공통 실행 함수 (fit_test와 test 모드에서 재사용)
-    def _run_test_evaluation(cfg_base, feature_extractor, rf_model, motion_feature_keys, logger):
-        # test split dataloader 생성
-        cfg_test = cfg_base.copy()
-        cfg_test.data.split = 'test'
-        kvss_test_module = KVSSDataModule(cfg_test)
-        print(kvss_test_module.dataset.__len__())
-        test_loader = kvss_test_module.get_dataloader()
-
-        with torch.no_grad():
-            test_features, test_labels, test_subject_ids = extract_features_from_loader(
-                cfg_test, feature_extractor, test_loader, "Extracting features from KVSS test set"
-            )
-
-        X_test = np.vstack([features for features in test_features])
-        y_test = np.hstack([labels for labels in test_labels])
-
-        # 데이터셋 크기 로깅
-        logger.info(f"\n=== TEST DATASET SIZE ===")
-        logger.info(f"Test samples: {len(y_test):,} epochs from {len(test_features)} recordings")
-        logger.info(f"Test feature shape: {X_test.shape}")
-
-        # Sleep stage label mapping
-        class_names = ['Wake', 'N1+N2', 'N3', 'REM']
-
-        # Per-recording predictions 저장 및 subject metrics 계산
-        logger.info(f"\n=== SAVING PER-RECORDING PREDICTIONS ===")
-        csv_data = []
-        subject_metrics = []
-
-        from sklearn.metrics import accuracy_score, cohen_kappa_score, f1_score, precision_score, recall_score, confusion_matrix as sk_cm
-
-        for i, (features, labels, subject_id) in enumerate(zip(test_features, test_labels, test_subject_ids)):
-            predictions = rf_model.predict(features)
-
-            subject_acc = accuracy_score(labels, predictions)
-            subject_kappa = cohen_kappa_score(labels, predictions)
-            subject_f1_macro = f1_score(labels, predictions, average='macro', zero_division=0)
-            subject_f1_weighted = f1_score(labels, predictions, average='weighted', zero_division=0)
-            subject_precision = precision_score(labels, predictions, average='macro', zero_division=0)
-            subject_recall = recall_score(labels, predictions, average='macro', zero_division=0)
-
-            subject_cm = sk_cm(labels, predictions)
-
-            per_class_acc = []
-            for class_idx in range(len(class_names)):
-                if class_idx < subject_cm.shape[0] and np.sum(subject_cm[class_idx, :]) > 0:
-                    class_acc = subject_cm[class_idx, class_idx] / np.sum(subject_cm[class_idx, :])
-                    per_class_acc.append(class_acc)
-                else:
-                    per_class_acc.append(np.nan)
-
-            subject_metrics.append({
-                'subject_id': subject_id,
-                'recording_idx': i,
-                'num_epochs': len(labels),
-                'accuracy': subject_acc,
-                'kappa': subject_kappa,
-                'f1_macro': subject_f1_macro,
-                'f1_weighted': subject_f1_weighted,
-                'precision_macro': subject_precision,
-                'recall_macro': subject_recall,
-                'wake_accuracy': per_class_acc[0],
-                'n1n2_accuracy': per_class_acc[1],
-                'n3_accuracy': per_class_acc[2],
-                'rem_accuracy': per_class_acc[3]
-            })
-
-            for epoch_idx in range(len(labels)):
-                csv_data.append({
-                    'subject_id': subject_id,
-                    'recording_idx': i,
-                    'epoch_idx': epoch_idx,
-                    'ground_truth_label': int(labels[epoch_idx]),
-                    'ground_truth_name': class_names[int(labels[epoch_idx])],
-                    'prediction_label': int(predictions[epoch_idx]),
-                    'prediction_name': class_names[int(predictions[epoch_idx])]
-                })
-
-        # Per-epoch predictions 저장
-        df_predictions = pd.DataFrame(csv_data)
-        csv_path = f"{cfg_base.model.name}_test_predictions.csv"
-        df_predictions.to_csv(csv_path, index=False)
-        logger.info(f"Saved per-epoch predictions to CSV: {csv_path}")
-        logger.info(f"Total rows saved: {len(csv_data)}")
-        logger.info(f"Columns: {list(df_predictions.columns)}")
-
-        # Subject별 metrics 저장
-        df_metrics = pd.DataFrame(subject_metrics)
-        metrics_path = f"{cfg_base.model.name}_test_subject_metrics.csv"
-        df_metrics.to_csv(metrics_path, index=False)
-        logger.info(f"\nSaved per-subject metrics to CSV: {metrics_path}")
-        logger.info(f"Total subjects: {len(subject_metrics)}")
-
-        # Subject별 metrics 요약 출력
-        logger.info(f"\n=== PER-SUBJECT METRICS SUMMARY ===")
-        logger.info(f"Accuracy    - Mean: {df_metrics['accuracy'].mean():.4f}, Std: {df_metrics['accuracy'].std():.4f}")
-        logger.info(f"Kappa       - Mean: {df_metrics['kappa'].mean():.4f}, Std: {df_metrics['kappa'].std():.4f}")
-        logger.info(f"F1 (macro)  - Mean: {df_metrics['f1_macro'].mean():.4f}, Std: {df_metrics['f1_macro'].std():.4f}")
-        logger.info(f"F1 (wtd)    - Mean: {df_metrics['f1_weighted'].mean():.4f}, Std: {df_metrics['f1_weighted'].std():.4f}")
-        logger.info(f"Precision   - Mean: {df_metrics['precision_macro'].mean():.4f}, Std: {df_metrics['precision_macro'].std():.4f}")
-        logger.info(f"Recall      - Mean: {df_metrics['recall_macro'].mean():.4f}, Std: {df_metrics['recall_macro'].std():.4f}")
-
-        logger.info(f"\n=== PER-CLASS ACCURACY (AVERAGED ACROSS SUBJECTS) ===")
-        logger.info(f"Wake        - Mean: {df_metrics['wake_accuracy'].mean():.4f}, Std: {df_metrics['wake_accuracy'].std():.4f}")
-        logger.info(f"N1+N2       - Mean: {df_metrics['n1n2_accuracy'].mean():.4f}, Std: {df_metrics['n1n2_accuracy'].std():.4f}")
-        logger.info(f"N3          - Mean: {df_metrics['n3_accuracy'].mean():.4f}, Std: {df_metrics['n3_accuracy'].std():.4f}")
-        logger.info(f"REM         - Mean: {df_metrics['rem_accuracy'].mean():.4f}, Std: {df_metrics['rem_accuracy'].std():.4f}")
-
-        test_results = rf_model.evaluate(X_test, y_test)
-
-        # Calculate per-recording metrics (paper equations 7, 8)
-        logger.info("="*60)
-        logger.info("TEST SET: PER-RECORDING METRICS (Paper Equations 7, 8)")
-        logger.info("="*60)
-        _ = calculate_per_recording_metrics(test_features, test_labels, rf_model, logger)
-
-        # 상세한 테스트 결과 출력
-        logger.info("\n" + "="*60)
-        logger.info("DETAILED TEST RESULTS")
-        logger.info("="*60)
-        
-        logger.info(f"\n🎯 F1 SCORE METRICS:")
-        logger.info(f"F1_macro: {test_results['f1_macro']:.4f}")
-        logger.info(f"F1_weighted: {test_results['f1_weighted']:.4f}")
-        
-        logger.info(f"\n📋 CONFUSION MATRIX:")
-        cm = test_results['confusion_matrix']
-        logger.info(f"Shape: {cm.shape}")
-        
-        # 클래스별로 Confusion Matrix 출력
-        class_names = ['Wake', 'N1+N2', 'N3', 'REM']  # 수면 단계
-        logger.info("\nConfusion Matrix (Actual vs Predicted):")
-        logger.info("        " + "  ".join([f"{name:>6}" for name in class_names]))
-        for i, actual_class in enumerate(class_names):
-            row_str = f"{actual_class:>6}: " + "  ".join([f"{cm[i,j]:>6d}" for j in range(len(class_names))])
-            logger.info(row_str)
-        
-        # 클래스별 정확도 계산
-        logger.info(f"\n📊 PER-CLASS ACCURACY:")
-        class_accuracies = []
-        for i in range(len(class_names)):
-            if np.sum(cm[i, :]) > 0:  # 해당 클래스가 실제로 존재하는 경우
-                class_acc = cm[i, i] / np.sum(cm[i, :])
-                class_accuracies.append(class_acc)
-                logger.info(f"{class_names[i]:>6}: {class_acc:.4f} ({cm[i,i]:>4d}/{np.sum(cm[i,:]):>4d})")
-            else:
-                logger.info(f"{class_names[i]:>6}: N/A (no samples)")
-        
-        # 전체 샘플 수 정보
-        total_samples = np.sum(cm)
-        correct_predictions = np.trace(cm)
-        logger.info(f"\n📈 OVERALL STATISTICS:")
-        logger.info(f"Total samples: {total_samples:,}")
-        logger.info(f"Correct predictions: {correct_predictions:,}")
-        logger.info(f"Incorrect predictions: {total_samples - correct_predictions:,}")
-        
-        # 상세 리포트 생성
-        detailed_report = rf_model.get_detailed_report(X_test, y_test)
-        
-        # Classification Report 출력
-        logger.info(f"\n📋 DETAILED CLASSIFICATION REPORT:")
-        class_report = detailed_report['classification_report']
-        
-        logger.info(f"{'Class':<8} {'Precision':<10} {'Recall':<8} {'F1-Score':<10} {'Support':<8}")
-        logger.info("-" * 50)
-        
-        for i, class_name in enumerate(class_names):
-            if str(i) in class_report:
-                metrics = class_report[str(i)]
-                logger.info(f"{class_name:<8} {metrics['precision']:<10.4f} {metrics['recall']:<8.4f} {metrics['f1-score']:<10.4f} {int(metrics['support']):<8d}")
-        
-        # Macro and Weighted averages
-        if 'macro avg' in class_report:
-            macro_avg = class_report['macro avg']
-            logger.info("-" * 50)
-            logger.info(f"{'Macro':<8} {macro_avg['precision']:<10.4f} {macro_avg['recall']:<8.4f} {macro_avg['f1-score']:<10.4f} {int(macro_avg['support']):<8d}")
-            
-        if 'weighted avg' in class_report:
-            weighted_avg = class_report['weighted avg']
-            logger.info(f"{'Weighted':<8} {weighted_avg['precision']:<10.4f} {weighted_avg['recall']:<8.4f} {weighted_avg['f1-score']:<10.4f} {int(weighted_avg['support']):<8d}")
-
-        # 함수 호출 시 class_names 전달
-        fig = plot_confusion_matrix(
-            test_results, 
-            class_report, 
-            class_names=class_names,  # class_names 추가
-            title=f"{cfg.model.name}", 
-            save_path=f"{cfg.model.name}_confusion_matrix.png"
-        )
-
-    # fit 또는 fit 후 즉시 test 실행
-    if cfg.mode.classifier.mode in ('fit', 'fit_test'):
-        cfg_train = cfg.copy()
-        cfg_train.data.split = 'train'
-        kvss_train_module = KVSSDataModule(cfg_train)
-
-        cfg_val = cfg.copy()
-        cfg_val.data.split = 'valid'
-        kvss_val_module = KVSSDataModule(cfg_val)
-
-        # Motion feature keys 정보 가져오기
-        motion_feature_keys = kvss_train_module.dataset.get_motion_feature_keys()
-        
-        # Feature 이름 생성 (시각적 특징 + 동작 특징)
-        signal_features = [f"signal_feat_{i}" for i in range(cfg.d_model)]
-        if motion_feature_keys is not None:
-            motion_features = motion_feature_keys
-        else:
-            motion_features = [f"motion_feat_{i}" for i in range(cfg.motion_dim)]
-        feature_names = signal_features + motion_features
-        
-        # Feature keys 정보 로깅
-        if logger and motion_feature_keys is not None:
-            logger.info(f"Motion feature keys loaded: {len(motion_feature_keys)} features")
-            logger.info(f"First 10 motion keys: {motion_feature_keys[:10]}")
-        
-        train_loader = kvss_train_module.get_dataloader()
-        val_loader = kvss_val_module.get_dataloader()
-        
-        rf_config = SleepVSTVideoRFConfig(
-            n_estimators=300,
-            search_params=False,
-            verbose=1
-        )
-        rf_model = SleepVSTVideoRF(rf_config)
-        
-        with torch.no_grad():
-            train_features, train_labels, train_subject_ids = extract_features_from_loader(cfg_train,
-                feature_extractor,
-                train_loader,
-                "Extracting features from KVSS train set"
-            )
-
-            val_features, val_labels, val_subject_ids = extract_features_from_loader(cfg_val,
-                feature_extractor,
-                val_loader,
-                "Extracting features from KVSS validation set"
-            )
-            
-        X_train = np.vstack([features for features in train_features])
-        X_val = np.vstack([features for features in val_features])
-
-        y_train = np.hstack([labels for labels in train_labels])
-        y_val = np.hstack([labels for labels in val_labels])
-
-        # 데이터셋 크기 로깅
-        logger.info(f"\n=== DATASET SIZES ===")
-        logger.info(f"Train samples: {len(y_train):,} epochs from {len(train_features)} recordings")
-        logger.info(f"Val samples: {len(y_val):,} epochs from {len(val_features)} recordings")
-        logger.info(f"Train feature shape: {X_train.shape}")
-        logger.info(f"Val feature shape: {X_val.shape}")
-
-        rf_model.fit(X_train, y_train, feature_names=feature_names)  # feature 이름 전달
-
-        # Basic evaluation (overall metrics only)
-        train_results = rf_model.evaluate(X_train, y_train)
-        val_results = rf_model.evaluate(X_val, y_val)
-
-        logger.info(f"\n=== BASIC METRICS (Overall) ===")
-        logger.info(f"Train Accuracy: {train_results['accuracy']:.4f}, Kappa: {train_results['kappa']:.4f}, F1: {train_results['f1']:.4f}")
-        logger.info(f"Val Accuracy: {val_results['accuracy']:.4f}, Kappa: {val_results['kappa']:.4f}, F1: {val_results['f1']:.4f}")
-
-        # Per-recording metrics (paper equations 7, 8)
-        logger.info(f"\n=== TRAIN SET: PER-RECORDING METRICS ===")
-        train_per_recording = calculate_per_recording_metrics(train_features, train_labels, rf_model, logger)
-
-        logger.info(f"\n=== VALIDATION SET: PER-RECORDING METRICS ===")
-        val_per_recording = calculate_per_recording_metrics(val_features, val_labels, rf_model, logger)
-        
-        # 모델 저장 시 motion feature keys도 함께 저장
-        if cfg.model.use_finetuned:
-            rf_model.save(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned_{cfg.data.data_source}.pkl", metadata={'motion_feature_keys': motion_feature_keys})
-        else:
-            rf_model.save(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_{cfg.data.data_source}.pkl", metadata={'motion_feature_keys': motion_feature_keys})
-        
-        # fit 직후 test 실행 (새 모드)
-        if cfg.mode.classifier.mode == 'fit_test':
-            _run_test_evaluation(cfg, feature_extractor, rf_model, motion_feature_keys, logger)
-    else:
-        # test 전용 모드 (이전 로직과 동일, 단 평가 로직을 함수로 호출)
-        if cfg.model.use_finetuned:
-            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned.pkl")
-        else:
-            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model.pkl")
-        metadata = rf_model.get_metadata() if hasattr(rf_model, 'get_metadata') else {}
-        motion_feature_keys = metadata.get('motion_feature_keys', None)
-
-        _run_test_evaluation(cfg, feature_extractor, rf_model, motion_feature_keys, logger)
-
-    # # Feature importance 분석 (공통)
-    # # 전체 feature importance 가져오기
-    # full_importance_df = rf_model.get_feature_importance()
-    
-    # # signal vs Motion feature importance 계산 (전체 데이터 기준)
-    # signal_mask = full_importance_df['feature'].str.startswith('signal_feat_')
-    # motion_mask = full_importance_df['feature'].str.startswith(('past_', 'current_', 'future_')) | \
-    #               full_importance_df['feature'].str.startswith('motion_feat_')
-
-    # signal_importance = full_importance_df[signal_mask]['importance'].sum()
-    # motion_importance = full_importance_df[motion_mask]['importance'].sum()
-    
-    # logger.info(f"\n🔍 FEATURE TYPE IMPORTANCE ANALYSIS:")
-    # logger.info(f"Total features: {len(full_importance_df)}")
-    # logger.info(f"Signal features: {signal_mask.sum()}")
-    # logger.info(f"Motion features: {motion_mask.sum()}")
-    # logger.info(f"Signal features total importance: {signal_importance:.4f}")
-    # logger.info(f"Motion features total importance: {motion_importance:.4f}")
-    
-    # # 안전한 비율 계산
-    # if motion_importance > 0:
-    #     ratio = signal_importance / motion_importance
-    #     logger.info(f"Signal/Motion ratio: {ratio:.2f}")
-    # else:
-    #     logger.info("Motion features have zero importance - all importance from signal features")
-
-    # # 상위 20개 feature importance 출력
-    # importance_df = rf_model.get_feature_importance(top_k=20)
-    # logger.info("\n🏆 TOP 20 FEATURE IMPORTANCE:")
-    # for idx, row in importance_df.iterrows():
-    #     logger.info(f"{row['feature']}: {row['importance']:.6f}")
-    
-    # # 각 feature type별 상위 features 분석
-    # top_signal = full_importance_df[signal_mask].head(10)
-    # top_motion = full_importance_df[motion_mask].head(10)
-
-    # logger.info("\n📡 TOP 10 SIGNAL FEATURES:")
-    # for idx, row in top_signal.iterrows():
-    #     logger.info(f"{row['feature']}: {row['importance']:.6f}")
-    
-    # logger.info("\n🏃 TOP 10 MOTION FEATURES:")
-    # for idx, row in top_motion.iterrows():
-    #     logger.info(f"{row['feature']}: {row['importance']:.6f}")
-    
-    # # Motion feature를 temporal type별로 분석
-    # if motion_feature_keys is not None:
-    #     logger.info("\n🔍 MOTION FEATURES BY TEMPORAL TYPE:")
-        
-    #     # Past, Current, Future로 분류
-    #     past_mask = full_importance_df['feature'].str.startswith('past_')
-    #     current_mask = full_importance_df['feature'].str.startswith('current_')
-    #     future_mask = full_importance_df['feature'].str.startswith('future_')
-        
-    #     past_importance = full_importance_df[past_mask]['importance'].sum()
-    #     current_importance = full_importance_df[current_mask]['importance'].sum()
-    #     future_importance = full_importance_df[future_mask]['importance'].sum()
-        
-    #     logger.info(f"Past motion features importance: {past_importance:.4f}")
-    #     logger.info(f"Current motion features importance: {current_importance:.4f}")
-    #     logger.info(f"Future motion features importance: {future_importance:.4f}")
-        
-    #     # 각 temporal type별 top 5 features
-    #     if past_mask.any():
-    #         logger.info("\n⬅️  TOP 5 PAST MOTION FEATURES:")
-    #         for idx, row in full_importance_df[past_mask].head(5).iterrows():
-    #             logger.info(f"{row['feature']}: {row['importance']:.6f}")
-        
-    #     if current_mask.any():
-    #         logger.info("\n⏺️  TOP 5 CURRENT MOTION FEATURES:")
-    #         for idx, row in full_importance_df[current_mask].head(5).iterrows():
-    #             logger.info(f"{row['feature']}: {row['importance']:.6f}")
-                
-    #     if future_mask.any():
-    #         logger.info("\n➡️  TOP 5 FUTURE MOTION FEATURES:")
-    #         for idx, row in full_importance_df[future_mask].head(5).iterrows():
-    #             logger.info(f"{row['feature']}: {row['importance']:.6f}")
-
-    # # Feature importance 통계
-    # logger.info(f"\n📊 FEATURE IMPORTANCE STATISTICS:")
-    # logger.info(f"Signal features - Mean: {full_importance_df[signal_mask]['importance'].mean():.6f}, "
-    #             f"Std: {full_importance_df[signal_mask]['importance'].std():.6f}")
-    # logger.info(f"Motion features - Mean: {full_importance_df[motion_mask]['importance'].mean():.6f}, "
-    #             f"Std: {full_importance_df[motion_mask]['importance'].std():.6f}")
-    
-    # # Feature importance 시각화 저장
-    # rf_model.plot_feature_importance(top_k=20, save_path="feature_importance.png")
-    
-    return rf_model
-
+    return fig

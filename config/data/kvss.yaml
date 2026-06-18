@@ -1,12 +1,19 @@
+_target_: src.data.datasets.KVSS.KVSS
 name: kvss
+
 root: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
+
+#original data dir
 video_dir: /tf/00_data/#_2021_Sleep_Video/
+label_dir: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels
+
+#preprocessed data dir
 signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
 respiratory_signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/respiratory
 motion_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/motionfeatures
-label_dir: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels
 
 model: SleepVST_BW
+mode: finetune
 seq_len: 240
 step_size: 60
 d_model: 128

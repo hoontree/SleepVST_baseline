@@ -40,3 +40,24 @@ roi:
 video:
   input_path: /tf/00_data/#_2021_Sleep_Video/
   file_list: /tf/01_code/mylittlecodes/SleepVST_baseline/config/preprocess/file_list.txt
+  record_ids: null
+
+# Hydra instantiation target for motion feature extraction. Values are linked to
+# the grouped fields above so CLI overrides keep working.
+config:
+  _target_: src.data.preprocess.motion_extractor.MotionProcessingConfig
+  _convert_: all
+  video_input_path: ${..video.input_path}
+  video_file_list: ${..video.file_list}
+  video_record_ids: ${..video.record_ids}
+  target_fps: ${..target_fps}
+  output_dir: ${..output.dir}
+  output_size: ${..output.size}
+  num_workers: ${..num_workers}
+  skip_existing: ${..skip_existing}
+  homography_source_points: ${..homography.source_points}
+  homography_scale_factor: ${..homography.scale_factor}
+  roi_person_box: ${..roi.person_box}
+  roi_head_bottom_y: ${..roi.head_bottom_y}
+  motion_time_windows: ${..motion_features.time_windows}
+  motion_thresholds: ${..motion_features.motion_thresholds}

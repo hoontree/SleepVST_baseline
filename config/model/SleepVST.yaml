@@ -1,3 +1,4 @@
+_target_: src.models.SleepVST.SleepVST
 name: SleepVST
 checkpoint: /tf/01_code/mylittlecodes/SleepVST_baseline/checkpoint/pretrain/pretrained_sleepvst.pth
 finetuned_checkpoint: /tf/01_code/mylittlecodes/SleepVST_baseline/checkpoint/finetune/kvss_finetuned.pth

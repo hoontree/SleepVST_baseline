@@ -63,3 +63,36 @@ selection:
   files: []
   # Path to a text file that contains one record name or pattern per line
   file_list: null
+
+# Hydra instantiation target for EDF preprocessing. Values are linked to the
+# grouped YAML fields above so CLI overrides keep working.
+config:
+  _target_: src.data.preprocess.preprocess_respiratory_edf.RespiratoryProcessingConfig
+  _convert_: all
+  dataset_name: ${..dataset.name}
+  edf_dir: ${..dataset.edf_dir}
+  annotation_dir: ${..dataset.annotation_dir}
+  save_dir: ${..dataset.save_dir}
+  file_pattern: ${..dataset.file_pattern}
+  channels: ${..signals.channels}
+  hw_patch_size: ${..signals.patch_sizes.hw}
+  bw_patch_size: ${..signals.patch_sizes.bw}
+  hw_patch_step: ${..signals.patch_steps.hw}
+  bw_patch_step: ${..signals.patch_steps.bw}
+  process_hw: ${..signals.process_hw}
+  process_bw: ${..signals.process_bw}
+  respiratory_filter_low: ${..respiratory_filter.low}
+  respiratory_filter_high: ${..respiratory_filter.high}
+  respiratory_filter_order: ${..respiratory_filter.order}
+  target_fs: ${..respiratory_filter.target_fs}
+  batch_size: ${..processing.batch_size}
+  num_workers: ${..processing.num_workers}
+  timeout: ${..processing.timeout}
+  memory_threshold: ${..processing.memory_threshold}
+  skip_partial: ${..error_handling.skip_partial}
+  continue_on_error: ${..error_handling.continue_on_error}
+  max_retries: ${..error_handling.max_retries}
+  select_include: ${..selection.include}
+  select_exclude: ${..selection.exclude}
+  select_files: ${..selection.files}
+  select_file_list: ${..selection.file_list}

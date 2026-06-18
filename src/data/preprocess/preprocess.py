@@ -12,7 +12,7 @@ import warnings
 import signal
 
 from concurrent.futures import ProcessPoolExecutor
-from src.common.logger import Logger
+from src.utils.logger import setup_logging, get_logger
 from src.data.preprocess.io import *
 from src.data.preprocess.utils_data import *
 from mne.io import read_raw_edf
@@ -23,7 +23,8 @@ from tqdm import tqdm
 # 전역 변수로 executor 선언
 executor = None
 args = config.parse_args()
-logger = Logger(dir=args.preprocess_log_dir, name='SleepVST.preprocess')
+setup_logging(args.preprocess_log_dir, file_name='SleepVST.preprocess')
+logger = get_logger(__name__)
 
 def signal_handler(sig, frame):
     """

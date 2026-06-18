@@ -1,6 +1,8 @@
+_target_: src.data.datasets.MESA.MESA
 name: mesa
 root: /tf/01_code/mylittlecodes/SleepVST_baseline/data/mesa
 seq_len: 240
+split: train
 batch_size: 64
 num_workers: 8
 shuffle: True

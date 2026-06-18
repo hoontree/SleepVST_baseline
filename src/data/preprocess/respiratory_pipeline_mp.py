@@ -13,6 +13,7 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
 import traceback
+from src.utils.logger import get_logger
 from src.data.preprocess.io import loadVideo, FrameResize, loadVideoStream, loadVideoStreamCV2
 import imageio.v3 as iio
 from scipy.signal import butter, sosfilt, iirnotch, lfilter
@@ -20,6 +21,8 @@ from sklearn.preprocessing import scale
 
 from .respiratory_extraction import resp_extraction, resp_extraction_r
 from .filters.temporal_filters import difference_of_iir
+
+logger = get_logger(__name__)
 
 
 def butter_bandpass(lowcut, highcut, fs, order=1):
@@ -176,7 +179,6 @@ def process_single_video_by_epoch(
     video_path: str,
     output_dir: str,
     cfg: DictConfig,
-    logger=None,
     show_progress: bool = True
 ) -> str:
     """
@@ -186,17 +188,14 @@ def process_single_video_by_epoch(
         video_path: Path to input video
         output_dir: Base output directory
         cfg: Configuration object
-        logger: Logger instance (optional for multiprocessing)
         show_progress: Whether to show tqdm progress bar
 
     Returns:
         Status message string
     """
-    if logger:
-        logger.info(f"Processing video: {record_id}")
-
     try:
         num_epochs, fps, record_id = get_last_epoch_fps(video_path.replace('_video_01.mp4', '_annotation.json'))
+        logger.info(f"Processing video: {record_id}")
 
         # Check if filtering is enabled and if this record should be processed
         filter_cfg = cfg.get('filter', {})
@@ -204,8 +203,7 @@ def process_single_video_by_epoch(
             record_ids = filter_cfg.get('record_ids', [])
             if record_ids and record_id not in record_ids:
                 msg = f"Skipped {record_id} (not in filter list)"
-                if logger:
-                    logger.info(msg)
+                logger.info(msg)
                 return msg
 
         # Get epoch range for this record
@@ -217,8 +215,7 @@ def process_single_video_by_epoch(
                 epoch_range = epoch_ranges[record_id]
                 epoch_start = epoch_range[0] - 1  # Convert to 0-indexed
                 epoch_end = min(epoch_range[1], num_epochs)  # End is inclusive, but bounded by num_epochs
-                if logger:
-                    logger.info(f"Processing epochs {epoch_range[0]} to {epoch_range[1]} for {record_id}")
+                logger.info(f"Processing epochs {epoch_range[0]} to {epoch_range[1]} for {record_id}")
 
         # Create output directory for this video
         video_output_dir = Path(output_dir) / record_id
@@ -235,14 +232,13 @@ def process_single_video_by_epoch(
         if cap_fps <= 0:
             cap_fps = fps  # fallback
         frames_per_epoch = int(round(30 * cap_fps))
-        if abs(cap_fps - fps) > 0.1 and logger:
+        if abs(cap_fps - fps) > 0.1:
             logger.warning(f"FPS mismatch (json:{fps:.3f}, video:{cap_fps:.3f}). Using video FPS for seeking.")
 
         # Skip frames before epoch_start if needed
         if epoch_start > 0:
             frames_to_skip = epoch_start * frames_per_epoch
-            if logger:
-                logger.info(f"Skipping {frames_to_skip} frames to reach epoch {epoch_start + 1}")
+            logger.info(f"Skipping {frames_to_skip} frames to reach epoch {epoch_start + 1}")
             cap.set(cv2.CAP_PROP_POS_FRAMES, frames_to_skip)
 
         processed_count = 0
@@ -272,8 +268,7 @@ def process_single_video_by_epoch(
 
             # 이미 처리된 에포크 스킵 (파일 무결성 확인 포함)
             if cfg.skip_existing and _is_epoch_done(movement_path):
-                if logger:
-                    logger.info(f"Skipping epoch {i+1} - already processed")
+                logger.info(f"Skipping epoch {i+1} - already processed")
                 # 현재 위치가 목표보다 앞설 때만 시킹
                 target_pos = (i + 1) * frames_per_epoch
                 cur_pos = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
@@ -295,13 +290,11 @@ def process_single_video_by_epoch(
             preprocessed = preprocessed_signal[i]
 
             if epoch_video is None:
-                if logger:
-                    logger.warning(f"No more frames available at epoch {i+1}")
+                logger.warning(f"No more frames available at epoch {i+1}")
                 break
 
             if len(epoch_video) < frames_per_epoch:
-                if logger:
-                    logger.warning(f"Epoch {i+1} has only {len(epoch_video)} frames (expected {frames_per_epoch})")
+                logger.warning(f"Epoch {i+1} has only {len(epoch_video)} frames (expected {frames_per_epoch})")
 
             # Extract respiratory signal for this epoch
             max_point = resp_extraction_r(
@@ -329,9 +322,8 @@ def process_single_video_by_epoch(
             return f"Successfully processed {processed_count} epochs for {record_id}"
 
     except Exception as e:
-        error_msg = f"Error processing {record_id}: {str(e)}\n{traceback.format_exc()}"
-        if logger:
-            logger.error(error_msg)
+        error_msg = f"Error processing {Path(video_path).name}: {str(e)}\n{traceback.format_exc()}"
+        logger.error(error_msg)
         return error_msg
 
 
@@ -347,19 +339,17 @@ def _process_video_wrapper(args):
         Status message string
     """
     video_path, output_dir, cfg = args
-    # Don't pass logger to avoid pickling issues
     # Show progress for individual videos when using multiprocessing
-    return process_single_video_by_epoch(video_path, output_dir, cfg, logger=None, show_progress=False)
+    return process_single_video_by_epoch(video_path, output_dir, cfg, show_progress=False)
 
 
-def process_all_videos(cfg: DictConfig, logger) -> List[str]:
+def process_all_videos(cfg: DictConfig) -> List[str]:
     """
     Process all videos for respiratory signal extraction.
     Supports optional multiprocessing for video-level parallelization.
 
     Args:
         cfg: Configuration object with multiprocessing settings
-        logger: Logger instance
 
     Returns:
         List of status messages for each video
@@ -436,7 +426,7 @@ def process_all_videos(cfg: DictConfig, logger) -> List[str]:
         logger.info("Processing videos sequentially (multiprocessing disabled)")
         results = []
         for video_path in tqdm(video_files, desc="Processing videos (sequential)", unit="video"):
-            result = process_single_video_by_epoch(video_path, str(output_dir), cfg, logger, show_progress=True)
+            result = process_single_video_by_epoch(video_path, str(output_dir), cfg, show_progress=True)
             results.append(result)
 
     return results

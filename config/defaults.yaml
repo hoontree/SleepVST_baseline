@@ -18,3 +18,9 @@ d_model: 128
 motion_dim: 90 
 seq_len: 240
 step_size: 60
+
+transfer:
+  modality: bw
+  classifier:
+    mode: fit_test
+    name: rf

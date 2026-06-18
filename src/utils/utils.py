@@ -1,9 +1,10 @@
 import os
 import torch
-import logging
 import matplotlib.pyplot as plt
 import numpy as np
-logger = logging.getLogger('SleepVST')
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 def setup_device(device: str, gpu_ids: str = '0') -> torch.device:
     """Sets up the device for PyTorch."""

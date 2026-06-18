@@ -1,28 +1,35 @@
-import os
+"""Preprocess respiratory EDF files into SleepVST HW/BW patch arrays."""
+
 from pathlib import Path
 import numpy as np
 import gc
 import sys
-import psutil
 import mne
 import warnings
 import signal as sig
 import csv
-import traceback
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict
 
+from hydra.utils import instantiate
 from omegaconf import DictConfig
-from src.common.logger import Logger
+from src.utils.logger import get_logger
 from src.data.preprocess.io import *
 from src.data.preprocess.utils_data import *
 from mne.io import read_raw_edf
 from tqdm import tqdm
 
+logger = get_logger(__name__)
+
 
 @dataclass
 class RespiratoryProcessingConfig:
-    """Configuration for Respiratory EDF preprocessing"""
+    """Hydra-instantiated settings for respiratory EDF preprocessing.
+
+    The fields are intentionally flat so Hydra can instantiate this dataclass
+    directly from ``preprocess/respiratory_edf.yaml`` while the YAML itself keeps
+    human-friendly grouped sections such as ``dataset`` and ``signals``.
+    """
     # Dataset paths
     dataset_name: str
     edf_dir: str
@@ -62,50 +69,13 @@ class RespiratoryProcessingConfig:
     select_files: List[str]
     select_file_list: Optional[str]
 
-    @classmethod
-    def from_hydra_config(cls, cfg: DictConfig) -> 'RespiratoryProcessingConfig':
-        """Create RespiratoryProcessingConfig from Hydra config"""
-        # Get respiratory filter parameters with defaults
-        resp_filter = cfg.get('respiratory_filter', {})
-
-        return cls(
-            dataset_name=cfg.dataset.name,
-            edf_dir=cfg.dataset.edf_dir,
-            annotation_dir=cfg.dataset.annotation_dir,
-            save_dir=cfg.dataset.save_dir,
-            file_pattern=cfg.dataset.file_pattern,
-            channels=cfg.signals.channels,
-            hw_patch_size=cfg.signals.patch_sizes.hw,
-            bw_patch_size=cfg.signals.patch_sizes.bw,
-            hw_patch_step=cfg.signals.patch_steps.hw,
-            bw_patch_step=cfg.signals.patch_steps.bw,
-            process_hw=cfg.signals.get('process_hw', True),
-            process_bw=cfg.signals.get('process_bw', True),
-            respiratory_filter_low=resp_filter.get('low', 0.1),
-            respiratory_filter_high=resp_filter.get('high', 0.5),
-            respiratory_filter_order=resp_filter.get('order', 1),
-            target_fs=resp_filter.get('target_fs', 5),
-            batch_size=cfg.processing.batch_size,
-            num_workers=cfg.processing.num_workers,
-            timeout=cfg.processing.timeout,
-            memory_threshold=cfg.processing.memory_threshold,
-            skip_partial=cfg.error_handling.skip_partial,
-            continue_on_error=cfg.error_handling.continue_on_error,
-            max_retries=cfg.error_handling.max_retries,
-            # selection (all optional)
-            select_include=list(getattr(cfg, 'selection', {}).get('include', [])) if hasattr(cfg, 'selection') else [],
-            select_exclude=list(getattr(cfg, 'selection', {}).get('exclude', [])) if hasattr(cfg, 'selection') else [],
-            select_files=list(getattr(cfg, 'selection', {}).get('files', [])) if hasattr(cfg, 'selection') else [],
-            select_file_list=getattr(cfg, 'selection', {}).get('file_list', None) if hasattr(cfg, 'selection') else None
-        )
-
 
 class RespiratoryEDFPreprocessor:
-    """Respiratory EDF preprocessor with respiratory_extraction.py signal processing"""
+    """Extract and save heart-wave and breathing-wave patches from EDF files."""
 
-    def __init__(self, config: RespiratoryProcessingConfig, logger: Logger):
+    def __init__(self, config: RespiratoryProcessingConfig):
+        """Initialize the preprocessor and ensure the output directory exists."""
         self.config = config
-        self.logger = logger
 
         # Setup signal handlers
         sig.signal(sig.SIGINT, self._signal_handler)
@@ -115,22 +85,16 @@ class RespiratoryEDFPreprocessor:
         Path(self.config.save_dir).mkdir(parents=True, exist_ok=True)
 
     def _signal_handler(self, sig, frame):
-        """Handle Ctrl+C and other signals"""
-        self.logger.info("프로그램 종료 요청됨...")
+        """Exit cleanly when the process receives an interrupt signal."""
+        logger.info("종료 요청을 받았습니다.")
         sys.exit(0)
 
-    def _get_memory_info(self) -> Dict[str, float]:
-        """Get system memory usage information"""
-        memory = psutil.virtual_memory()
-        return {
-            'total': memory.total,
-            'available': memory.available,
-            'used': memory.used,
-            'percent': memory.percent
-        }
-
     def _get_last_row_column_value(self, file_path: str, column_name: str) -> str:
-        """Get the last row value from a specific column in CSV file"""
+        """Return ``column_name`` from the final data row of a CSV file.
+
+        Annotation files can be large, so this reads backwards from the end of
+        the file instead of loading the entire CSV into memory.
+        """
         with open(file_path, 'r', newline='') as f:
             f.seek(0, 2)  # Move to end of file
             file_size = f.tell()
@@ -160,11 +124,11 @@ class RespiratoryEDFPreprocessor:
             return last_values[col_index]
 
     def extract_signal(self, edf_path: str) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
-        """
-        Extract ECG and respiratory signals from EDF file
-        Returns processed heart wave and breathing wave patches
-        Uses respiratory_extraction.py signal processing for breathing wave
-        Returns None for signals that are not being processed based on config
+        """Load one EDF file and return processed HW/BW patch arrays.
+
+        The returned tuple is ``(hw, bw)``. Each value is ``None`` when that
+        signal type is disabled in the config. When annotation duration is
+        available, the raw signal is cropped before preprocessing.
         """
         # Calculate duration from CSV annotation
         duration_sec = None
@@ -176,11 +140,11 @@ class RespiratoryEDFPreprocessor:
                 duration_sec = int(self._get_last_row_column_value(str(ann_path), 'Start_Epoch')) * 30
                 if duration_sec <= 0:
                     duration_sec = None
-                    self.logger.warning(f"{basename}의 annotation 파일에서 유효한 duration을 찾을 수 없습니다.")
+                    logger.debug(f"{basename}: annotation duration이 유효하지 않아 전체 EDF를 사용합니다.")
             else:
-                self.logger.warning(f"{basename}의 annotation 파일을 찾을 수 없습니다: {ann_path}")
+                logger.debug(f"{basename}: annotation 파일이 없어 전체 EDF를 사용합니다. path={ann_path}")
         except Exception as e:
-            self.logger.error(f"{Path(edf_path).name}의 annotation 파일 처리 중 오류 발생: {str(e)}")
+            logger.debug(f"{Path(edf_path).name}: annotation duration 계산 실패, 전체 EDF를 사용합니다. error={e}")
 
         # Configure MNE to minimize output
         original_verbose = mne.set_log_level('ERROR')
@@ -266,7 +230,11 @@ class RespiratoryEDFPreprocessor:
             gc.collect()
 
     def process_file(self, edf_file: str) -> Tuple[bool, str]:
-        """Process a single EDF file"""
+        """Process one EDF file and persist the enabled output arrays.
+
+        Returns a ``(success, status)`` tuple where ``status`` is one of
+        ``processed``, ``skipped``, or an ``error_*`` string suitable for logs.
+        """
         edf_path = Path(edf_file)
         base = edf_path.stem
 
@@ -304,7 +272,7 @@ class RespiratoryEDFPreprocessor:
                 np.save(str(bw_file), bw)
 
             return True, "processed"
-            
+
         except MemoryError:
             return False, f"error_memory: 메모리 부족 - {base}"
         except Exception as e:
@@ -313,7 +281,7 @@ class RespiratoryEDFPreprocessor:
             gc.collect()
 
     def _get_files_to_process(self) -> List[str]:
-        """Get list of EDF files to process"""
+        """Return EDF paths that match selection rules and still need outputs."""
         import fnmatch
 
         edf_dir = Path(self.config.edf_dir)
@@ -331,7 +299,7 @@ class RespiratoryEDFPreprocessor:
                         if name:
                             selection_from_file.append(name)
             else:
-                self.logger.warning(f"selection.file_list 경로가 존재하지 않습니다: {list_path}")
+                logger.warning(f"selection.file_list를 찾을 수 없습니다: {list_path}")
 
         # Compose include patterns
         include_patterns = []
@@ -390,29 +358,39 @@ class RespiratoryEDFPreprocessor:
             else:
                 files_to_process.append(edf_file)
 
-        self.logger.info(f"이미 처리된 파일: {complete_count}/{len(edf_files)} ({complete_count/len(edf_files)*100:.1f}%)")
-        self.logger.info(f"처리할 파일: {len(files_to_process)} 개")
+        logger.info(
+            f"EDF 선택 결과: total={len(edf_files)}, completed={complete_count}, "
+            f"pending={len(files_to_process)}"
+        )
 
         return files_to_process
 
     def process_dataset(self) -> Dict[str, int]:
-        """Process the entire dataset"""
-        # Memory information
-        memory_info = self._get_memory_info()
-        self.logger.info(f"사용 가능한 메모리: {memory_info['available']/1024/1024:.1f} MB / 총 메모리: {memory_info['total']/1024/1024:.1f} MB")
-
-        self.logger.info("Respiratory EDF 전처리 작업 시작 (순차 처리)")
-        self.logger.info(f"데이터셋: {self.config.dataset_name}")
-        self.logger.info(f"처리 대상: HW={'O' if self.config.process_hw else 'X'}, BW={'O' if self.config.process_bw else 'X'}")
+        """Process all pending EDF files and return aggregate counts."""
+        targets = []
+        if self.config.process_hw:
+            targets.append("HW")
         if self.config.process_bw:
-            self.logger.info(f"Respiratory filter: low={self.config.respiratory_filter_low}Hz, "
-                            f"high={self.config.respiratory_filter_high}Hz, order={self.config.respiratory_filter_order}")
+            targets.append("BW")
+
+        logger.info(
+            f"Respiratory EDF 전처리 시작: dataset={self.config.dataset_name}, "
+            f"targets={','.join(targets) or 'none'}"
+        )
+        if self.config.process_bw:
+            logger.debug(
+                "BW filter config: target_fs=%s, low=%sHz, high=%sHz, order=%s",
+                self.config.target_fs,
+                self.config.respiratory_filter_low,
+                self.config.respiratory_filter_high,
+                self.config.respiratory_filter_order,
+            )
 
         # Get files to process
         files_to_process = self._get_files_to_process()
 
         if not files_to_process:
-            self.logger.info("처리할 파일이 없습니다.")
+            logger.info("처리할 EDF 파일이 없습니다.")
             return {"processed": 0, "skipped": 0, "error": 0}
 
         # Overall results aggregation
@@ -424,11 +402,11 @@ class RespiratoryEDFPreprocessor:
                 file_name = Path(edf_file).name
 
                 try:
-                    success, status = self.process_file(edf_file)
+                    _success, status = self.process_file(edf_file)
 
                     if status.startswith("error"):
                         overall_results["error"] += 1
-                        self.logger.error(f"{file_name}: {status}")
+                        logger.error(f"{file_name}: {status}")
                     elif status == "skipped":
                         overall_results["skipped"] += 1
                     elif status == "processed":
@@ -442,15 +420,15 @@ class RespiratoryEDFPreprocessor:
 
                 except KeyboardInterrupt:
                     if self.config.continue_on_error:
-                        self.logger.warning("처리 중단됨. 다음 파일로 진행합니다.")
+                        logger.warning("처리 중단됨. 다음 파일로 진행합니다.")
                         overall_results["error"] += 1
                         continue
                     else:
                         raise
 
-                except Exception as e:
+                except Exception:
                     overall_results["error"] += 1
-                    self.logger.error(f"{file_name}: 처리 중 예상치 못한 오류\n{traceback.format_exc()}")
+                    logger.exception(f"{file_name}: 처리 중 예상치 못한 오류")
                     if not self.config.continue_on_error:
                         raise
 
@@ -458,41 +436,40 @@ class RespiratoryEDFPreprocessor:
                     pbar.update(1)
                     gc.collect()
 
-        # Log final results
-        self.logger.info(f"데이터셋 {self.config.dataset_name} 처리 결과: "
-                        f"처리 완료={overall_results['processed']}, "
-                        f"건너뛴 파일={overall_results['skipped']}, "
-                        f"오류={overall_results['error']}")
+        logger.info(
+            f"Respiratory EDF 전처리 완료: processed={overall_results['processed']}, "
+            f"skipped={overall_results['skipped']}, errors={overall_results['error']}"
+        )
 
         return overall_results
 
 
-def process_respiratory_edf_dataset(cfg: DictConfig, logger: Logger) -> Dict[str, int]:
-    """Process EDF dataset with respiratory signal processing"""
-    config = RespiratoryProcessingConfig.from_hydra_config(cfg)
-    preprocessor = RespiratoryEDFPreprocessor(config, logger)
+def process_respiratory_edf_dataset(cfg: DictConfig) -> Dict[str, int]:
+    """Instantiate preprocessing config from Hydra and process the dataset."""
+    config = instantiate(cfg.config)
+    preprocessor = RespiratoryEDFPreprocessor(config)
     return preprocessor.process_dataset()
 
 
 def main():
-    """Legacy main function - kept for backward compatibility"""
+    """Run respiratory EDF preprocessing through the legacy Hydra entry point."""
     import hydra
     from omegaconf import DictConfig
+    from src.utils.logger import setup_logging
 
     @hydra.main(version_base=None, config_path="../../../config", config_name="defaults")
     def hydra_main(cfg: DictConfig):
         # Use respiratory EDF preprocessing configuration
         preprocess_cfg = cfg.preprocess if hasattr(cfg, 'preprocess') else cfg
 
-        # Create logger
+        # Configure logging
         log_cfg = preprocess_cfg.log if hasattr(preprocess_cfg, 'log') else {'dir': './logs', 'name': 'respiratory_edf_preprocess'}
-        logger = Logger(dir=log_cfg['dir'], name=log_cfg['name'])
+        setup_logging(log_cfg['dir'], log_cfg['name'])
 
         # Process dataset
-        results = process_respiratory_edf_dataset(preprocess_cfg, logger)
+        results = process_respiratory_edf_dataset(preprocess_cfg)
 
-        logger.info("모든 데이터셋 처리 완료")
-        logger.info(f"최종 결과: {results}")
+        logger.debug(f"최종 결과: {results}")
 
     hydra_main()
 

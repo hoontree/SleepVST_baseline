@@ -1,137 +1,157 @@
-from torch.utils.data import DataLoader, Dataset
-from src.data.base_datamodule import BaseDataModule, BaseDataset, SampleDict
-from pathlib import Path
+"""MESA dataset wrappers for SleepVST training and evaluation."""
+
+from torch.utils.data import DataLoader
+from src.data.base_datamodule import BaseDataset, SampleDict, BaseDataModule
 from tqdm import tqdm
-from typing import List, Union
-from omegaconf import DictConfig
+from typing import List
 
 import numpy as np
 
+
 class MESA(BaseDataset):
-    def __init__(self, cfg: Union[DictConfig, dict] = None, split: str = None, **kwargs):
-        """
+    """Load MESA waveform windows and sleep-stage labels.
+
+    The dataset expects each split directory to contain an ``A-<split>_set.txt``
+    file with record IDs and, for every available record, ``*_hw.npy``,
+    ``*_bw.npy`` and ``*_label.npy`` files. Training/validation samples are
+    fixed-length sliding windows. Test-style samples can be returned as full
+    recordings by calling :meth:`load_samples` with ``is_test=True``.
+    """
+
+    def __init__(self, root, split='train', seq_len=240, exceptions=None, **kwargs):
+        """Create a MESA dataset from Hydra yaml fields.
+
         Args:
-            cfg: Configuration object or dict with 'root', 'seq_len', etc.
-            split: Split name ('train', 'val', 'test'). Overrides cfg.split if provided.
-            **kwargs: Additional arguments (data_dir, seq_len for backward compatibility)
+            root: Dataset root directory. Split files are read from
+                ``root / split``.
+            split: Split name. Expected values are ``train``, ``valid`` and
+                ``test``.
+            seq_len: Number of epochs in one training/validation sample.
+            exceptions: Optional record IDs to exclude before loading samples.
+            **kwargs: Extra yaml fields, usually dataloader options. They are
+                accepted for Hydra compatibility and ignored here.
         """
-        super().__init__()
-        
-        # Backward compatibility: support old (data_dir, split, seq_len) signature
-        if cfg is None:
-            # Old style: MESA(data_dir, split, seq_len=30)
-            data_dir = kwargs.get('data_dir', split)  # split might be data_dir in old call
-            self.split = kwargs.get('split', 'train')
-            self.seq_len = kwargs.get('seq_len', 30)
-            self.data_dir = Path(data_dir) / self.split
-        else:
-            # New style: MESA(cfg, split='train')
-            if hasattr(cfg, 'root'):
-                root = cfg.root
-            elif isinstance(cfg, dict) and 'root' in cfg:
-                root = cfg['root']
-            else:
-                root = cfg
-                
-            self.split = split if split is not None else getattr(cfg, 'split', 'train')
-            self.seq_len = getattr(cfg, 'seq_len', 240)
-            self.data_dir = Path(root) / self.split
-        
-        self.samples = self.load_samples()
-        self.exceptions = set()
+        self.exceptions = set(exceptions or [])
+        super().__init__(root=root, split=split, seq_len=seq_len, **kwargs)
+
+    def _load_samples(self, **kwargs) -> List[SampleDict]:
+        """Load samples for the active split.
+
+        ``BaseDataset`` calls this hook during initialization. Extra yaml fields
+        are intentionally ignored so dataloader metadata such as ``batch_size``
+        does not leak into sample loading.
+        """
+        return self.load_samples()
 
     def _discover_ids(self):
+        """Return record IDs listed for the active split.
+
+        Split membership is defined by text files named ``A-train_set.txt``,
+        ``A-valid_set.txt`` and ``A-test_set.txt`` inside ``self.data_dir``.
+        File extensions are stripped so downstream path construction can append
+        each modality suffix consistently.
         """
-        레코드 파일 목록을 반환합니다.
-        KVSS 데이터셋의 경우, 'A-train_set.txt', 'A-valid_set.txt', 'A-test_set.txt' 파일에서 ID를 읽어옵니다.
-        """
-        if self.split == 'train':
-            train_list_file = self.data_dir / 'A-train_set.txt'
-            with open(train_list_file, 'r') as f:
-                self.train_list = set([line.strip().replace('.h5', '') for line in f.readlines()]) - self.exceptions
-            return self.train_list
-        elif self.split == 'valid':
-            valid_list_file = self.data_dir / 'A-valid_set.txt'
-            with open(valid_list_file, 'r') as f:
-                self.valid_list = set([line.strip().replace('.h5', '') for line in f.readlines()]) - self.exceptions
-            return self.valid_list
-        elif self.split == 'test':
-            test_list_file = self.data_dir / 'A-test_set.txt'
-            with open(test_list_file, 'r') as f:
-                self.test_list = set([line.strip().replace('.h5', '') for line in f.readlines()]) - self.exceptions
-            return self.test_list
-        else:
+        split_files = {
+            'train': 'A-train_set.txt',
+            'valid': 'A-valid_set.txt',
+            'test': 'A-test_set.txt',
+        }
+        if self.split not in split_files:
             raise ValueError(f"Unknown split: {self.split}")
 
+        with open(self.data_dir / split_files[self.split], 'r') as f:
+            record_ids = set(line.strip().replace('.h5', '') for line in f)
+        return record_ids - self.exceptions
+
     def load_samples(self, step=10, is_test: bool = False) -> List[SampleDict]:
+        """Load waveform/label arrays and convert them to sample dictionaries.
+
+        Args:
+            step: Sliding-window stride in epochs for training/validation mode.
+            is_test: If ``True``, return one full-recording sample per record
+                instead of sliding windows. This keeps temporal continuity for
+                recording-level inference.
+
+        Returns:
+            List of ``SampleDict`` entries. Each entry contains ``x_hw``,
+            ``x_bw``, ``label``, ``subject_id`` and ``start_idx``. Arrays are
+            truncated to the shortest available modality/label length for that
+            record.
+        """
         samples = []
         if is_test:
             for record_id in tqdm(self._discover_ids()):
                 if record_id in self.exceptions:
                     continue
-                
+
                 hw_file = self.data_dir / f"{record_id}_hw.npy"
                 bw_file = self.data_dir / f"{record_id}_bw.npy"
                 label_file = self.data_dir / f"{record_id}_label.npy"
 
                 if not hw_file.exists() or not bw_file.exists() or not label_file.exists():
                     continue
-                
+
                 x_hw = np.load(hw_file).astype(np.float32)
                 x_bw = np.load(bw_file).astype(np.float32)
                 epochs = self.parse_xml(label_file)
-                
                 labels = np.array([e['label'] for e in epochs], dtype=np.int64)
-                
+
                 T = min(len(x_hw), len(x_bw), len(labels))
-                sample: SampleDict = {
+                samples.append({
                     "x_hw": x_hw[:T],
                     "x_bw": x_bw[:T],
                     "label": labels[:T],
                     "subject_id": record_id,
-                    "start_idx": 0
-                }
-                samples.append(sample)
-                
+                    "start_idx": 0,
+                })
+
             return samples
-        
+
         for record_id in tqdm(self._discover_ids()):
             if record_id in self.exceptions:
                 continue
-            
+
             hw_file = self.data_dir / f"{record_id}_hw.npy"
             bw_file = self.data_dir / f"{record_id}_bw.npy"
             label_file = self.data_dir / f"{record_id}_label.npy"
 
             if not hw_file.exists() or not bw_file.exists() or not label_file.exists():
                 continue
-            
+
             x_hw = np.load(hw_file).astype(np.float32)
             x_bw = np.load(bw_file).astype(np.float32)
             epochs = self.parse_csv(label_file)
-                
             labels = np.array([e['label'] for e in epochs], dtype=np.int64)
-            
             T = min(len(x_hw), len(x_bw), len(labels))
-            
+
             for i in range(0, T - self.seq_len + 1, step):
-                sample: SampleDict = {
+                samples.append({
                     "x_hw": x_hw[i:i + self.seq_len],
                     "x_bw": x_bw[i:i + self.seq_len],
                     "label": labels[i:i + self.seq_len],
                     "subject_id": record_id,
-                    "start_idx": i
-                }
-                samples.append(sample)
-                
+                    "start_idx": i,
+                })
+
         return samples
 
+
 class MESADataModule(BaseDataModule):
-    def __init__(self, data_dir: str, batch_size: int = 32, seq_len: int = 30, num_workers: int = 4):
+    """Small datamodule wrapper kept for legacy call sites.
+
+    New training code instantiates datasets directly from Hydra configs, but this
+    class is still useful for scripts that expect train/validation/test dataloader
+    methods.
+    """
+
+    def __init__(self, data_dir, batch_size=32, seq_len=30, num_workers: int = 4):
+        """Store dataloader options and the dataset root."""
         super().__init__(data_dir, batch_size, num_workers)
         self.seq_len = seq_len
+        self.num_workers = num_workers
 
-    def setup(self, stage: str = None):
+    def setup(self, stage: str =None):
+        """Instantiate split datasets for the requested stage."""
         if stage == 'fit' or stage is None:
             self.train_dataset = MESA(self.data_dir, 'train', self.seq_len)
             self.valid_dataset = MESA(self.data_dir, 'valid', self.seq_len)
@@ -139,10 +159,13 @@ class MESADataModule(BaseDataModule):
             self.test_dataset = MESA(self.data_dir, 'test', self.seq_len)
 
     def train_dataloader(self):
+        """Return a shuffled training dataloader."""
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def val_dataloader(self):
+        """Return a deterministic validation dataloader."""
         return DataLoader(self.valid_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
 
     def test_dataloader(self):
+        """Return a deterministic test dataloader."""
         return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)

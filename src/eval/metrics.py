@@ -2,6 +2,11 @@ import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, cohen_kappa_score, classification_report
 from typing import List, Dict
 
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+
 class MetricsTracker:
     def __init__(self):
         self.preds = []

@@ -1,31 +1,68 @@
+"""Extract optical-flow motion features from sleep videos."""
+
+from dataclasses import dataclass
+from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from typing import Dict, List, Tuple, Optional, Union
+
 import cv2
 import numpy as np
+from hydra.utils import instantiate
+from omegaconf import DictConfig
 from tqdm import tqdm
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Dict, List, Tuple, Optional
-from pathlib import Path
+
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+@dataclass
+class MotionProcessingConfig:
+    """Hydra-instantiated settings for motion feature extraction.
+
+    The flat field layout keeps multiprocessing workers independent from
+    OmegaConf objects while ``preprocess/motionfeatures.yaml`` can still expose
+    grouped, human-readable sections.
+    """
+
+    video_input_path: str
+    video_file_list: Optional[Union[str, List[str]]]
+    video_record_ids: Optional[Union[str, List[str]]]
+    target_fps: int
+    output_dir: str
+    output_size: List[int]
+    num_workers: int
+    skip_existing: bool
+    homography_source_points: List[List[float]]
+    homography_scale_factor: float
+    roi_person_box: List[int]
+    roi_head_bottom_y: int
+    motion_time_windows: List[int]
+    motion_thresholds: List[float]
+
 
 class MotionFeatureExtractor:
-    """Class to handle motion feature extraction from videos."""
+    """Compute optical-flow motion features for a single standardized video."""
 
-    def __init__(self, cfg):
-        self.cfg = cfg
-        self.target_fps = cfg.target_fps
-        self.out_size = tuple(cfg.output.size)
-        self.pts_src = np.array(cfg.homography.source_points, dtype=np.float32)
-        self.scale_factor = cfg.homography.scale_factor
-        self.person_box = cfg.roi.person_box  # (x0, y0, x1, y1)
-        self.head_bottom_y = cfg.roi.head_bottom_y
-        self.time_windows = cfg.motion_features.time_windows
-        self.motion_thresholds = cfg.motion_features.motion_thresholds
+    def __init__(self, config: MotionProcessingConfig):
+        """Store preprocessing geometry and feature parameters."""
+        self.config = config
+        self.target_fps = config.target_fps
+        self.out_size = tuple(config.output_size)
+        self.pts_src = np.array(config.homography_source_points, dtype=np.float32)
+        self.scale_factor = config.homography_scale_factor
+        self.person_box = config.roi_person_box  # (x0, y0, x1, y1)
+        self.head_bottom_y = config.roi_head_bottom_y
+        self.time_windows = config.motion_time_windows
+        self.motion_thresholds = config.motion_thresholds
 
     def scale_quad(self, pts: np.ndarray, scale: float) -> np.ndarray:
-        """Scale a quadrilateral around its centroid."""
+        """Return ``pts`` scaled around their centroid by ``scale``."""
         center = pts.mean(axis=0)
-        return (pts - center) * scale + center  
+        return (pts - center) * scale + center
 
     def homography_transform(self, img: np.ndarray) -> np.ndarray:
-        """Apply homography transformation to standardize the image."""
+        """Warp a frame into the configured bed-aligned output plane."""
         pts_dst = np.array([[0, 0], [self.out_size[0], 0], 
                            [self.out_size[0], self.out_size[1]], [0, self.out_size[1]]], 
                           dtype=np.float32)
@@ -35,7 +72,7 @@ class MotionFeatureExtractor:
         return cv2.warpPerspective(img, h, self.out_size)
 
     def extract_region_magnitudes_from_box(self, flow: np.ndarray) -> Dict[str, Tuple[float, float]]:
-        """Extract motion magnitudes from predefined regions."""
+        """Summarize flow magnitude for head, body, and outer regions."""
         h, w = flow.shape[:2]
         mag = np.linalg.norm(flow, axis=2)
 
@@ -63,15 +100,15 @@ class MotionFeatureExtractor:
         
         return {'Head': (vH, sH), 'Body': (vB, sB), 'Outer': (vO, sO)}
 
-    def compute_optical_flow(self, prev_img: np.ndarray, curr_img: np.ndarray, 
-                           flow_calculator) -> np.ndarray:
-        """Compute optical flow between two images."""
+    def compute_optical_flow(self, prev_img: np.ndarray, curr_img: np.ndarray,
+                             flow_calculator) -> np.ndarray:
+        """Compute dense optical flow between consecutive grayscale frames."""
         return flow_calculator.calc(prev_img, curr_img, None)
 
-    def compute_motion_features(self, v_seq: np.ndarray, s_seq: np.ndarray, 
-                              seconds: List[int], 
-                              thresholds: List[float], logger) -> Dict[str, np.ndarray]:
-        """Compute motion features from velocity sequences."""
+    def compute_motion_features(self, v_seq: np.ndarray, s_seq: np.ndarray,
+                                seconds: List[int],
+                                thresholds: List[float]) -> Dict[str, np.ndarray]:
+        """Build cumulative-motion and time-since-motion features."""
         T = len(v_seq)
         features = {}
         delta_fps = self.target_fps
@@ -81,7 +118,7 @@ class MotionFeatureExtractor:
         s_cum = np.cumsum(s_seq)
         
         for sec in seconds:
-            logger.info(f"Computing features for time window: {sec}s")
+            logger.debug(f"Computing motion features for window={sec}s")
             delta = int(sec * delta_fps)
             f1 = np.zeros(T)
             f2 = np.zeros(T)
@@ -118,21 +155,22 @@ class MotionFeatureExtractor:
 
         return features
 
-def process_single_video(cfg, video_info: Tuple[str, bool], logger) -> Optional[str]:
-    """Process a single video file to extract motion features."""
+
+def process_single_video(config: MotionProcessingConfig, video_info: Tuple[str, bool]) -> Optional[str]:
+    """Extract motion features for one video and save them as a ``.npy`` file."""
     video_file, skip_existing = video_info
 
     try:
         # Check if output already exists
         video_name = Path(video_file).name
-        output_filename = Path(cfg.output.dir) / f'{video_name.replace("_video_01.mp4", "_motion_features.npy")}'
+        output_filename = Path(config.output_dir) / f'{video_name.replace("_video_01.mp4", "_motion_features.npy")}'
 
         if skip_existing and output_filename.exists():
             logger.info(f"Skipping {video_name}, output already exists.")
             return f"Skipped: {video_name}"
 
         # Initialize extractor
-        extractor = MotionFeatureExtractor(cfg)
+        extractor = MotionFeatureExtractor(config)
         
         # Open video
         cap = cv2.VideoCapture(video_file)
@@ -142,7 +180,7 @@ def process_single_video(cfg, video_info: Tuple[str, bool], logger) -> Optional[
 
         # Get video properties
         fps = cap.get(cv2.CAP_PROP_FPS)
-        frame_interval = int(round(fps / cfg.target_fps))
+        frame_interval = int(round(fps / config.target_fps))
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         total_steps = max(1, int(frame_count // frame_interval) - 1)
 
@@ -166,7 +204,7 @@ def process_single_video(cfg, video_info: Tuple[str, bool], logger) -> Optional[
             'Outer': {'v': [], 's': []}
         }
         
-        logger.info(f"Processing {video_name} with {total_steps} steps at target FPS {cfg.target_fps}")
+        logger.info(f"Processing {video_name} with {total_steps} steps at target FPS {config.target_fps}")
         
         # Process frames
         frames_processed = 0
@@ -210,24 +248,23 @@ def process_single_video(cfg, video_info: Tuple[str, bool], logger) -> Optional[
             s_seq = np.array(region_seqs[region]['s'])
 
             features = extractor.compute_motion_features(
-                v_seq, s_seq, 
-                seconds=extractor.time_windows, 
-                thresholds=extractor.motion_thresholds,
-                logger=logger
+                v_seq, s_seq,
+                seconds=extractor.time_windows,
+                thresholds=extractor.motion_thresholds
             )
 
             # 디버깅: feature 이름들 출력
-            logger.info(f"Features for {region}: {list(features.keys())}")
+            logger.debug(f"Features for {region}: {list(features.keys())}")
 
             for k, v in features.items():
                 all_features[f'{k}_{region}'] = v
 
         # 디버깅: 최종 feature 목록 출력
-        logger.info(f"Final features: {sorted(all_features.keys())}")
-        logger.info(f"Total feature count: {len(all_features)}")
+        logger.debug(f"Final features: {sorted(all_features.keys())}")
+        logger.debug(f"Total feature count: {len(all_features)}")
         
         # Save results
-        Path(cfg.output.dir).mkdir(parents=True, exist_ok=True)
+        Path(config.output_dir).mkdir(parents=True, exist_ok=True)
         np.save(output_filename, all_features)
         
         logger.info(f"Successfully processed {video_name} ({frames_processed} frames)")
@@ -237,18 +274,24 @@ def process_single_video(cfg, video_info: Tuple[str, bool], logger) -> Optional[
         logger.error(f"Error processing {video_file}: {str(e)}")
         return f"Error: {Path(video_file).name} - {str(e)}"
 
-def get_video_files(cfg, logger) -> List[str]:
-    """Get list of video files to process."""
+
+def _as_list(value: Optional[Union[str, List[str]]]) -> List[str]:
+    """Normalize optional comma-separated strings or lists into a list."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(',') if item.strip()]
+    return [str(item).strip() for item in value if str(item).strip()]
+
+
+def get_video_files(config: MotionProcessingConfig) -> List[str]:
+    """Return existing video paths selected by record IDs, file list, or scan."""
     try:
         # Priority 1: Check for record_ids in config (highest priority)
-        if cfg.video.get('record_ids'):
-            record_ids = cfg.video.record_ids
-            if isinstance(record_ids, str):
-                # Handle comma-separated string
-                record_ids = [rid.strip() for rid in record_ids.split(',') if rid.strip()]
-
+        record_ids = _as_list(config.video_record_ids)
+        if record_ids:
             logger.info(f"Processing specific record IDs: {record_ids}")
-            video_dir = Path(cfg.video.input_path)
+            video_dir = Path(config.video_input_path)
             file_paths = [video_dir / rid / f"{rid}_video_01.mp4" for rid in record_ids]
 
             # Filter existing files
@@ -260,20 +303,14 @@ def get_video_files(cfg, logger) -> List[str]:
             file_paths = existing_files
 
         # Priority 2: If specific file list is provided
-        elif cfg.video.get('file_list'):
-            if isinstance(cfg.video.file_list, str):
-                # If it's a file path containing list of files
-                if Path(cfg.video.file_list).exists():
-                    with open(cfg.video.file_list, 'r') as f:
-                        video_dir = Path(cfg.video.input_path)
-                        file_paths = [video_dir / line.strip() / f"{line.strip()}_video_01.mp4" for line in f if line.strip()]
-                else:
-                    # If it's a comma-separated string
-                    video_dir = Path(cfg.video.input_path)
-                    file_paths = [video_dir / f.strip() / f"{f.strip()}_video_01.mp4" for f in cfg.video.file_list.split(',')]
+        elif config.video_file_list:
+            if isinstance(config.video_file_list, str) and Path(config.video_file_list).exists():
+                with open(config.video_file_list, 'r') as f:
+                    video_dir = Path(config.video_input_path)
+                    file_paths = [video_dir / line.strip() / f"{line.strip()}_video_01.mp4" for line in f if line.strip()]
             else:
-                # If it's already a list
-                file_paths = cfg.video.file_list
+                video_dir = Path(config.video_input_path)
+                file_paths = [video_dir / record_id / f"{record_id}_video_01.mp4" for record_id in _as_list(config.video_file_list)]
 
             # Filter existing files
             existing_files = [f for f in file_paths if Path(f).exists()]
@@ -284,7 +321,7 @@ def get_video_files(cfg, logger) -> List[str]:
             file_paths = existing_files
         else:
             # Priority 3: Default - scan directory for video files
-            file_paths = list(Path(cfg.video.input_path).glob('A*/*.mp4'))
+            file_paths = list(Path(config.video_input_path).glob('A*/*.mp4'))
 
         if not file_paths:
             logger.warning(f"No video files found")
@@ -296,24 +333,25 @@ def get_video_files(cfg, logger) -> List[str]:
         logger.error(f"Error reading video files: {e}")
         return []
 
-def process_all_videos(cfg, logger) -> List[str]:
-    """Process all videos using multiprocessing."""
-    video_files = get_video_files(cfg, logger)
+
+def process_all_videos(config: MotionProcessingConfig) -> List[str]:
+    """Process all videos selected by ``config`` using multiprocessing."""
+    video_files = get_video_files(config)
     if not video_files:
         return []
-    
+
     total_videos = len(video_files)
-    
+
     # Prepare video info tuples
-    video_infos = [(vf, cfg.skip_existing) for vf in video_files]
-    
-    logger.info(f"Processing {total_videos} videos with {cfg.num_workers} workers")
-    
+    video_infos = [(vf, config.skip_existing) for vf in video_files]
+
+    logger.info(f"Processing {total_videos} videos with {config.num_workers} workers")
+
     results = []
 
-    with ProcessPoolExecutor(max_workers=cfg.num_workers) as executor:
+    with ProcessPoolExecutor(max_workers=config.num_workers) as executor:
         # Submit all jobs at once
-        future_to_video = {executor.submit(process_single_video, cfg, video_info, logger): video_info[0] 
+        future_to_video = {executor.submit(process_single_video, config, video_info): video_info[0]
                          for video_info in video_infos}
         
         # Collect results with progress bar

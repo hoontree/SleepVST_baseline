@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional, List, Tuple
 from omegaconf import DictConfig
 from tqdm import tqdm
+from src.utils.logger import get_logger
 from src.data.preprocess.io import loadVideo, FrameResize, loadVideoStream, loadVideoStreamCV2
 import imageio.v3 as iio
 from scipy.signal import butter, sosfilt, iirnotch, lfilter
@@ -18,6 +19,8 @@ from sklearn.preprocessing import scale
 
 from .respiratory_extraction import resp_extraction, resp_extraction_r
 from .filters.temporal_filters import difference_of_iir
+
+logger = get_logger(__name__)
 
 
 def butter_bandpass(lowcut, highcut, fs, order=1):
@@ -177,8 +180,7 @@ def get_last_epoch_fps_new(json_path):
 def process_single_video_by_epoch(
     video_path: str,
     output_dir: str,
-    cfg: DictConfig,
-    logger
+    cfg: DictConfig
 ) -> str:
     """
     Process a single video for respiratory signal extraction.
@@ -187,7 +189,6 @@ def process_single_video_by_epoch(
         video_path: Path to input video
         output_dir: Base output directory
         cfg: Configuration object
-        logger: Logger instance
 
     Returns:
         Status message string
@@ -293,13 +294,12 @@ def process_single_video_by_epoch(
     else:
         return f"Successfully processed {processed_count} epochs for {record_id}"
 
-def process_all_videos(cfg: DictConfig, logger) -> List[str]:
+def process_all_videos(cfg: DictConfig) -> List[str]:
     """
     Process all videos for respiratory signal extraction.
 
     Args:
         cfg: Configuration object
-        logger: Logger instance
 
     Returns:
         List of status messages for each video
@@ -352,7 +352,7 @@ def process_all_videos(cfg: DictConfig, logger) -> List[str]:
 
     # Process each video
     for video_path in tqdm(video_files, desc="Processing videos", mininterval=10):
-        result = process_single_video_by_epoch(video_path, str(output_dir), cfg, logger)
+        result = process_single_video_by_epoch(video_path, str(output_dir), cfg)
         results.append(result)
 
     return results

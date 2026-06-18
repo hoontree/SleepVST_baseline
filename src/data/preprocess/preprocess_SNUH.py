@@ -16,12 +16,14 @@ from typing import List, Optional, Tuple, Dict, Any
 
 from concurrent.futures import ProcessPoolExecutor
 from omegaconf import DictConfig
-from src.common.logger import Logger
+from src.utils.logger import get_logger
 from src.data.preprocess.io import *
 from src.data.preprocess.utils_data import *
 from mne.io import read_raw_edf
 from glob import glob
 from tqdm import tqdm
+
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -91,9 +93,8 @@ class ProcessingConfig:
 class SNUHPreprocessor:
     """SNUH dataset preprocessor with configuration support"""
     
-    def __init__(self, config: ProcessingConfig, logger: Logger):
+    def __init__(self, config: ProcessingConfig):
         self.config = config
-        self.logger = logger
         self.executor = None
         
         # Setup signal handlers
@@ -105,7 +106,7 @@ class SNUHPreprocessor:
 
     def _signal_handler(self, sig, frame):
         """Handle Ctrl+C and other signals"""
-        self.logger.info("프로그램 종료 요청됨. 실행 중인 작업 종료 중...")
+        logger.info("프로그램 종료 요청됨. 실행 중인 작업 종료 중...")
         if self.executor:
             self.executor.shutdown(wait=False)
         sys.exit(0)
@@ -163,13 +164,13 @@ class SNUHPreprocessor:
                 duration_sec = int(self._get_last_row_column_value(ann_path, 'Start_Epoch')) * 30
                 if duration_sec <= 0:
                     duration_sec = None
-                    self.logger.warning(f"Warning: {basename}의 XML 파일에서 유효한 duration을 찾을 수 없습니다.")
+                    logger.warning(f"Warning: {basename}의 XML 파일에서 유효한 duration을 찾을 수 없습니다.")
             else:
                 duration_sec = None
-                self.logger.warning(f"Warning: {basename}의 XML 파일을 찾을 수 없습니다: {ann_path}")
+                logger.warning(f"Warning: {basename}의 XML 파일을 찾을 수 없습니다: {ann_path}")
         except Exception as e:
             duration_sec = None
-            self.logger.error(f"Error: {os.path.basename(edf_path)}의 XML 파일 처리 중 오류 발생: {str(e)}")
+            logger.error(f"Error: {os.path.basename(edf_path)}의 XML 파일 처리 중 오류 발생: {str(e)}")
         
         # Configure MNE to minimize output
         original_verbose = mne.set_log_level('ERROR')
@@ -314,7 +315,7 @@ class SNUHPreprocessor:
                         if name:
                             selection_from_file.append(name)
             else:
-                self.logger.warning(f"selection.file_list 경로가 존재하지 않습니다: {list_path}")
+                logger.warning(f"selection.file_list 경로가 존재하지 않습니다: {list_path}")
 
         # Compose include patterns
         include_patterns = []
@@ -360,8 +361,8 @@ class SNUHPreprocessor:
             else:
                 files_to_process.append(edf_file)
         
-        self.logger.info(f"이미 처리된 파일: {complete_count}/{len(edf_files)} ({complete_count/len(edf_files)*100:.1f}%)")
-        self.logger.info(f"처리할 파일: {len(files_to_process)} 개")
+        logger.info(f"이미 처리된 파일: {complete_count}/{len(edf_files)} ({complete_count/len(edf_files)*100:.1f}%)")
+        logger.info(f"처리할 파일: {len(files_to_process)} 개")
         
         return files_to_process
 
@@ -369,17 +370,17 @@ class SNUHPreprocessor:
         """Process the entire dataset"""
         # Memory information
         memory_info = self._get_memory_info()
-        self.logger.info(f"사용 가능한 메모리: {memory_info['available']/1024/1024:.1f} MB / 총 메모리: {memory_info['total']/1024/1024:.1f} MB")
+        logger.info(f"사용 가능한 메모리: {memory_info['available']/1024/1024:.1f} MB / 총 메모리: {memory_info['total']/1024/1024:.1f} MB")
 
-        self.logger.info("전처리 작업 시작")
-        self.logger.info(f"데이터셋: {self.config.dataset_name}")
-        self.logger.info(f"설정: batch_size={self.config.batch_size}, num_workers={self.config.num_workers}")
+        logger.info("전처리 작업 시작")
+        logger.info(f"데이터셋: {self.config.dataset_name}")
+        logger.info(f"설정: batch_size={self.config.batch_size}, num_workers={self.config.num_workers}")
 
         # Get files to process
         files_to_process = self._get_files_to_process()
         
         if not files_to_process:
-            self.logger.info("처리할 파일이 없습니다.")
+            logger.info("처리할 파일이 없습니다.")
             return {"processed": 0, "skipped": 0, "error": 0}
 
         # Overall results aggregation
@@ -389,7 +390,7 @@ class SNUHPreprocessor:
         batches = [files_to_process[i:i + self.config.batch_size] 
                   for i in range(0, len(files_to_process), self.config.batch_size)]
         
-        self.logger.info(f"배치 크기: {self.config.batch_size}, 워커 수: {self.config.num_workers}")
+        logger.info(f"배치 크기: {self.config.batch_size}, 워커 수: {self.config.num_workers}")
 
         # Process batches with progress bar
         with tqdm(total=len(files_to_process), ncols=100, desc=f"{self.config.dataset_name}", unit="file") as pbar:
@@ -423,12 +424,12 @@ class SNUHPreprocessor:
                                 
                                 if status.startswith("error"):
                                     batch_results["error"] += 1
-                                    self.logger.error(f"{file_name}: {status}")
+                                    logger.error(f"{file_name}: {status}")
                                 elif status == "skipped":
                                     batch_results["skipped"] += 1
                                 elif status == "processed":
                                     batch_results["processed"] += 1
-                                    self.logger.debug(f"Processed: {file_name}")
+                                    logger.debug(f"Processed: {file_name}")
                                 
                                 pbar.set_postfix(
                                     processed=overall_results["processed"] + batch_results["processed"], 
@@ -438,11 +439,11 @@ class SNUHPreprocessor:
                             
                             except concurrent.futures.TimeoutError:
                                 batch_results["error"] += 1
-                                self.logger.error(f"{file_name} 처리 시간 초과 ({self.config.timeout}초)")
+                                logger.error(f"{file_name} 처리 시간 초과 ({self.config.timeout}초)")
                             
                             except Exception as e:
                                 batch_results["error"] += 1
-                                self.logger.error(f"{file_name} 처리 중 예상치 못한 오류: {traceback.format_exc()}")
+                                logger.error(f"{file_name} 처리 중 예상치 못한 오류: {traceback.format_exc()}")
                     
                     # Aggregate results
                     overall_results["processed"] += batch_results["processed"]
@@ -454,14 +455,14 @@ class SNUHPreprocessor:
                     
                 except KeyboardInterrupt:
                     if self.config.continue_on_error:
-                        self.logger.warning("배치 처리 중단됨. 다음 배치로 진행합니다.")
+                        logger.warning("배치 처리 중단됨. 다음 배치로 진행합니다.")
                         continue
                     else:
                         raise
                         
                 except Exception as e:
                     error_msg = f"배치 {batch_idx+1}/{len(batches)} 처리 중 오류 발생: {str(e)}"
-                    self.logger.error(error_msg)
+                    logger.error(error_msg)
                     if not self.config.continue_on_error:
                         raise
                     continue
@@ -475,36 +476,37 @@ class SNUHPreprocessor:
                   f"건너뛴 파일={overall_results['skipped']}, "
                   f"오류={overall_results['error']}")
         
-        self.logger.info(summary)
+        logger.info(summary)
         return overall_results
 
 
-def process_snuh_dataset(cfg: DictConfig, logger: Logger) -> Dict[str, int]:
+def process_snuh_dataset(cfg: DictConfig) -> Dict[str, int]:
     """Process SNUH dataset with configuration"""
     config = ProcessingConfig.from_hydra_config(cfg)
-    preprocessor = SNUHPreprocessor(config, logger)
+    preprocessor = SNUHPreprocessor(config)
     return preprocessor.process_dataset()
 
 def main():
     """Legacy main function - kept for backward compatibility"""
     import hydra
     from omegaconf import DictConfig
-    
+    from src.utils.logger import setup_logging
+
     @hydra.main(version_base=None, config_path="../../../config", config_name="defaults")
     def hydra_main(cfg: DictConfig):
         # Use SNUH preprocessing configuration
         preprocess_cfg = cfg.preprocess if hasattr(cfg, 'preprocess') else cfg
-        
-        # Create logger
+
+        # Configure logging
         log_cfg = preprocess_cfg.log if hasattr(preprocess_cfg, 'log') else {'dir': './logs', 'name': 'snuh_preprocess'}
-        logger = Logger(dir=log_cfg['dir'], name=log_cfg['name'])
-        
+        setup_logging(log_cfg['dir'], log_cfg['name'])
+
         # Process dataset
-        results = process_snuh_dataset(preprocess_cfg, logger)
-        
+        results = process_snuh_dataset(preprocess_cfg)
+
         logger.info("모든 데이터셋 처리 완료")
         logger.info(f"최종 결과: {results}")
-    
+
     hydra_main()
 
 

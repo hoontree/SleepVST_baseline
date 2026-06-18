@@ -8,9 +8,11 @@ individual records for debugging and testing purposes.
 import numpy as np
 from pathlib import Path
 from omegaconf import OmegaConf
-from src.common.logger import Logger
-from src.data.preprocess.motion_extractor import process_single_video, MotionFeatureExtractor
+from src.utils.logger import setup_logging, get_logger
+from src.data.preprocess.motion_extractor import build_motion_processing_config, process_single_video, MotionFeatureExtractor
 import cv2
+
+logger = get_logger(__name__)
 
 
 def extract_motion_features_from_record(
@@ -45,9 +47,10 @@ def extract_motion_features_from_record(
     cfg.video.input_path = video_base_path
     cfg.output.dir = output_dir
     cfg.skip_existing = skip_existing
+    cfg.video.record_ids = [record_id]
 
-    # Setup logger
-    logger = Logger(cfg.log.dir, name=f"motion_test_{record_id}")
+    # Configure logging
+    setup_logging(cfg.log.dir, file_name=f"motion_test_{record_id}")
 
     if verbose:
         logger.info(f"Extracting motion features for record: {record_id}")
@@ -60,8 +63,9 @@ def extract_motion_features_from_record(
         return None
 
     # Process the video
+    config = build_motion_processing_config(cfg)
     video_info = (str(video_file), skip_existing)
-    result = process_single_video(cfg, video_info, logger)
+    result = process_single_video(config, video_info)
 
     if verbose:
         logger.info(f"Result: {result}")
