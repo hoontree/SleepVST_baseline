@@ -32,8 +32,6 @@ SleepVST_baseline/
 │       ├── full_oracle_predict.py           # regenerate full-oracle predictions
 │       ├── make_vinuss_predictions.py       # convert ViNUSS raw results to schema
 │       └── convert_seq_predictions.py       # 5-class → 4-class prediction mapping
-├── scripts/                      # One-shot analysis / comparison scripts
-│   └── compare_proxy_v1_v2.py   # Side-by-side v1 vs v2 respiratory proxy scoring
 ├── config/                       # Hydra configurations (data/model/mode/preprocess/train)
 │   ├── defaults.yaml
 │   ├── extraction.yaml
@@ -41,31 +39,9 @@ SleepVST_baseline/
 │   ├── mode/                     # pretrain / finetune / test / transfer
 │   ├── preprocess/               # respiratory / motionfeatures / EDF configs
 │   └── train/
-├── notebooks/                    # Analysis / exploration notebooks (kept for reference)
-├── results/                      # Generated experiment outputs (CSV/TXT)
-│   ├── RESULTS_INDEX.md          # Model comparison table + file→role mapping
-│   ├── predictions/              # Per-epoch test predictions (date-suffixed per run)
-│   ├── metrics/                  # Per-subject metrics + subject_stats
-│   ├── analysis/                 # Fairness, intensity, proxy failure (G1-G4), test metadata
-│   ├── label_comparison/         # Per-subject CSV-vs-JSON label comparison dumps
-│   ├── proxy_validation_v1.csv   # v1 proxy vs EDF reference scores
-│   └── movinet_mamba_test/       # MoViNet/Mamba ablation results
-├── figures/                      # All plots/figures (gitignored — PNGs)
-├── models/                       # Trained RF model pickles (gitignored — large)
-├── archive/                      # Disposable debug scripts / one-off notebooks (gitignored, kept on disk)
-│   ├── notebooks/
-│   └── scripts/
-├── data/                         # Datasets, .npy features (gitignored)
-├── test_sample/                  # Per-subject test samples (gitignored)
-├── checkpoint/                   # Model checkpoints (gitignored)
-├── logs/  output/  outputs/  wandb/   # Runtime logs & training outputs (gitignored)
+├── notebooks/                    # Analysis / exploration notebooks
 └── readme.md
 ```
-
-> **Note on duplicated outputs:** `results/predictions/` and `results/metrics/` keep more than one
-> dated copy of the same file (e.g. `..._2025-11-08.csv` vs `..._2025-11-09.csv`). These come from
-> different evaluation runs and are intentionally all preserved — the date suffix marks the run.
-> See `results/RESULTS_INDEX.md` for the authoritative model↔file mapping and metric summary.
 
 ## Installation
 
