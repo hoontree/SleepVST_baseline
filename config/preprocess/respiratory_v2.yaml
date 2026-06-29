@@ -1,0 +1,58 @@
+# v2 Respiratory Signal Extraction — soft-ROI optical flow (PBM ROI + LK OF)
+#
+# Changes from respiratory.yaml:
+#   - output.dir  : separate dir so v1 results are not overwritten
+#   - skip_existing: true   (safe to re-run; picks up where it left off)
+#   - file_list: null       (process every video in input_path)
+#   - save_frames/magnified: false  (saves time; not needed for training)
+#   - multiprocessing.num_workers: 60  (64-core machine, leave 4 for system)
+#   - extraction.top_k: 10  (number of LK tracking seed points)
+
+log:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/logs"
+  name: "respiratory_extraction_v2"
+
+video:
+  input_path: /tf/00_data/#_2021_Sleep_Video/
+  file_list: null          # null = scan all A*/*.mp4 in input_path
+  crop_box: [32, 422, 125, 515]
+  resize: [250, 250]
+
+edf:
+  input_path: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/"
+
+output:
+  dir: "/tf/01_code/mylittlecodes/SleepVST_baseline/data/resp_proxy_video_epochs_v2"
+  save_frames: false
+  save_signals: false          # set true to generate per-epoch signal plots
+  save_magnified_frames: false
+
+preprocessed_signal_dir: data/resp_proxy_video   # EDF reference for plot overlay
+
+magnification:
+  mag_factor: 50
+  freq_range: [0.2, 0.3]
+  attenuate: true
+  sigma: 5
+
+extraction:
+  method: robust_v2
+  roi_quantile: 0.95
+  resp_band: [0.1, 0.5]
+  top_k: 10                # LK optical flow seed points (soft-ROI)
+
+temporal_filter:
+  type: "difference_of_iir"
+  rl: 0.4
+  rh: 0.05
+
+skip_existing: true
+
+multiprocessing:
+  enabled: true
+  num_workers: 60
+
+filter:
+  enabled: false
+  record_ids: []
+  epoch_ranges: {}

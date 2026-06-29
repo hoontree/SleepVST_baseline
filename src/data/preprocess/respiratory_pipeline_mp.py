@@ -226,6 +226,7 @@ def process_single_video_by_epoch(
         method = extraction_cfg.get('method', 'robust_v2')
         roi_quantile = extraction_cfg.get('roi_quantile', 0.95)
         resp_band = tuple(extraction_cfg.get('resp_band', (0.1, 0.5)))
+        top_k = extraction_cfg.get('top_k', 10)
 
         # 간단한 무결성 체크 함수
         def _is_epoch_done(path: Path) -> bool:
@@ -292,6 +293,7 @@ def process_single_video_by_epoch(
                     record_id=record_id,
                     roi_quantile=roi_quantile,
                     resp_band=resp_band,
+                    top_k=top_k,
                     save_signals=save_signals,
                 )
             else:

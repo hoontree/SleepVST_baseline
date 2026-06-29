@@ -1,36 +1,25 @@
 """Robust respiratory-proxy extraction (v2).
 
 This is an improved alternative to :func:`respiratory_extraction.resp_extraction_r`.
-It keeps the phase-based motion magnification (PBM) front-end but replaces the
-fragile parts of the downstream signal extraction:
+It keeps the phase-based motion magnification (PBM) front-end for ROI selection and
+replaces the downstream signal extraction with soft-ROI Lucas-Kanade optical flow:
 
-Weaknesses of the legacy path and how v2 addresses them
--------------------------------------------------------
-1. **Single max-point dependency.** The legacy code tracks the single pixel of
-   maximum magnified-vs-original difference, so one large non-respiratory motion
-   (body movement, blanket, lighting flicker) corrupts the whole epoch. v2 builds
-   a *soft ROI* from the top-quantile motion-energy pixels and extracts a
-   motion-energy-weighted spatial average, which is far less sensitive to a few
-   outlier pixels.
-2. **Method inconsistency.** The legacy code locates the point with PBM but then
-   re-extracts the signal with Lucas-Kanade optical flow, mixing two different
-   motion models. v2 uses a single, consistent signal model: luminance change of
-   the magnified video over the ROI.
-3. **Frame dropping + wrong filter fs.** The legacy code halves the frame rate
-   (``make_half``) and then band-passes with a hard-coded ``fs=5`` that does not
-   match the true sampling rate. v2 keeps every frame and band-passes with the
-   actual ``fps`` using a zero-phase (``filtfilt``) filter.
-4. **Vertical-only displacement.** Legacy tracks only the y displacement.
-   Luminance change at moving edges responds to motion in any direction.
-5. **No quality control.** v2 computes a respiratory-band quality metric
-   (dominant breathing rate and spectral SNR) per epoch so downstream code can
-   discard or down-weight unreliable epochs instead of trusting every output.
-
-The function returns the extracted signal plus a quality dict; the pipeline is
-responsible for persisting them.
+Improvements over v1 (resp_extraction_r)
+-----------------------------------------
+1. **Soft-ROI optical flow.** v1 tracks a single pixel; v2 picks the top-K
+   highest-energy pixels from the PBM energy map and runs LK optical flow at
+   each, then averages their y-displacements weighted by motion energy.  This
+   makes the proxy far more robust to a single bad tracking point.
+2. **Correct filter fps.** v1 halves the frame rate and then band-passes with
+   a hard-coded ``fs=5`` that does not match the (≈2.5 Hz) sampling rate.
+   v2 keeps every frame and band-passes with the actual ``fps``.
+3. **Zero-phase filter.** v2 uses ``sosfiltfilt`` (zero-phase) instead of the
+   causal ``sosfilt`` in v1, so the proxy has no phase delay relative to EDF.
+4. **Per-epoch quality control.** A spectral SNR metric flags unreliable epochs.
 """
 
 from pathlib import Path
+import cv2
 import numpy as np
 from scipy.signal import butter, sosfiltfilt, welch
 
@@ -101,53 +90,87 @@ def respiratory_quality(signal, fs, resp_band=(0.1, 0.5), peak_halfwidth=0.03):
             "peak_freq": float(peak_freq), "ok": ok}
 
 
+def _soft_roi_optical_flow(video, energy, top_k=10, bbx_half=25):
+    """Soft-ROI LK optical flow: track top-K energy pixels, return weighted y-signal.
+
+    Args:
+        video: ``(T, H, W, 3)`` float array in ``[0, 1]``.
+        energy: ``(H, W)`` PBM motion-energy map.
+        top_k: number of seed points to track.
+        bbx_half: half-size of the bounding box cropped around each seed point.
+
+    Returns:
+        1-D array of length T with energy-weighted mean y-displacement.
+    """
+    H, W = energy.shape
+    flat_idx = np.argpartition(energy.ravel(), -top_k)[-top_k:]
+    rows = flat_idx // W
+    cols = flat_idx % W
+    e_weights = energy.ravel()[flat_idx]
+    e_weights = e_weights / e_weights.sum()
+
+    uint8_frames = (np.clip(video, 0, 1) * 255).astype(np.uint8)
+    T = len(uint8_frames)
+    y_matrix = np.zeros((top_k, T), dtype=np.float32)
+
+    for ki, (r, c, ew) in enumerate(zip(rows, cols, e_weights)):
+        r0, r1 = max(0, r - bbx_half), min(H, r + bbx_half)
+        c0, c1 = max(0, c - bbx_half), min(W, c + bbx_half)
+        crop = uint8_frames[:, r0:r1, c0:c1]  # (T, h, w, 3)
+
+        prev_gray = cv2.cvtColor(crop[0], cv2.COLOR_RGB2GRAY)
+        cy = float(r - r0)
+        pt = np.array([[[float(c - c0), cy]]], dtype=np.float32)
+
+        y_track = [cy]
+        for t in range(1, T):
+            gray = cv2.cvtColor(crop[t], cv2.COLOR_RGB2GRAY)
+            nxt, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pt, None)
+            if status is not None and status[0, 0] == 1:
+                cy = float(nxt[0, 0, 1])
+                pt = nxt
+            y_track.append(cy)
+            prev_gray = gray
+
+        y_matrix[ki] = y_track
+
+    # Energy-weighted mean y-position over time → (T,)
+    raw = (y_matrix * e_weights[:, None]).sum(axis=0)
+    return raw
+
+
 def extract_respiratory_signal(
     video, fps,
     mag_factor, freq_range, attenuate, sigma, temporal_filter,
-    roi_quantile=0.95, resp_band=(0.1, 0.5),
+    roi_quantile=0.95, resp_band=(0.1, 0.5), top_k=10,
 ):
     """Extract a robust respiratory proxy from one epoch of video.
+
+    Uses PBM to build a motion-energy ROI, then runs Lucas-Kanade optical flow
+    at the top-K highest-energy seed points and averages their y-displacements
+    weighted by motion energy.
 
     Args:
         video: ``(T, H, W, 3)`` float array in ``[0, 1]``.
         fps: true sampling rate of ``video`` (frames per second).
-        mag_factor, freq_range, attenuate, sigma, temporal_filter: PBM params,
-            passed through to :func:`motionMag`.
-        roi_quantile: pixels whose motion energy is at/above this quantile form
-            the ROI (e.g. 0.95 = top 5% most-moving pixels).
-        resp_band: band-pass range in Hz for the respiratory signal.
+        mag_factor, freq_range, attenuate, sigma, temporal_filter: PBM params.
+        roi_quantile: pixels at/above this energy quantile form the candidate ROI.
+        resp_band: band-pass range in Hz.
+        top_k: number of seed points to run optical flow on.
 
     Returns:
-        ``(signal, max_point, energy_map, quality)`` where ``signal`` is the
-        z-scored band-passed proxy of length ``T``, ``max_point`` is the
-        argmax-energy pixel (kept for visualization/compat), ``energy_map`` is
-        the ``(H, W)`` motion-energy map, and ``quality`` is the dict from
-        :func:`respiratory_quality`.
+        ``(signal, max_point, energy_map, quality)``.
     """
-    # --- Phase-based motion magnification ---
+    # --- Phase-based motion magnification (ROI selection only) ---
     no_mag, mag = motionMag(video, mag_factor, freq_range, attenuate, sigma, temporal_filter)
 
     # --- Spatial motion-energy map (H, W) ---
     energy = frame_difference(no_mag, mag)
-    # argmax kept only for backward-compatible visualization
     flat = np.argmax(energy)
     max_point = (int(flat // energy.shape[1]), int(flat % energy.shape[1]))
 
-    # --- Soft ROI: top-quantile energy pixels, energy-weighted ---
-    thresh = np.quantile(energy, roi_quantile)
-    weights = np.where(energy >= thresh, energy, 0.0)
-    total_w = weights.sum()
-    if total_w <= 0:
-        # Degenerate (static) epoch: fall back to uniform weighting.
-        weights = np.ones_like(energy)
-        total_w = weights.sum()
-    weights = weights / total_w
-
-    # --- Respiratory signal: ROI-weighted luminance of the magnified video ---
-    # Luminance change at moving edges encodes motion regardless of direction.
-    mag_clipped = np.clip(mag, 0.0, 1.0)
-    luminance = mag_clipped.mean(axis=-1)              # (T, H, W)
-    raw = (luminance * weights[None, :, :]).sum(axis=(1, 2))  # (T,)
+    # --- Soft-ROI optical flow: top-K energy seed points ---
+    raw = _soft_roi_optical_flow(video, energy, top_k=top_k)
 
     # --- Zero-phase band-pass at the TRUE fps, then z-score ---
     filtered = _bandpass_zerophase(raw, fps, resp_band[0], resp_band[1])
@@ -160,7 +183,7 @@ def extract_respiratory_signal(
 def resp_extraction_v2(
     video, fps, mag_factor, freq_range, attenuate, sigma, temporal_filter,
     save_dir, epoch_idx, preprocessed_signal=None, record_id=None,
-    roi_quantile=0.95, resp_band=(0.1, 0.5),
+    roi_quantile=0.95, resp_band=(0.1, 0.5), top_k=10,
     save_signals=True,
 ):
     """Pipeline-facing wrapper: extract, save proxy + quality, and plot.
@@ -176,7 +199,7 @@ def resp_extraction_v2(
 
     signal, max_point, energy, quality = extract_respiratory_signal(
         video, fps, mag_factor, freq_range, attenuate, sigma, temporal_filter,
-        roi_quantile=roi_quantile, resp_band=resp_band,
+        roi_quantile=roi_quantile, resp_band=resp_band, top_k=top_k,
     )
 
     # Save proxy under the legacy filename so downstream consumers keep working.
