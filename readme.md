@@ -7,23 +7,48 @@ Implementation of SleepVST paper: https://arxiv.org/abs/2404.03831
 ```
 SleepVST_baseline/
 ├── src/                          # Main source code (use this for development)
-│   ├── cli_train.py              # Entry point: training/eval (pretrain, finetune, test, transfer)
+│   ├── cli_train.py              # Entry point: training/eval (pretrain, finetune, test, transfer_to_video)
 │   ├── cli_preprocess.py         # Entry point: data preprocessing (edf/motion/respiratory)
+│   ├── cli_motionfeatures.py     # Entry point: motion feature extraction from videos
+│   ├── cli_extract_respiratory.py# Entry point: respiratory signal extraction from videos
+│   ├── cli_transfer.py           # Entry point: transfer_to_video (dedicated shim)
 │   ├── cli.py                    # Backward-compatible shim routing to the two above
-│   ├── common/                   # Common utilities (logger, utils)
+│   ├── utils/                    # Common utilities (logger, utils)
 │   ├── data/                     # Datasets, registry, preprocessing pipelines
 │   │   ├── datasets/             # KVSS / MESA / SHHS loaders
 │   │   └── preprocess/           # motion + respiratory extraction, filters
+│   │       ├── respiratory_extraction.py    # v1 optical-flow proxy
+│   │       ├── respiratory_extraction_v2.py # v2 robust PBM proxy
+│   │       ├── respiratory_pipeline.py      # single-process pipeline
+│   │       ├── respiratory_pipeline_mp.py   # multiprocess pipeline
+│   │       ├── motion_extractor.py
+│   │       └── motion_mag/
 │   ├── models/                   # SleepVST, RFClassifier, registry
-│   ├── train/                    # Training loops (loop.py, transfer.py)
-│   └── eval/                     # Evaluation metrics
+│   ├── train/                    # Training loops (loop.py, transfer.py, trainer.py)
+│   └── eval/                     # Evaluation metrics and analysis scripts
+│       ├── metrics.py
+│       ├── proxy_failure_analysis.py        # G1-G4 failure-mode breakdown
+│       ├── respiratory_proxy_validation.py  # proxy vs EDF reference scoring
+│       ├── full_oracle_predict.py           # regenerate full-oracle predictions
+│       ├── make_vinuss_predictions.py       # convert ViNUSS raw results to schema
+│       └── convert_seq_predictions.py       # 5-class → 4-class prediction mapping
+├── scripts/                      # One-shot analysis / comparison scripts
+│   └── compare_proxy_v1_v2.py   # Side-by-side v1 vs v2 respiratory proxy scoring
 ├── config/                       # Hydra configurations (data/model/mode/preprocess/train)
+│   ├── defaults.yaml
+│   ├── extraction.yaml
+│   ├── command2/                 # Per-command config overrides
+│   ├── mode/                     # pretrain / finetune / test / transfer
+│   ├── preprocess/               # respiratory / motionfeatures / EDF configs
+│   └── train/
 ├── notebooks/                    # Analysis / exploration notebooks (kept for reference)
 ├── results/                      # Generated experiment outputs (CSV/TXT)
+│   ├── RESULTS_INDEX.md          # Model comparison table + file→role mapping
 │   ├── predictions/              # Per-epoch test predictions (date-suffixed per run)
 │   ├── metrics/                  # Per-subject metrics + subject_stats
-│   ├── analysis/                 # Fairness, intensity, test-sample metadata, label-comparison logs
+│   ├── analysis/                 # Fairness, intensity, proxy failure (G1-G4), test metadata
 │   ├── label_comparison/         # Per-subject CSV-vs-JSON label comparison dumps
+│   ├── proxy_validation_v1.csv   # v1 proxy vs EDF reference scores
 │   └── movinet_mamba_test/       # MoViNet/Mamba ablation results
 ├── figures/                      # All plots/figures (gitignored — PNGs)
 ├── models/                       # Trained RF model pickles (gitignored — large)
@@ -35,12 +60,12 @@ SleepVST_baseline/
 ├── checkpoint/                   # Model checkpoints (gitignored)
 ├── logs/  output/  outputs/  wandb/   # Runtime logs & training outputs (gitignored)
 └── readme.md
-
 ```
 
 > **Note on duplicated outputs:** `results/predictions/` and `results/metrics/` keep more than one
 > dated copy of the same file (e.g. `..._2025-11-08.csv` vs `..._2025-11-09.csv`). These come from
 > different evaluation runs and are intentionally all preserved — the date suffix marks the run.
+> See `results/RESULTS_INDEX.md` for the authoritative model↔file mapping and metric summary.
 
 ## Installation
 
@@ -101,7 +126,28 @@ For detailed information on respiratory signal extraction, see [RESPIRATORY_EXTR
 
 #### 5. Transfer Learning to Video Domain
 ```bash
+# Via the main training CLI
 python -m src.cli_train command=transfer_to_video
+
+# Or via the dedicated shim
+python -m src.cli_transfer
+```
+
+#### 6. Proxy Validation & Failure Analysis
+```bash
+# Compare v1 (optical-flow) vs v2 (robust PBM) respiratory proxy
+python scripts/compare_proxy_v1_v2.py [--records 10] [--epochs 20]
+
+# Validate proxy against EDF reference (per-epoch r, br_mae, etc.)
+python -m src.eval.respiratory_proxy_validation \
+    --proxy-root data/resp_proxy_video_epochs \
+    --ref-dir    data/resp_proxy_video \
+    --out-csv results/proxy_validation_v1.csv
+
+# G1-G4 failure-mode breakdown (ViNUSS vs proxy model)
+python -m src.eval.proxy_failure_analysis \
+    --vinuss results/predictions/vinuss_predictions_2026-06-18.csv \
+    --proxy  results/predictions/sleepvst_dual_predictions_2025-11-09.csv
 ```
 
 ### Configuration
