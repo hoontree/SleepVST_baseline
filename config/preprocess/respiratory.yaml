@@ -8,6 +8,8 @@ log:
 video:
   input_path: /tf/00_data/#_2021_Sleep_Video/  # Path to the input video directory
   file_list: /tf/01_code/mylittlecodes/SleepVST_baseline/config/preprocess/file_list.txt  # Optional: file list for batch processing
+  crop_box: [32, 422, 125, 515]  # Frame crop region (y1, y2, x1, x2) — matches the PBM notebook
+  resize: [250, 250]  # Resize each cropped frame to (width, height)
 
 edf:
   input_path: "/tf/00_AIoT2/video_signal/#_2021_Sleep_Video/"
@@ -22,12 +24,23 @@ output:
 # Video processing parameters
 video_fps: 30  # Input video FPS (KVSS dataset default)
 
+# Optional reference (EDF-derived) breathing waveform for plot overlay.
+# Looks for {record_id}_bw.npy under this dir; missing files are tolerated.
+# Set to null to disable the overlay entirely.
+preprocessed_signal_dir: data/resp_proxy_video
+
 # Phase-based motion magnification parameters
 magnification:
   mag_factor: 50  # Magnification factor for respiratory motion
   freq_range: [0.2, 0.3]  # Frequency range for respiratory signal (6-24 breaths/min)
   attenuate: true  # Attenuate I and Q channels
   sigma: 5  # Standard deviation for amplitude-weighted blur (0 = no blur)
+
+# Signal extraction method
+extraction:
+  method: robust_v2     # 'robust_v2' (ROI-weighted, QC) or 'optical_flow' (legacy)
+  roi_quantile: 0.95    # Top-(1-q) motion-energy pixels form the ROI (v2 only)
+  resp_band: [0.1, 0.5] # Band-pass range in Hz for the proxy (v2 only)
 
 # Temporal filter parameters
 temporal_filter:

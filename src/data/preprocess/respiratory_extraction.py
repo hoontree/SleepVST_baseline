@@ -167,17 +167,18 @@ def resp_extraction(video, fps, mag_factor, freq_range, attenuate, sigma, tempor
     num_frames = len(video)
 
     signal_save_path = save_dir / 'signals'
-    signal_with_pt(mov_normalized, num_frames, fps, signal_save_path, epoch_idx,
-                   preprocessed_signal_dir, record_id)
+    signal_with_pt(mov_normalized, num_frames, fps, signal_save_path,
+                   preprocessed_signal=preprocessed_signal_dir, epoch_idx=epoch_idx, record_id=record_id)
 
     mag_signal_save_path = save_dir / 'mag_signals'
-    signal_with_pt(mag_mov_normalized, num_frames, fps, mag_signal_save_path, epoch_idx,
-                   preprocessed_signal_dir, record_id)
+    signal_with_pt(mag_mov_normalized, num_frames, fps, mag_signal_save_path,
+                   preprocessed_signal=preprocessed_signal_dir, epoch_idx=epoch_idx, record_id=record_id)
 
     return max_point
 
 def resp_extraction_r(video, fps, mag_factor, freq_range, attenuate, sigma, temporal_filter, save_dir, epoch_idx,
-                      preprocessed_signal=None, record_id=None):
+                      preprocessed_signal=None, record_id=None,
+                      save_frames=False, save_magnified_frames=False, save_signals=True):
 
     save_dir = Path(save_dir)
 
@@ -195,22 +196,20 @@ def resp_extraction_r(video, fps, mag_factor, freq_range, attenuate, sigma, temp
     of_video, y_val = tracking_movement(v_new, max_point, bbx_size=50)
     mov = processing(y_val)
 
-    # save movement signal
+    # save movement signal (always: this is the actual proxy output)
     np.save(save_dir / f'epoch_{epoch_idx}_movement.npy', mov)
 
-    # visualization
+    # visualization (optional, controlled by cfg.output.* flags)
+    if save_frames:
+        frames_with_max_pt(video, max_point, save_dir / 'frames')
 
-    # # frames
-    # frame_save_path = save_dir / 'frames'
-    # frames_with_max_pt(video, max_point, frame_save_path)
+    if save_magnified_frames:
+        frames_with_max_pt(mag, max_point, save_dir / 'mag_frames')
 
-    # mag_frame_save_path = save_dir / 'mag_frames'
-    # frames_with_max_pt(mag, max_point, mag_frame_save_path)
-
-    # signals
-    num_frames = len(v_new)
-
-    signal_with_pt(mov, num_frames, fps, save_dir, preprocessed_signal=preprocessed_signal, epoch_idx=epoch_idx-1, record_id=record_id)
+    if save_signals:
+        num_frames = len(v_new)
+        signal_with_pt(mov, num_frames, fps, save_dir, preprocessed_signal=preprocessed_signal,
+                       epoch_idx=epoch_idx, record_id=record_id)
 
     return max_point
 

@@ -14,60 +14,14 @@ from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
 import traceback
 from src.utils.logger import get_logger
-from src.data.preprocess.io import loadVideo, FrameResize, loadVideoStream, loadVideoStreamCV2
-import imageio.v3 as iio
-from scipy.signal import butter, sosfilt, iirnotch, lfilter
-from sklearn.preprocessing import scale
+from src.data.preprocess.io import loadVideoStreamCV2
 
-from .respiratory_extraction import resp_extraction, resp_extraction_r
+from .respiratory_extraction import resp_extraction_r
+from .respiratory_extraction_v2 import resp_extraction_v2
 from .filters.temporal_filters import difference_of_iir
 
 logger = get_logger(__name__)
 
-
-def butter_bandpass(lowcut, highcut, fs, order=1):
-    low = lowcut
-    high = highcut
-    sos  = butter(order, [low, high], btype='band', fs=fs, output='sos', analog=False)
-    return sos
-
-def butter_bandpass_filter(data, lowcut, highcut, fs, order=1):
-    sos  = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = sosfilt(sos, data)
-    return y
-
-def notch_filter(data, f0, Q, fs):
-    b, a = iirnotch(f0, Q, fs)
-    y = lfilter(b, a, data)
-    return y
-
-def filtered_signal(signal, sample_freq, low=0.1, high=0.5, order=1):
-
-#     # Notch filter to cancel out the power line disturbance (50 Hz - 60Hz)
-#     f0, Q = 50, 5
-#     y1 = notch_filter(signal, f0, Q, fs=sample_freq)
-#     f0 = 60
-#     y2 = notch_filter(y1, f0, Q, fs=sample_freq)
-
-    #y2 = signal
-    # Butterworth filter for valid freq signals
-    #filtered_signal = butter_bandpass_filter(y2, low, high, fs=sample_freq, order=order)
-    filtered_signal = butter_bandpass_filter(signal, low, high, fs=sample_freq, order=order)
-
-    return filtered_signal
-
-def normalize(y_val):
-    y = (y_val - np.min(y_val)) / (np.max(y_val) - np.min(y_val))
-    return y
-
-
-def processing(signal):
-    standardize = scale(signal)
-    butter = filtered_signal(standardize, 5)
-    norm = normalize(butter)
-    #norm = normalize(standardize)
-
-    return norm
 
 def load_video(video_path: str) -> Tuple[np.ndarray, float]:
     """
@@ -243,9 +197,35 @@ def process_single_video_by_epoch(
 
         processed_count = 0
 
-        preprocessed_signal_dir='data/resp_proxy_video'
-        preprocessed_path = Path(preprocessed_signal_dir) / f'{record_id}_bw.npy'
-        preprocessed_signal = np.load(preprocessed_path)
+        # Optional reference signal (EDF-derived breathing waveform) for plot overlay.
+        # Configurable via cfg.preprocessed_signal_dir; missing files are tolerated
+        # so extraction never fails just because the reference is unavailable.
+        preprocessed_signal = None
+        preprocessed_signal_dir = cfg.get('preprocessed_signal_dir', 'data/resp_proxy_video')
+        if preprocessed_signal_dir:
+            preprocessed_path = Path(preprocessed_signal_dir) / f'{record_id}_bw.npy'
+            if preprocessed_path.exists():
+                preprocessed_signal = np.load(preprocessed_path)
+            else:
+                logger.warning(f"Reference signal not found, skipping overlay: {preprocessed_path}")
+
+        # Build the temporal filter once per video instead of once per epoch.
+        temporal_filter = get_temporal_filter(cfg)
+
+        # Frame crop/resize and visualization options (config-driven).
+        video_cfg = cfg.get('video', {})
+        crop_box = tuple(video_cfg.get('crop_box', (32, 422, 125, 515)))
+        resize = tuple(video_cfg.get('resize', (250, 250)))
+        output_cfg = cfg.get('output', {})
+        save_frames = output_cfg.get('save_frames', False)
+        save_magnified_frames = output_cfg.get('save_magnified_frames', False)
+        save_signals = output_cfg.get('save_signals', True)
+
+        # Extraction method: 'optical_flow' (legacy) or 'robust_v2' (default).
+        extraction_cfg = cfg.get('extraction', {})
+        method = extraction_cfg.get('method', 'robust_v2')
+        roi_quantile = extraction_cfg.get('roi_quantile', 0.95)
+        resp_band = tuple(extraction_cfg.get('resp_band', (0.1, 0.5)))
 
         # 간단한 무결성 체크 함수
         def _is_epoch_done(path: Path) -> bool:
@@ -283,11 +263,11 @@ def process_single_video_by_epoch(
             epoch_video = loadVideoStreamCV2(
                 cap,
                 num_frames=frames_per_epoch,
-                crop_box=(32, 422, 125, 515),
-                size=(250, 250),
+                crop_box=crop_box,
+                size=resize,
                 normalize=True
             )
-            preprocessed = preprocessed_signal[i]
+            preprocessed = preprocessed_signal[i] if preprocessed_signal is not None and i < len(preprocessed_signal) else None
 
             if epoch_video is None:
                 logger.warning(f"No more frames available at epoch {i+1}")
@@ -297,19 +277,40 @@ def process_single_video_by_epoch(
                 logger.warning(f"Epoch {i+1} has only {len(epoch_video)} frames (expected {frames_per_epoch})")
 
             # Extract respiratory signal for this epoch
-            max_point = resp_extraction_r(
-                video=epoch_video,
-                fps=fps,
-                mag_factor=cfg.magnification.mag_factor,
-                freq_range=cfg.magnification.freq_range,
-                attenuate=cfg.magnification.attenuate,
-                sigma=cfg.magnification.sigma,
-                temporal_filter=get_temporal_filter(cfg),
-                save_dir=epoch_output_dir,
-                preprocessed_signal=preprocessed,
-                epoch_idx=i+1,
-                record_id=record_id
-            )
+            if method == 'robust_v2':
+                resp_extraction_v2(
+                    video=epoch_video,
+                    fps=cap_fps,
+                    mag_factor=cfg.magnification.mag_factor,
+                    freq_range=cfg.magnification.freq_range,
+                    attenuate=cfg.magnification.attenuate,
+                    sigma=cfg.magnification.sigma,
+                    temporal_filter=temporal_filter,
+                    save_dir=epoch_output_dir,
+                    epoch_idx=i+1,
+                    preprocessed_signal=preprocessed,
+                    record_id=record_id,
+                    roi_quantile=roi_quantile,
+                    resp_band=resp_band,
+                    save_signals=save_signals,
+                )
+            else:
+                resp_extraction_r(
+                    video=epoch_video,
+                    fps=fps,
+                    mag_factor=cfg.magnification.mag_factor,
+                    freq_range=cfg.magnification.freq_range,
+                    attenuate=cfg.magnification.attenuate,
+                    sigma=cfg.magnification.sigma,
+                    temporal_filter=temporal_filter,
+                    save_dir=epoch_output_dir,
+                    preprocessed_signal=preprocessed,
+                    epoch_idx=i+1,
+                    record_id=record_id,
+                    save_frames=save_frames,
+                    save_magnified_frames=save_magnified_frames,
+                    save_signals=save_signals
+                )
 
             processed_count += 1
 
