@@ -111,7 +111,8 @@ def assign_groups(m: pd.DataFrame) -> pd.DataFrame:
     return m
 
 
-def write_outputs(m: pd.DataFrame, outdir: str) -> None:
+def write_outputs(m: pd.DataFrame, outdir: str,
+                  name_a: str = "ViNUSS", name_b: str = "Proxy") -> None:
     os.makedirs(outdir, exist_ok=True)
     total = len(m)
 
@@ -125,8 +126,8 @@ def write_outputs(m: pd.DataFrame, outdir: str) -> None:
     summary = pd.DataFrame({
         "group": grp.index,
         "description": [
-            "ViNUSS correct, Proxy wrong",
-            "ViNUSS wrong, Proxy correct",
+            f"{name_a} correct, {name_b} wrong",
+            f"{name_a} wrong, {name_b} correct",
             "Both correct",
             "Both wrong",
         ],
@@ -187,13 +188,14 @@ def write_outputs(m: pd.DataFrame, outdir: str) -> None:
 
     lines = []
     lines.append("# Proxy failure-mode analysis (G1-G4)\n")
+    lines.append(f"- A = **{name_a}**  vs  B = **{name_b}**")
     lines.append(f"- matched epochs: **{total:,}**")
-    lines.append(f"- ViNUSS : acc={vm['accuracy']:.4f}, kappa={vm['kappa']:.4f}")
-    lines.append(f"- Proxy  : acc={pm['accuracy']:.4f}, kappa={pm['kappa']:.4f}\n")
+    lines.append(f"- {name_a} (A): acc={vm['accuracy']:.4f}, kappa={vm['kappa']:.4f}")
+    lines.append(f"- {name_b} (B): acc={pm['accuracy']:.4f}, kappa={pm['kappa']:.4f}\n")
     lines.append("## Group summary\n")
     lines.append(summary.to_markdown(index=False))
     lines.append("")
-    lines.append(f"- G1 (ViNUSS 단독 정답) = {n1:,} / G2 (Proxy 단독 정답) = {n2:,}")
+    lines.append(f"- G1 ({name_a} 단독 정답) = {n1:,} / G2 ({name_b} 단독 정답) = {n2:,}")
     lines.append(f"- McNemar χ²(1, cc) = {mcnemar_chi2:.3f} "
                  f"(>3.84 이면 p<0.05 로 두 모델 차이 유의)\n")
     lines.append("## Group distribution by ground-truth stage\n")
@@ -203,8 +205,8 @@ def write_outputs(m: pd.DataFrame, outdir: str) -> None:
     lines.append("- `group_summary.csv` — 그룹별 count/pct")
     lines.append("- `group_by_stage.csv` — stage x group")
     lines.append("- `group_by_subject.csv` — subject x group (+모델 acc, vinuss_gain 내림차순)")
-    lines.append("- `G1_proxy_confusion.csv` — G1 구간 Proxy 오분류 (gt x proxy_pred)")
-    lines.append("- `G2_vinuss_confusion.csv` — G2 구간 ViNUSS 오분류 (gt x vinuss_pred)")
+    lines.append(f"- `G1_proxy_confusion.csv` — G1 구간 B({name_b}) 오분류 (gt x proxy_pred)")
+    lines.append(f"- `G2_vinuss_confusion.csv` — G2 구간 A({name_a}) 오분류 (gt x vinuss_pred)")
     lines.append("- `epoch_groups.csv` — per-epoch 전체 그룹 라벨")
     report = "\n".join(lines) + "\n"
     with open(os.path.join(outdir, "report.md"), "w") as f:
@@ -224,13 +226,17 @@ def main(argv: Optional[list] = None) -> None:
                         "(oracle/ModernTCN 비교 시 이 경로를 바꾸면 됨)")
     p.add_argument("--outdir", default="results/analysis/proxy_failure",
                    help="결과 출력 디렉터리")
+    p.add_argument("--name-a", default="ViNUSS",
+                   help="모델 A(=--vinuss) 표시 이름. G1 = A correct, B wrong.")
+    p.add_argument("--name-b", default="Proxy",
+                   help="모델 B(=--proxy) 표시 이름. G2 = B correct, A wrong.")
     args = p.parse_args(argv)
 
-    vinuss = _load(args.vinuss, "ViNUSS")
-    proxy = _load(args.proxy, "Proxy")
+    vinuss = _load(args.vinuss, args.name_a)
+    proxy = _load(args.proxy, args.name_b)
     merged = align(vinuss, proxy)
     grouped = assign_groups(merged)
-    write_outputs(grouped, args.outdir)
+    write_outputs(grouped, args.outdir, name_a=args.name_a, name_b=args.name_b)
 
 
 if __name__ == "__main__":
