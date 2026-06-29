@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+.venv/
 *.py[cod]
 *$py.class
 *.so
@@ -44,8 +45,6 @@ legacy/data/
 *.ipynb_checkpoints
 # Disposable/experimental notebooks are kept on disk under archive/ but not tracked
 /archive/
-# Oversized notebook with embedded data (preserved on disk, too large for git)
-notebooks/Extraction_of_Respiratory_Pattern_using_PBM_Final_r2.ipynb
 
 # Figures and visualizations (kept on disk under figures/, not tracked)
 /figures/
@@ -63,3 +62,6 @@ notebooks/Extraction_of_Respiratory_Pattern_using_PBM_Final_r2.ipynb
 
 # Generated results (regenerable; kept on disk only)
 results/
+
+# Jupyter Notebook
+notebooks/
