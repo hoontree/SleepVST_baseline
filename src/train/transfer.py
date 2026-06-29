@@ -90,16 +90,22 @@ def transfer_to_video(cfg):
         rf_model = SleepVSTVideoRF(rf_config)
         
         with torch.no_grad():
-            train_features, train_labels, train_subject_ids = extract_features_from_loader(cfg_train,
+            train_features, train_labels, train_subject_ids = extract_features_from_loader(
+                cfg_train.seq_len,
+                cfg_train.step_size,
+                cfg_train.data.motion_dim,
                 feature_extractor,
                 train_loader,
-                "Extracting features from KVSS train set"
+                "Extracting features from KVSS train set",
             )
 
-            val_features, val_labels, val_subject_ids = extract_features_from_loader(cfg_val,
+            val_features, val_labels, val_subject_ids = extract_features_from_loader(
+                cfg_val.seq_len,
+                cfg_val.step_size,
+                cfg_val.data.motion_dim,
                 feature_extractor,
                 val_loader,
-                "Extracting features from KVSS validation set"
+                "Extracting features from KVSS validation set",
             )
             
         X_train = np.vstack([features for features in train_features])
@@ -194,6 +200,9 @@ def extract_features_from_loader(seq_len, step_size, motion_dim, feature_extract
     step = step_size
     center_index = (window_size - 1) // 2
     use_bw_only = use_bw_only or 'x_hw' not in data_loader.dataset[0]
+    # Signal-feature width = encoder d_model (the classifier head is nn.Identity),
+    # which is independent of the sliding-window length.
+    signal_dim = int(getattr(feature_extractor, 'd_model'))
 
     all_final_features = []
     all_labels = []
@@ -226,7 +235,7 @@ def extract_features_from_loader(seq_len, step_size, motion_dim, feature_extract
 
             # For each step, take the feature from the window whose center is closest,
             # then concatenate with that step's motion vector
-            batch_final_features = np.zeros((B, T, seq_len + motion_dim), dtype=np.float32)
+            batch_final_features = np.zeros((B, T, signal_dim + motion_dim), dtype=np.float32)
             batch_labels = np.zeros((B, T), dtype=np.int64)
 
             for t in range(T):

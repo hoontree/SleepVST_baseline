@@ -67,6 +67,10 @@ def run(cfg: DictConfig):
         if wandb_run:
             wandb_run.finish()
 
+    elif cfg.command == "transfer_to_video":
+        logger.info("Starting transfer_to_video command")
+        transfer_to_video(cfg)
+
     else:
         logger.error(
             f"Unknown training command: {cfg.command}. "
