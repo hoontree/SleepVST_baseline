@@ -37,6 +37,7 @@ class KVSS(BaseDataset):
         mode='finetune',
         data_source='video',
         exceptions=None,
+        bw_patch_samples=74,
         **kwargs,
     ):
         """Create a KVSS dataset from Hydra yaml fields.
@@ -63,6 +64,12 @@ class KVSS(BaseDataset):
             data_source: ``video`` to use extracted respiratory signals, or
                 another value to use raw BW arrays from ``signal_dir``.
             exceptions: Optional record IDs to exclude before sample loading.
+            bw_patch_samples: Expected sample count of one video-derived BW
+                epoch file. Epochs that don't match are resampled (or, for a
+                short trailing epoch, dropped) so every recording stacks into a
+                uniform-length array. Defaults to 74, the v1 (frame-halved)
+                proxy convention; pass 150 for v2 proxy output, which is
+                already captured at the native 5 Hz BW rate.
             **kwargs: Extra yaml fields such as dataloader options. They are
                 accepted for Hydra compatibility and ignored here.
         """
@@ -87,6 +94,7 @@ class KVSS(BaseDataset):
         self.data_source = data_source
         self.motion_feature_keys = None
         self.exceptions = set(exceptions or [])
+        self.bw_patch_samples = bw_patch_samples
 
         super().__init__(root=root, split=split, seq_len=seq_len, **kwargs)
 
@@ -291,12 +299,12 @@ class KVSS(BaseDataset):
                 if signal_files:
                     last = signal_files[-1]
                     arr = np.load(last).astype(np.float32)
-                    if arr.shape[0] != 74:
+                    if arr.shape[0] != self.bw_patch_samples:
                         signal_files = signal_files[:-1]
                 for signal_file in signal_files:
                     x_bw_part = np.load(signal_file).astype(np.float32)
-                    if x_bw_part.shape[0] != 74:
-                        x_bw_part = scipy.signal.resample_poly(x_bw_part, 74, x_bw_part.shape[0])
+                    if x_bw_part.shape[0] != self.bw_patch_samples:
+                        x_bw_part = scipy.signal.resample_poly(x_bw_part, self.bw_patch_samples, x_bw_part.shape[0])
                     x_bw_list.append(x_bw_part)
                 x_bw = np.vstack(x_bw_list)
             else:
@@ -364,12 +372,12 @@ class KVSS(BaseDataset):
                 if signal_files:
                     last = signal_files[-1]
                     arr = np.load(last).astype(np.float32)
-                    if arr.shape[0] != 74:
+                    if arr.shape[0] != self.bw_patch_samples:
                         signal_files = signal_files[:-1]
                 for signal_file in signal_files:
                     x_bw_part = np.load(signal_file).astype(np.float32)
-                    if x_bw_part.shape[0] != 74:
-                        x_bw_part = scipy.signal.resample_poly(x_bw_part, 74, x_bw_part.shape[0])
+                    if x_bw_part.shape[0] != self.bw_patch_samples:
+                        x_bw_part = scipy.signal.resample_poly(x_bw_part, self.bw_patch_samples, x_bw_part.shape[0])
                     x_bw_list.append(x_bw_part)
                 x_bw = np.vstack(x_bw_list)
             else:
