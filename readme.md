@@ -52,7 +52,7 @@ SleepVST_baseline/
 │   ├── cli_preprocess.py         # [진입점] EDF 전처리 (SNUH/KISS, 호흡 EDF)
 │   ├── cli_motionfeatures.py     # [진입점] 비디오 → 모션 피처
 │   ├── cli_extract_respiratory.py# [진입점] 비디오 → 호흡 프록시 신호
-│   ├── cli_transfer.py           # [진입점] transfer_to_video 전용 shim (⚠ 로깅/GPU 설정 누락)
+│   ├── cli_transfer.py           # [진입점] transfer_to_video 전용 shim
 │   ├── cli.py                    # [진입점] 구버전 호환 라우터
 │   │
 │   ├── models/
@@ -94,7 +94,7 @@ SleepVST_baseline/
 │   ├── defaults.yaml             # ★ 모든 진입점의 기본 config (transfer 지향)
 │   ├── data/                     # kvss, kvss_bwproxy_v2, shhs, mesa
 │   ├── model/                    # SleepVST, SleepVST_BW
-│   ├── mode/                     # transfer / pretrain / finetune (일부 필드는 미사용, §7-9)
+│   ├── mode/                     # transfer / pretrain / finetune (일부 필드는 미사용, §7-11)
 │   ├── preprocess/               # respiratory(_v2), motionfeatures, snuh, respiratory_edf
 │   ├── train/                    # defaults (lr/epochs 등)
 │   ├── log/                      # log_transfer
@@ -129,7 +129,7 @@ Hydra 기반. **모든 학습/평가 진입점은 `config/defaults.yaml`을 기�
 (`@hydra.main(config_name="defaults")`). `defaults.yaml`은 다음을 조합한다:
 
 ```
-data: kvss · model: SleepVST · mode: transfer · log: log_transfer
+data: kvss_bwproxy_v2 · model: SleepVST · mode: transfer · log: log_transfer
 preprocess: respiratory · train: defaults · (+ _self_)
 command: transfer_to_video   # 기본 명령
 ```
@@ -162,31 +162,36 @@ uv sync
 pip install torch torchvision hydra-core omegaconf numpy scipy scikit-learn tqdm wandb joblib opencv-python
 ```
 
-### 5.2 Transfer to video (RandomForest 헤드) — ✅ 정상
+### 5.2 Transfer to video (RandomForest 헤드) — ✅ 실제 실행 검증됨
 
-이 저장소에서 **실제로 검증된 주 경로**. 인코더를 얼려 피처를 뽑고 RF를 학습·평가한다.
+이 저장소의 **주 파이프라인**. 인코더를 얼려 피처를 뽑고 RF 헤드를 학습·평가한다.
+기본 config가 이제 `data: kvss_bwproxy_v2`(mode=transfer, SleepVST dual, v2 프록시)라 bare 명령이 바로 동작한다.
 
 ```bash
-# 기본 (data=kvss, model=SleepVST, mode=fit_test → 학습 후 테스트까지)
-python -m src.cli_train                       # command 기본값이 transfer_to_video
+python -m src.cli_train                       # command 기본값 transfer_to_video, data=kvss_bwproxy_v2
 python -m src.cli_train command=transfer_to_video   # 동일
-
-# v2 호흡 프록시 + dual(HW+BW) 구성
-python -m src.cli_train data=kvss_bwproxy_v2
 
 # 전용 shim (이제 setup_logging/GPU 설정 포함 — 기능상 cli_train 경로와 동일)
 python -m src.cli_transfer
 ```
 
-동작 모드는 `transfer.classifier.mode`로 제어: `fit`(학습·저장) / `fit_test`(학습·저장·테스트) / 그 외(`test`, 저장된 RF 로드 후 테스트).
-저장·로드 경로가 이제 일치하므로 `mode=test` 단독 실행도 방금 저장한 파일을 찾는다([§7-4](#7-알려진-이슈-수정-내역--남은-정리)에서 수정됨).
+> ⚠️ **`data=kvss`로는 transfer가 동작하지 않는다.** kvss.yaml은 `mode: finetune`/`SleepVST_BW`라
+> transfer가 빈 regular 샘플을 로드한다([§7-10](#7-알려진-이슈-수정-내역--남은-정리)). 그래서 기본값을 `kvss_bwproxy_v2`로 바꿨다.
+
+동작 모드는 `transfer.classifier.mode`로 제어: `fit`(학습·저장) / `fit_test`(학습·저장·테스트, 기본) / `test`(저장된 RF 로드 후 테스트).
+저장·로드 경로가 이제 일치하므로 `mode=test` 단독 실행도 방금 저장한 RF(`_{data_source}` 접미사 포함)를 찾는다.
 
 ```bash
-# 저장한 RF를 다시 로드해 테스트만 (data_source 접미사까지 일치)
-python -m src.cli_train transfer.classifier.mode=test
+# 저장한 RF를 다시 로드해 테스트만
+python -m src.cli_train transfer.classifier.mode=test system.gpu_ids=0
 ```
 
-### 5.3 사전학습 (SHHS + MESA) — ✅ 정상
+> ✅ **실제 실행 확인 (2026-07-24)**: `transfer.classifier.mode=test`를 GPU에서 완주 —
+> 체크포인트 로드 → KVSS test 70개 로드 → 피처 추출 `(57838, 218)` → `SleepVST_rf_model_video.pkl`
+> 로드(수정된 경로) → 예측·지표 산출 → CSV/혼동행렬 PNG 저장까지 exit 0. (지표 자체는 이 RF가
+> v2 프록시와 다른 데이터로 학습돼 낮게 나오지만, 그건 모델/데이터 정합성 문제로 파이프라인 배선과 무관.)
+
+### 5.3 사전학습 (SHHS + MESA) — ✅ dispatch 검증됨
 
 ```bash
 # 권장: 전용 config (checkpoint/pretrain/, 로그명 sleepvst_pretrain, epochs 50)
@@ -196,23 +201,32 @@ python -m src.cli_train --config-name command2/pretrain
 python -m src.cli_train command=pretrain
 ```
 SHHS/MESA config는 `config/data/*.yaml`에서 코드가 직접 로드한다.
+> ✅ 실행 확인: dispatch → `prepare_pretrain` → SHHS 데이터셋 빌드까지 도달. 완주하려면 SHHS 스플릿
+> 정의 파일(`data/shhs/<split>/A-<split>_set.txt`)이 있어야 한다(이 환경엔 npy만 있고 스플릿 txt는 없음).
 
-### 5.4 미세조정 (KVSS) — ✅ 정상
+### 5.4 미세조정 (KVSS) — ✅ dispatch 검증됨
 
 ```bash
 python -m src.cli_train --config-name command2/finetune
 ```
 - 사전학습 가중치 `checkpoint/pretrain/pretrained_sleepvst_bw.pth`를 로드해 KVSS 실측 신호로 미세조정.
-- 체크포인트: `checkpoint/finetune/sleepvst_finetune_kvss_finetuned.pth`.
-- ⚠️ 기본 config의 `command=finetune`은 전용 config를 쓰라는 안내 후 종료된다(전용 config로 실행).
+- 체크포인트 저장: `checkpoint/finetune/sleepvst_finetune_kvss_finetuned.pth`.
+- 기본 config의 `command=finetune`은 전용 config를 쓰라는 안내 후 종료된다.
+> ✅ 실행 확인: dispatch → `prepare_finetune` → KVSS train(333)/valid(69)/test(70) 빌드까지 도달.
+> **완주하려면 KVSS `{id}_label.npy`가 필요**하다(이 환경엔 없음 — 라벨이 annotation JSON에만 있어
+> transfer 경로만 소비. finetune/test의 regular-sample 경로는 label.npy를 요구, [§7-13](#7-알려진-이슈-수정-내역--남은-정리)).
 
-### 5.5 평가 (test) — ✅ 정상
+### 5.5 평가 (test) — ✅ dispatch 검증됨
 
 ```bash
-python -m src.cli_train --config-name command2/test
+# ⚠️ command2/test.yaml의 기본 test.checkpoint 파일명(sleepvst_finetune_kvss_finetuned.pth)은
+#    이 환경에 없다. 존재하는 체크포인트로 오버라이드:
+python -m src.cli_train --config-name command2/test \
+    test.checkpoint=checkpoint/finetune/kvss_finetuned_bw.pth
 ```
 - `test.checkpoint`의 모델을 로드해 `test.datasets`(기본 `kvss`)에 대해 sliding-window 추론.
-- ⚠️ 기본 config의 `command=test` 역시 전용 config 안내 후 종료된다.
+- 기본 config의 `command=test` 역시 전용 config 안내 후 종료된다.
+> ✅ 실행 확인: dispatch → `test()` → 체크포인트 로드 → KVSS test 빌드까지 도달. 완주 조건은 §5.4와 동일(label.npy).
 
 ### 5.6 전처리 — ✅ (config 주의)
 
@@ -271,7 +285,7 @@ KVSS 스플릿은 `data/kvss/A-{train,valid,test}_set.txt`로 정의되며, `con
 
 ## 7. 알려진 이슈 (수정 내역 / 남은 정리)
 
-README 작성 중 코드·config를 대조하며 발견한 문제들. **아래 #1~#8은 이 브랜치에서 수정 완료**, #9~#10은 남은 정리거리.
+코드·config를 대조하고 **실제로 실행**하며 발견한 문제들. **#1~#10은 이 브랜치에서 수정 완료**, #11~ 는 남은 정리거리 / 환경 의존성.
 
 ### ✅ 수정 완료
 
@@ -280,33 +294,38 @@ README 작성 중 코드·config를 대조하며 발견한 문제들. **아래 #
 | **1** | `config/command2/finetune.yaml` | `--config-name command2/finetune` 실행 시 모든 키가 `command2:` 아래로 중첩돼 `cfg.command`조차 못 읽음 → "Unknown training command" | 파일 맨 위에 **`# @package _global_` 추가** |
 | **2** | `config/command2/{pretrain,test}.yaml` | `cli_train.run()`이 dispatch 전에 `cfg.system.device`/`gpu_ids`([cli_train.py:42-43])를 읽는데 두 config에 `system:` 블록이 없어 크래시 | **`system:` 블록 추가** (+ `_self_` 명시로 경고 제거) |
 | **3** | `command=test` (기본 config) | `test()`가 `cfg.test.checkpoint`([loop.py:409]) 등을 읽는데 기본 config엔 `test:`가 없어 크래시 | `run()`에 **가드 추가** — 전용 config(`command2/test`) 안내 후 정상 종료 |
-| **4** | `src/train/transfer.py` 저장/로드 경로 | 저장은 `..._rf_model_{data_source}.pkl`(접미사 O), 로드는 접미사 X → `mode=test`가 방금 저장한 모델을 못 찾음 | **로드 경로에도 `_{cfg.data.data_source}` 추가**해 저장·로드 일치 |
-| **5** | `command=finetune` (기본 config) | `prepare_finetune`이 `cfg.train.pretrained_checkpoint`([loop.py:379])를 읽는데 없어 크래시 | `run()`에 **가드 추가** — 전용 config(`command2/finetune`) 안내 후 정상 종료. 전용 config는 `mode=finetune`도 세팅해 KVSS가 실측 샘플을 로드 |
+| **4** | `src/train/transfer.py` 저장/로드 경로 | 저장은 `..._rf_model_{data_source}.pkl`(접미사 O), 로드는 접미사 X → `mode=test`가 방금 저장한 모델을 못 찾음 | **로드 경로에도 `_{cfg.data.data_source}` 추가**해 저장·로드 일치 (실행으로 확인) |
+| **5** | `command=finetune` (기본 config) | `prepare_finetune`이 `cfg.train.pretrained_checkpoint`([loop.py:379])를 읽는데 없어 크래시 | `run()`에 **가드 추가** — 전용 config(`command2/finetune`) 안내 후 정상 종료 |
 | **6** | `src/cli_transfer.py` | `cli_train` 경로와 달리 파일 로깅/GPU 선택이 적용 안 됨 | shim에 **`setup_logging()`·`setup_device()` 추가** |
 | **7** | `config/command2/{pretrain,test}.yaml` | Hydra "Defaults list is missing `_self_`" 경고 | defaults에 **`_self_` 명시** |
 | **8** | `src/models/registry.py`, `src/data/registry.py` | 어디서도 import 안 되는 죽은 코드 | **삭제** |
+| **9** | `src/utils/utils.py` `setup_device` | `system.gpu_ids=0`(int)로 오버라이드하면 `os.environ[...]=int` → `TypeError`. **실제 실행에서 발견** | `str(gpu_ids)`로 강제 변환 |
+| **10** | `config/defaults.yaml` `data: kvss` | transfer 기본 실행이 빈 샘플 로드로 실패. kvss.yaml은 `mode=finetune`/`SleepVST_BW`라 transfer가 regular 샘플을 로드(라벨 없음→0개). **실제 실행에서 발견** | 기본 data를 **`kvss_bwproxy_v2`**(mode=transfer, SleepVST, v2 프록시)로 변경 — model·command과 정합 |
 
-> #3·#5는 "기본 config로도 finetune/test가 돌게" 만드는 대신, 의도된 전용 config(`command2/`)로
-> 안내하는 방식으로 처리했다. 기본 config는 transfer 지향이라 finetune/test용 경로(체크포인트 디렉토리,
-> `mode`)가 다르기 때문이다. **정식 실행은 `--config-name command2/<명령>`.**
+> #3·#5는 "기본 config로도 finetune/test가 돌게" 만드는 대신 의도된 전용 config(`command2/`)로
+> 안내하는 방식으로 처리했다. **학습/평가 정식 실행은 `--config-name command2/<명령>`.**
 
-### 🔧 남은 정리거리 (동작에는 지장 없음)
+### 🔧 남은 정리거리 / 환경 의존성
 
 | # | 위치 | 내용 |
 |---|---|---|
-| **9** | `config/mode/pretrain.yaml`, `mode/finetune.yaml`, `mode/extract_respiratory.yaml` | `mode.lr`/`max_epochs`/`freeze`는 코드에서 안 읽힘(trainer는 `cfg.train.*` 사용), `mode/extract_respiratory.yaml`도 미사용. 크래시는 없으나 헷갈리는 죽은 config — 추후 정리 권장 |
-| **10** | `config/model/*.yaml` `input_length: 74` | 실제로는 어떤 레이어 크기도 결정하지 않는 값(`WaveformEncoder`는 AdaptiveAvgPool). 바꿔도 no-op이라 그대로 뒀으나, 의미상 혼동 소지가 있으니 문서로만 남김 |
+| **11** | `config/mode/pretrain.yaml`, `mode/finetune.yaml`, `mode/extract_respiratory.yaml` | `mode.lr`/`max_epochs`/`freeze`는 코드에서 안 읽힘, `mode/extract_respiratory.yaml`도 미사용. 크래시는 없으나 헷갈리는 죽은 config |
+| **12** | `config/model/*.yaml` `input_length: 74` | 실제로는 레이어 크기를 결정하지 않는 값(`WaveformEncoder`는 AdaptiveAvgPool). no-op이라 문서로만 남김 |
+| **13** | KVSS regular-sample 경로 (`load_regular_samples`) | finetune/test는 `{id}_label.npy`를 요구하는데(없으면 레코드 skip) 이 환경엔 label.npy가 0개(라벨이 annotation JSON에만 존재). 그래서 finetune/test는 **dispatch까지만 검증**됨. 완주하려면 label.npy 생성 또는 로더가 JSON/CSV 라벨을 쓰도록 수정 필요 |
+| **14** | `config/command2/test.yaml` `test.checkpoint` | 기본값 `sleepvst_finetune_kvss_finetuned.pth`가 이 환경에 없음(있는 건 `kvss_finetuned{,_bw}.pth`). 실행 시 오버라이드하거나 실제 finetune 산출물 경로로 갱신 필요 |
 
-### 지금 바로 되는 것
+### 실제 실행 검증 (2026-07-24, GPU)
 
-- ✅ transfer: `python -m src.cli_train` (또는 `data=kvss_bwproxy_v2`, `transfer.classifier.mode=test`)
-- ✅ pretrain: `python -m src.cli_train --config-name command2/pretrain` (기본 config `command=pretrain`도 가능)
-- ✅ finetune: `python -m src.cli_train --config-name command2/finetune`
-- ✅ test: `python -m src.cli_train --config-name command2/test`
-- ✅ 전처리(모션/호흡/EDF), eval 스크립트
+| 명령 | 어디까지 확인 | 결과 |
+|---|---|---|
+| `cli_train transfer.classifier.mode=test` (data=kvss_bwproxy_v2) | **완주** | exit 0 — 피처 `(57838,218)` 추출 → RF 로드(수정경로) → 예측·지표·CSV·PNG |
+| `--config-name command2/pretrain` | dispatch → SHHS 빌드 | ✅ 배선 정상 (SHHS 스플릿 txt 없어 그 지점서 멈춤) |
+| `--config-name command2/finetune` | dispatch → KVSS train/val/test 빌드 | ✅ 배선 정상 (label.npy 없어 그 지점서 멈춤, #13) |
+| `--config-name command2/test` | dispatch → 체크포인트 로드 → 데이터 빌드 | ✅ 배선 정상 (label.npy 없어 그 지점서 멈춤, #13) |
+| `command=finetune`/`command=test` (기본 config) | 가드 | ✅ 안내 메시지 후 정상 종료 |
 
-> 위 학습 명령은 **config 조합·모듈 임포트·가드 동작까지 검증**했다. 실제 학습은 데이터셋과
-> 사전학습 체크포인트(`checkpoint/pretrain/*.pth`)가 준비돼 있어야 완주한다.
+> 즉 **모든 명령의 config·dispatch 배선은 실행으로 확인**됐다. finetune/test/pretrain의 *완주*는
+> 이 환경에 없는 데이터(KVSS label.npy, SHHS 스플릿 txt)에만 걸려 있고, 배선 문제는 아니다.
 
 ---
 

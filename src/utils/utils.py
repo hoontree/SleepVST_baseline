@@ -11,7 +11,9 @@ def setup_device(device: str, gpu_ids: str = '0') -> torch.device:
     if device == 'cuda' and not torch.cuda.is_available():
         logger.error("CUDA is not available. Please check your setup.")
         raise ValueError("CUDA is not available. Please check your setup.")
-    os.environ['CUDA_VISIBLE_DEVICES'] = gpu_ids if device != 'cpu' else ''
+    # gpu_ids may arrive as an int (e.g. Hydra override `system.gpu_ids=0`) or a
+    # comma list; CUDA_VISIBLE_DEVICES must be a str.
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_ids) if device != 'cpu' else ''
     return torch.device(device)
 
 def vis_fdiff(orig, diff):
