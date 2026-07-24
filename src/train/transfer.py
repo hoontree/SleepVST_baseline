@@ -148,11 +148,15 @@ def transfer_to_video(cfg):
         if cfg.transfer.classifier.mode == 'fit_test':
             _run_test_evaluation(cfg, feature_extractor, rf_model)
     else:
-        # Test-only mode: load a saved RF model and evaluate
+        # Test-only mode: load a saved RF model and evaluate.
+        # The load path must mirror the fit-mode save path above, including the
+        # ``_{data_source}`` suffix -- otherwise mode='test' looks for a file that
+        # fit-mode never wrote (e.g. it saves ``..._video.pkl`` but a suffix-less
+        # load would miss it).
         if cfg.model.use_finetuned:
-            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned.pkl")
+            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_used_finetuned_{cfg.data.data_source}.pkl")
         else:
-            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model.pkl")
+            rf_model = SleepVSTVideoRF.load(f"./checkpoint/randomforest/{cfg.model.name}_rf_model_{cfg.data.data_source}.pkl")
 
         _run_test_evaluation(cfg, feature_extractor, rf_model)
 

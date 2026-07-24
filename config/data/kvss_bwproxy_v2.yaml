@@ -1,0 +1,66 @@
+# KVSS video-transfer config: BW proxy (v2 robust extraction) + HW oracle + motion.
+#
+# Differs from kvss.yaml:
+#   - model: SleepVST (dual HW+BW, not SleepVST_BW) so KVSS.load_motion_samples()
+#     is used instead of load_motion_samples_bw() -- this is what actually loads
+#     x_hw from signal_dir alongside the video-derived x_bw.
+#   - mode: transfer (kvss.yaml leaves this at "finetune", which would skip the
+#     motion/video sample loading path entirely).
+#   - respiratory_signal_dir points at the v2 (robust PBM + soft-ROI LK) proxy
+#     output instead of the v1 output.
+#   - bw_patch_samples: 150, matching v2's native 5 Hz capture (30s * 5Hz = 150,
+#     the same patch length as the real BW oracle). v1's 74 came from halving
+#     frames in make_half(); v2 keeps every frame so no halving is needed.
+#
+# x_hw is always read from signal_dir/{record_id}_hw.npy (real ECG-derived
+# oracle) regardless of data_source -- see KVSS.load_motion_samples().
+#
+# Run with:
+#   python -m src.cli_transfer data=kvss_bwproxy_v2
+
+_target_: src.data.datasets.KVSS.KVSS
+name: kvss_bwproxy_v2
+
+root: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
+
+#original data dir
+video_dir: /tf/00_data/#_2021_Sleep_Video/
+label_dir: /tf/00_AIoT2/video_signal/#_2021_Sleep_Video/30sec_labels
+
+#preprocessed data dir
+signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/kvss
+respiratory_signal_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/resp_proxy_video_epochs_v2
+motion_dir: /tf/01_code/mylittlecodes/SleepVST_baseline/data/motionfeatures
+
+model: SleepVST
+mode: transfer
+bw_patch_samples: 150
+seq_len: 240
+step_size: 60
+d_model: 128
+motion_dim: 90
+split: train
+exceptions:
+  - A2019-EM-01-0119
+  - A2019-EM-01-0120
+  - A2019-EM-01-0122
+  - A2019-EM-01-0123
+  - A2019-EM-01-0124
+  - A2019-EM-01-0125
+  - A2019-EM-01-0196
+  - A2019-EM-01-0197
+  - A2019-EM-01-0198
+  - A2019-EM-01-0199
+  - A2019-EM-01-0200
+  - A2019-EM-01-0201
+  - A2019-EM-01-0202
+  - A2019-EM-01-0203
+  - A2019-EM-01-0204
+  - A2019-EM-01-0205
+  - A2019-EM-01-0206
+  - A2021-EM-01-0163
+batch_size: 1
+num_workers: 8
+shuffle: True
+pin_memory: True
+data_source: video # video, raw

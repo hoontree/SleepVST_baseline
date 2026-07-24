@@ -8,6 +8,7 @@ defaults:
   - /data@data.shhs: shhs
   - /data@data.mesa: mesa
   - /model: SleepVST_BW
+  - _self_
 
 test:
   checkpoint: checkpoint/finetune/sleepvst_finetune_kvss_finetuned.pth
@@ -15,6 +16,13 @@ test:
     - kvss
     # - shhs
     # - mesa
+
+# run() reads cfg.system.device/gpu_ids before dispatching, so this block is required.
+system:
+  device: cuda
+  num_workers: 8
+  pin_memory: true
+  gpu_ids: "4"
 
 log:
   dir: logs/test

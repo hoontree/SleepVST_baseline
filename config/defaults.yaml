@@ -1,5 +1,9 @@
 defaults:
-  - data: kvss
+  # transfer_to_video needs a dataset in mode=transfer whose `model` matches
+  # `model:` below (SleepVST dual). kvss.yaml is mode=finetune / SleepVST_BW,
+  # which makes transfer load empty regular samples -- kvss_bwproxy_v2 is the
+  # matching config (mode=transfer, SleepVST, video BW proxy).
+  - data: kvss_bwproxy_v2
   - model: SleepVST
   - mode: transfer
   - log: log_transfer

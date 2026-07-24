@@ -1,3 +1,5 @@
+# @package _global_
+
 # Finetune configuration for KVSS
 command: finetune
 
