@@ -8,6 +8,7 @@ defaults:
   - /data@data.mesa: mesa
   - /model: SleepVST
   - /train: defaults
+  - _self_
 
 train:
   log_name: sleepvst_pretrain
@@ -18,6 +19,13 @@ train:
   epochs: 50
   from_scratch: true
   early_stopping_patience: 10
+
+# run() reads cfg.system.device/gpu_ids before dispatching, so this block is required.
+system:
+  device: cuda
+  num_workers: 8
+  pin_memory: true
+  gpu_ids: "4"
 
 log:
   dir: logs/pretrain

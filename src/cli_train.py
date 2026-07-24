@@ -52,6 +52,16 @@ def run(cfg: DictConfig):
             wandb_run.finish()
 
     elif cfg.command == "finetune":
+        # The transfer-oriented default config does not carry the finetune-only
+        # keys (train.pretrained_checkpoint, mode=finetune). Fail with guidance
+        # instead of a cryptic ConfigKeyError from deep inside prepare_finetune.
+        if "pretrained_checkpoint" not in cfg.get("train", {}):
+            logger.error(
+                "'finetune' is not wired into the default config. Run it with the "
+                "dedicated config:\n"
+                "    python -m src.cli_train --config-name command2/finetune"
+            )
+            return
         logger.info("Starting finetune command")
         wandb_run = _setup_wandb(cfg)
         setup = prepare_finetune(cfg, wandb_run)
@@ -61,6 +71,15 @@ def run(cfg: DictConfig):
             wandb_run.finish()
 
     elif cfg.command == "test":
+        # The default config has no `test:` block (checkpoint / datasets). Fail
+        # with guidance instead of a cryptic ConfigKeyError inside test().
+        if "test" not in cfg:
+            logger.error(
+                "'test' is not wired into the default config. Run it with the "
+                "dedicated config:\n"
+                "    python -m src.cli_train --config-name command2/test"
+            )
+            return
         logger.info("Starting test command")
         wandb_run = _setup_wandb(cfg)
         test(cfg, wandb_run)
