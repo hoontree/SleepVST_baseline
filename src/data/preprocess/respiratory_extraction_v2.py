@@ -221,6 +221,47 @@ def resp_extraction_v2(
     return quality
 
 
+def load_quality(record_dir):
+    """Read the per-epoch quality sidecars written by :func:`resp_extraction_v2`.
+
+    The proxy signals themselves are loaded by
+    :class:`src.data.datasets.KVSS.KVSS`; this reads only the ``*_quality.npz``
+    files, which no other module consumes.
+
+    Args:
+        record_dir: Directory holding one record's ``epoch_*/`` subdirectories.
+
+    Returns:
+        Dict of arrays indexed in epoch order, all of length N:
+        ``epoch`` (1-based epoch number), ``breathing_rate`` (breaths/min),
+        ``snr``, ``peak_freq`` (Hz), ``ok`` (bool) and ``max_point`` (N, 2).
+        Every field is empty when the record has no quality sidecars.
+    """
+    record_dir = Path(record_dir)
+    files = sorted(record_dir.glob('epoch_*/epoch_*_quality.npz'),
+                   key=lambda p: int(p.parent.name.split('_')[1]))
+
+    epochs, brs, snrs, peaks, oks, points = [], [], [], [], [], []
+    for path in files:
+        with np.load(path) as z:
+            epochs.append(int(path.parent.name.split('_')[1]))
+            brs.append(float(z['breathing_rate']))
+            snrs.append(float(z['snr']))
+            peaks.append(float(z['peak_freq']))
+            oks.append(bool(z['ok']))
+            points.append(z['max_point'])
+
+    return {
+        "epoch": np.array(epochs, dtype=np.int64),
+        "breathing_rate": np.array(brs, dtype=np.float32),
+        "snr": np.array(snrs, dtype=np.float32),
+        "peak_freq": np.array(peaks, dtype=np.float32),
+        "ok": np.array(oks, dtype=bool),
+        "max_point": (np.stack(points) if points
+                      else np.empty((0, 2), dtype=np.int64)),
+    }
+
+
 def _plot_signal(signal, fps, save_dir, epoch_idx, record_id, quality,
                  preprocessed_signal=None):
     import matplotlib

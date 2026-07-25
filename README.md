@@ -236,9 +236,14 @@ python -m src.cli_motionfeatures                # config_name=preprocess/motionf
 
 # 비디오 → 호흡 프록시 (v1 기본)
 python -m src.cli_extract_respiratory           # config_name=preprocess/respiratory 고정
-# 호흡 프록시 v2
-python -m src.cli_extract_respiratory --config-name preprocess/respiratory_v2
-# (scripts/run_v2_extraction.sh 가 위 v2 명령을 래핑)
+
+# 호흡 프록시 v2 — 전용 러너 사용 (A* 499개, 60 workers)
+python scripts/run_v2_extraction.py
+#   ⚠ `--config-name preprocess/respiratory_v2` 는 쓰지 말 것. 경로 구분자가 든 config
+#     이름을 Hydra에 넘기면 빈 struct config가 만들어져 `Key 'log' is not in struct`로 죽는다.
+#     run_v2_extraction.py 는 OmegaConf.load()로 config를 직접 읽어 이 문제를 우회한다.
+#     (scripts/run_v2_extraction.sh 는 깨진 Hydra 경로를 쓰므로 .py 쪽을 사용)
+#   산출물 구조·불러오기·검증 결과 → docs/resp_proxy_v2.md
 
 # EDF 전처리 — ⚠ 기본 config엔 dataset 지정이 없어 그대로는 exit(1).
 #   해당 preprocess config를 함께 지정해야 한다 (예시, 사용 전 config 확인 권장):
